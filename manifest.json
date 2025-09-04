@@ -1,0 +1,33 @@
+{
+  "manifest_version": 3,
+  "name": "RedactaPro - Escritura Humana",
+  "version": "1.0",
+  "description": "Mejora tu escritura para sonar más humano y evadir detectores de IA.",
+  "permissions": [
+    "activeTab",
+    "scripting",
+    "storage" // Asegúrate de que esto esté presente
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
+  },
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "web_accessible_resources": [
+    {
+      "resources": ["js/popup.js", "css/popup.css"],
+      "matches": ["<all_urls>"]
+    }
+  ]
+  // **IMPORTANTE:** No necesitas la sección content_security_policy si compilas tu código
+  // y evitas 'unsafe-eval'. Si no compilas y usas Babel standalone, la necesitas.
+  // Dado que estamos migrando a un proceso de build, la CSP se puede omitir.
+}
