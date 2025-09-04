@@ -6,7 +6,7 @@
   "permissions": [
     "activeTab",
     "scripting",
-    "storage" // Asegúrate de que esto esté presente
+    "storage"
   ],
   "action": {
     "default_popup": "popup.html",
@@ -27,7 +27,5 @@
       "matches": ["<all_urls>"]
     }
   ]
-  // **IMPORTANTE:** No necesitas la sección content_security_policy si compilas tu código
-  // y evitas 'unsafe-eval'. Si no compilas y usas Babel standalone, la necesitas.
-  // Dado que estamos migrando a un proceso de build, la CSP se puede omitir.
+  // CSP eliminada si usas build. Si usas Babel standalone, reañádela.
 }
