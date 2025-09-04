@@ -764,11 +764,16 @@
       });
 
       const avgSentenceLength = sentenceLengths.length > 0 ? sentenceLengths.reduce((a, b) => a + b, 0) / sentenceLengths.length : 1;
-      const stdDevSentenceLength = sentenceLengths.length > 0 ? Math.sqrt(sentenceLengths.reduce((acc, val) => acc + Math.pow(val - avgSentenceLength, 2), 0) / sentenceLengths.length) : 0;
+      // --- MODIFICACIÓN APLICADA AQUÍ ---
+      const sentenceWordCounts = sentences.map(s => s.split(/\s+/).length);
+      const localSentenceLengths = sentenceWordCounts; 
+      const localAvgSentenceLength = localSentenceLengths.length > 0 ? localSentenceLengths.reduce((a, b) => a + b, 0) / localSentenceLengths.length : 1;
+      const localStdDevSentenceLength = localSentenceLengths.length > 0 ? Math.sqrt(localSentenceLengths.reduce((acc, val) => acc + Math.pow(val - localAvgSentenceLength, 2), 0) / localSentenceLengths.length) : 0;
+      // --- FIN DE LA MODIFICACIÓN ---
 
       resetLastIntroPhrase(); 
 
-      return paragraphs.map((paraSentences, pIdx) => {
+      return processedParagraphs.map((paraSentences, pIdx) => {
         let finalSentences = paraSentences.map((sentence, idx) => {
           let processed = sentence.trim();
           const currentSentenceLength = processed.split(/\s+/).length;
@@ -868,9 +873,8 @@
 
       const avgSentenceLength = sentenceLengths.length > 0 ? sentenceLengths.reduce((a, b) => a + b, 0) / sentenceLengths.length : 1;
       // --- MODIFICACIÓN APLICADA AQUÍ ---
-      // sentenceLengths se calcula localmente ahora, en lugar de depender de adjustToneAndReadability
       const sentenceWordCounts = sentences.map(s => s.split(/\s+/).length);
-      const localSentenceLengths = sentenceWordCounts; // Renombramos para claridad
+      const localSentenceLengths = sentenceWordCounts; 
       const localAvgSentenceLength = localSentenceLengths.length > 0 ? localSentenceLengths.reduce((a, b) => a + b, 0) / localSentenceLengths.length : 1;
       const localStdDevSentenceLength = localSentenceLengths.length > 0 ? Math.sqrt(localSentenceLengths.reduce((acc, val) => acc + Math.pow(val - localAvgSentenceLength, 2), 0) / localSentenceLengths.length) : 0;
       // --- FIN DE LA MODIFICACIÓN ---
