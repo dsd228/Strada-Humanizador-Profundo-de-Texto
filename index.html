@@ -1,4 +1,4 @@
-777<!DOCTYPE html>
+666<!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
@@ -527,6 +527,56 @@
     };
 
     // --- Procesador de Texto Avanzado ---
+    // Definimos las funciones primero
+    function introduceVariety(text) {
+      let sentences = text.split(/(?<=[.!?])\s+/);
+      const settings = SettingsManager.get();
+
+      if (settings.connectorVariety && Math.random() > 0.6) {
+        const connector = Utils.getRandom(Data.connectors);
+        sentences[0] = connector + " " + sentences[0].charAt(0).toLowerCase() + sentences[0].slice(1);
+      }
+
+      if (settings.naturalFlow && Math.random() > 0.7) {
+        const interjection = Utils.getRandom(Data.interjections);
+        const idx = Math.floor(Math.random() * sentences.length);
+        sentences[idx] = interjection + " " + sentences[idx];
+      }
+
+      if (settings.lexicalRichness) {
+        sentences = sentences.map(sentence => {
+          Object.keys(Data.synonyms).forEach(word => {
+            const regex = new RegExp(`\\b${word}\\b`, 'gi');
+            sentence = sentence.replace(regex, () => Utils.getRandom(Data.synonyms[word]));
+          });
+          return sentence;
+        });
+      }
+
+      if (settings.toneAdjustment) {
+        sentences = sentences.map(sentence => {
+          Object.keys(Data.formalToInformal).forEach(formal => {
+            const regex = new RegExp(`\\b${formal}\\b`, 'gi');
+            sentence = sentence.replace(regex, Data.formalToInformal[formal]);
+          });
+          return sentence;
+        });
+      }
+
+      return sentences.join(' ');
+    }
+
+    function addIdiomsAndFlow(text) {
+      const sentences = text.split(/(?<=[.!?])\s+/);
+      if (Math.random() > 0.5 && sentences.length > 2) {
+        const idiom = Utils.getRandom(Data.idioms);
+        const insertAt = Math.floor(Math.random() * sentences.length);
+        sentences[insertAt] = sentences[insertAt] + " —" + idiom + "—";
+      }
+      return sentences.join(' ');
+    }
+
+    // Ahora definimos el objeto Processor con referencias a las funciones
     const Processor = {
       processText: async () => {
         const inputEl = document.getElementById('input-text');
@@ -545,12 +595,12 @@
         UI.updateProgress(20, "Limpieza inicial...");
         let processed = State.inputText;
 
-        // ✅ Corregido: la función está definida aquí y se llama correctamente
+        // ✅ Corregido: ahora `introduceVariety` es una función global accesible
         UI.updateProgress(40, "Aplicando variación...");
-        processed = this.introduceVariety(processed);
+        processed = introduceVariety(processed);
 
         UI.updateProgress(60, "Añadiendo naturalidad...");
-        processed = this.addIdiomsAndFlow(processed);
+        processed = addIdiomsAndFlow(processed);
 
         UI.updateProgress(80, "Ajustando tono...");
         await Utils.sleep(100);
@@ -565,55 +615,6 @@
           HistoryManager.saveToHistory();
           Storage.saveState();
         }, 300);
-      },
-
-      // ✅ Mover la función dentro de Processor
-      introduceVariety: (text) => {
-        let sentences = text.split(/(?<=[.!?])\s+/);
-        const settings = SettingsManager.get();
-
-        if (settings.connectorVariety && Math.random() > 0.6) {
-          const connector = Utils.getRandom(Data.connectors);
-          sentences[0] = connector + " " + sentences[0].charAt(0).toLowerCase() + sentences[0].slice(1);
-        }
-
-        if (settings.naturalFlow && Math.random() > 0.7) {
-          const interjection = Utils.getRandom(Data.interjections);
-          const idx = Math.floor(Math.random() * sentences.length);
-          sentences[idx] = interjection + " " + sentences[idx];
-        }
-
-        if (settings.lexicalRichness) {
-          sentences = sentences.map(sentence => {
-            Object.keys(Data.synonyms).forEach(word => {
-              const regex = new RegExp(`\\b${word}\\b`, 'gi');
-              sentence = sentence.replace(regex, () => Utils.getRandom(Data.synonyms[word]));
-            });
-            return sentence;
-          });
-        }
-
-        if (settings.toneAdjustment) {
-          sentences = sentences.map(sentence => {
-            Object.keys(Data.formalToInformal).forEach(formal => {
-              const regex = new RegExp(`\\b${formal}\\b`, 'gi');
-              sentence = sentence.replace(regex, Data.formalToInformal[formal]);
-            });
-            return sentence;
-          });
-        }
-
-        return sentences.join(' ');
-      },
-
-      addIdiomsAndFlow: (text) => {
-        const sentences = text.split(/(?<=[.!?])\s+/);
-        if (Math.random() > 0.5 && sentences.length > 2) {
-          const idiom = Utils.getRandom(Data.idioms);
-          const insertAt = Math.floor(Math.random() * sentences.length);
-          sentences[insertAt] = sentences[insertAt] + " —" + idiom + "—";
-        }
-        return sentences.join(' ');
       }
     };
 
