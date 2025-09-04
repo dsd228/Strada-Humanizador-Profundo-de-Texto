@@ -1,4 +1,4 @@
-111<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
@@ -242,19 +242,17 @@
   </div>
 
   <script>
-    // --- Estado de la aplicación (única instancia) ---
-    if (typeof AppState === 'undefined') {
-      const AppState = {
-        inputText: '',
-        outputText: '',
-        isProcessing: false,
-        analysisScore: 0,
-        activeTab: 'write',
-        history: [],
-        progress: 0,
-        progressMessage: 'Esperando...'
-      };
-    }
+    // --- ESTADO DE LA APLICACIÓN (definido al inicio) ---
+    let AppState = {
+      inputText: '',
+      outputText: '',
+      isProcessing: false,
+      analysisScore: 0,
+      activeTab: 'write',
+      history: [],
+      progress: 0,
+      progressMessage: 'Esperando...'
+    };
 
     // Aseguramos que todo se ejecute después del DOM
     document.addEventListener('DOMContentLoaded', () => {
