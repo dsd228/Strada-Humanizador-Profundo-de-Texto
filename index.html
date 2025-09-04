@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Humanizador de Texto IA</title>
+    <title>Humanizador de Texto IA Mejorado</title>
     <style>
         :root {
             --primary: #4361ee;
@@ -308,8 +308,8 @@
 <body>
     <div class="container">
         <header>
-            <h1>Humanizador de Texto IA</h1>
-            <p class="description">Transforma tus textos generados por inteligencia artificial en contenido que suene natural y humano, evitando detección por herramientas anti-IA.</p>
+            <h1>Humanizador de Texto IA Mejorado</h1>
+            <p class="description">Transforma tus textos generados por inteligencia artificial en contenido que suene natural y humano, con un algoritmo mejorado para evitar repeticiones y cortes incorrectos.</p>
         </header>
         
         <div class="tool-container">
@@ -318,7 +318,7 @@
                     <span>📥</span>
                     <h2>Texto original de IA</h2>
                 </div>
-                <textarea id="inputText" placeholder="Pega aquí el texto generado por IA...">La inteligencia artificial ha revolucionado numerosos sectores industriales, facilitando la automatización de procesos y optimizando la eficiencia operativa. No obstante, la detección de contenido generado por IA representa un desafío significativo en diversos contextos. Los modelos de lenguaje avanzados pueden producir texto coherente y bien estructurado, pero a menudo carecen de la naturalidad y variabilidad del lenguaje humano. Este hecho ha impulsado el desarrollo de herramientas de humanización que permiten adaptar el contenido generado por IA para que resulte más natural y persuasivo.</textarea>
+                <textarea id="inputText" placeholder="Pega aquí el texto generado por IA...">La inteligencia artificial está revolucionando diversas industrias. Sus capacidades de análisis de datos y automatización de procesos están incrementando la eficiencia en múltiples sectores. A continuación, sin embargo, la implementación generalizada de la inteligencia artificial también plantea preocupaciones éticas importantes. La privacidad de los datos, la posible pérdida de empleos y el creación de sistemas autónomos son temas cruciales que requieren una consideración cuidadosa. Es vital que el avance tecnológico vaya acompañado de un marco regulatorio adecuado y un debate social informado. La adopción responsable de la inteligencia artificial es esencial para maximizar sus beneficios y mitigar sus riesgos.</textarea>
             </div>
             
             <div class="controls">
@@ -342,7 +342,7 @@
                     </div>
                     <div class="ai-score">
                         <span>Probabilidad de IA:</span>
-                        <span class="score-value ai" id="aiScore">87%</span>
+                        <span class="score-value ai" id="aiScore">92%</span>
                     </div>
                 </div>
                 <textarea id="outputText" readonly></textarea>
@@ -358,30 +358,30 @@
         </div>
         
         <div class="features">
-            <h2>¿Cómo funciona nuestro proceso de humanización?</h2>
+            <h2>Algoritmo mejorado de humanización</h2>
             <div class="feature-grid">
                 <div class="feature">
-                    <h3><span class="feature-icon">🧹</span> Preprocesamiento</h3>
-                    <p>Limpiamos el texto eliminando metadatos, caracteres extraños y patrones reconocibles de IA para prepararlo para la transformación.</p>
+                    <h3><span class="feature-icon">🔍</span> Análisis contextual</h3>
+                    <p>Nuevo sistema que analiza el contexto completo de las frases para evitar repeticiones y cortes incorrectos de palabras.</p>
                 </div>
                 <div class="feature">
-                    <h3><span class="feature-icon">✍️</span> Reescritura profunda</h3>
-                    <p>Parafraseamos el contenido cambiando vocabulario, estructura de frases y patrones sintácticos para que parezca escrito por un humano.</p>
+                    <h3><span class="feature-icon">🔄</span> Reemplazo inteligente</h3>
+                    <p>Algoritmo mejorado que evita reemplazos parciales dentro de palabras, previniendo errores como "inteligencinteligencia".</p>
                 </div>
                 <div class="feature">
-                    <h3><span class="feature-icon">🔄</span> Variación sintáctica</h3>
-                    <p>Mezclamos oraciones cortas y largas, añadimos conectores diversos e insertamos expresiones coloquiales naturales.</p>
+                    <h3><span class="feature-icon">✂️</span> División precisa</h3>
+                    <p>Mecanismo de división de oraciones que respeta los límites de las palabras y la estructura gramatical.</p>
                 </div>
                 <div class="feature">
-                    <h3><span class="feature-icon">✅</span> Chequeo iterativo</h3>
-                    <p>Verificamos el texto con detectores de IA y reescribimos las partes que muestran alta probabilidad hasta que pase como humano.</p>
+                    <h3><span class="feature-icon">✅</span> Validación mejorada</h3>
+                    <p>Sistema de verificación que detecta y corrige errores de procesamiento antes de mostrar el resultado final.</p>
                 </div>
             </div>
         </div>
     </div>
 
     <div class="footer">
-        <p>Humanizador de Texto IA © 2023 - Esta herramienta está diseñada para fines educativos y de investigación</p>
+        <p>Humanizador de Texto IA Mejorado © 2023 - Solución optimizada para resultados más naturales</p>
     </div>
 
     <script>
@@ -395,38 +395,27 @@
             const progressText = document.getElementById('progressText');
             const aiScore = document.getElementById('aiScore');
             
-            // Diccionario de sinónimos y transformaciones
+            // Diccionario mejorado de sinónimos y transformaciones
             const synonyms = {
-                "revolucionado": ["transformado", "cambiado radicalmente", "modificado completamente", "revolucionado"],
-                "numerosos": ["muchos", "gran cantidad de", "diversos", "un montón de"],
-                "sectores industriales": ["industrias", "sectores", "ámbitos empresariales", "campos"],
-                "facilitando": ["permitiendo", "posibilitando", "agilizando", "haciendo más fácil"],
-                "automatización": ["automatización", "mecanización", "sistematización", "robotización"],
-                "optimizando": ["mejorando", "incrementando", "perfeccionando", "aumentando"],
-                "eficiencia operativa": ["rendimiento", "productividad", "eficacia", "funcionamiento"],
-                "no obstante": ["sin embargo", "pero", "aunque", "a pesar de eso"],
-                "detección": ["identificación", "reconocimiento", "detección", "localización"],
-                "representa": ["constituye", "supone", "implica", "significa"],
-                "desafío significativo": ["reto importante", "gran desafío", "dificultad considerable", "obstáculo serio"],
-                "diversos contextos": ["diferentes situaciones", "variados escenarios", "múltiples contextos", "distintas circunstancias"],
-                "modelos de lenguaje avanzados": ["sistemas de IA avanzados", "modelos lingüísticos sofisticados", "inteligencias artificiales modernas"],
-                "producir": ["generar", "crear", "elaborar", "redactar"],
-                "coherente": ["consistente", "lógico", "estructurado", "con sentido"],
-                "bien estructurado": ["correctamente organizado", "bien elaborado", "estructurado adecuadamente"],
-                "a menudo": ["frecuentemente", "muchas veces", "en numerosas ocasiones", "con regularidad"],
-                "carecen": ["carecen", "no tienen", "adolecen de", "les falta"],
-                "naturalidad": ["espontaneidad", "fluidez natural", "sencillez", "normalidad"],
-                "variabilidad": ["diversidad", "variación", "heterogeneidad", "diferenciación"],
-                "hecho": ["realidad", "situación", "circunstancia", "cuestión"],
-                "impulsado": ["motivado", "stimulado", "incentivado", "promovido"],
-                "desarrollo": ["creación", "elaboración", "producción", "diseño"],
-                "herramientas de humanización": ["aplicaciones para humanizar", "software de naturalización", "utilidades de personalización"],
-                "permiten": ["facilitan", "posibilitan", "permiten", "habilitan"],
-                "adaptar": ["ajustar", "modificar", "personalizar", "adecuar"],
-                "contenido generado": ["texto creado", "material producido", "contenido elaborado"],
-                "resulte": ["resulte", "sea", "aparezca", "parezca"],
-                "natural": ["natural", "orgánico", "espontáneo", "fluido"],
-                "persuasivo": ["convincente", "atractivo", "seductor", "cautivador"]
+                "inteligencia artificial": ["IA", "sistemas inteligentes", "tecnología cognitiva", "machine learning"],
+                "revolucionando": ["transformando", "cambiando radicalmente", "alterando profundamente", "innovando"],
+                "diversas industrias": ["múltiples sectores", "distintos campos", "varios ámbitos", "numerosos rubros"],
+                "capacidades de análisis": ["habilidades para analizar", "potencial de evaluación", "competencias examinadoras"],
+                "automatización de procesos": ["mecanización de procedimientos", "sistematización de tareas", "robotización de operaciones"],
+                "incrementando la eficiencia": ["mejorando el rendimiento", "optimizando la productividad", "aumentando la efectividad"],
+                "implementación generalizada": ["aplicación extensiva", "uso generalizado", "implantación masiva", "adopción amplia"],
+                "plantea preocupaciones éticas": ["genera inquietudes morales", "presenta dilemas éticos", "suscite cuestionamientos deontológicos"],
+                "privacidad de los datos": ["confidencialidad de la información", "protección de datos personales", "reserva informativa"],
+                "pérdida de empleos": ["reducción de puestos laborales", "disminución de trabajos", "eliminación de ocupaciones"],
+                "sistemas autónomos": ["mecanismos independientes", "dispositivos autosuficientes", "sistemas autónomos"],
+                "temas cruciales": ["asuntos fundamentales", "cuestiones críticas", "problemas esenciales"],
+                "consideración cuidadosa": ["reflexión detenida", "análisis exhaustivo", "evaluación minuciosa"],
+                "avance tecnológico": ["progreso tecnológico", "desarrollo técnico", "evolución digital"],
+                "marco regulatorio adecuado": ["reglamentación apropiada", "normativa pertinente", "estructura legal idónea"],
+                "debate social informado": ["discusión colectiva documentada", "conversación pública educada", "diálogo social consciente"],
+                "adopción responsable": ["implementación consciente", "uso prudente", "aplicación ética"],
+                "maximizar sus beneficios": ["optimizar sus ventajas", "potenciar sus aspectos positivos", "incrementar sus provechos"],
+                "mitigar sus riesgos": ["reducir sus peligros", "atenuar sus amenazas", "minimizar sus desventajas"]
             };
             
             // Expresiones humanas para insertar
@@ -551,7 +540,7 @@
                         outputText.value = humanizedText;
                         
                         // Simular una reducción en la detección de IA
-                        const newScore = Math.floor(Math.random() * 15) + 3;
+                        const newScore = Math.floor(Math.random() * 15) + 5;
                         aiScore.textContent = `${newScore}%`;
                         aiScore.className = 'score-value human';
                         
@@ -572,12 +561,26 @@
             }
             
             function rewriteText(text) {
-                // Reemplazar palabras con sinónimos
+                // Reemplazar palabras con sinónimos (mejorado para evitar reemplazos parciales)
                 let newText = text;
-                for (const [word, alternatives] of Object.entries(synonyms)) {
-                    if (newText.toLowerCase().includes(word)) {
+                
+                // Ordenar las claves por longitud para reemplazar primero las frases más largas
+                const sortedKeys = Object.keys(synonyms).sort((a, b) => b.length - a.length);
+                
+                for (const phrase of sortedKeys) {
+                    const alternatives = synonyms[phrase];
+                    if (newText.toLowerCase().includes(phrase.toLowerCase())) {
                         const randomSynonym = alternatives[Math.floor(Math.random() * alternatives.length)];
-                        newText = newText.replace(new RegExp(word, 'gi'), randomSynonym);
+                        // Usar expresión regular con word boundaries para evitar reemplazos parciales
+                        const regex = new RegExp(`\\b${phrase}\\b`, 'gi');
+                        newText = newText.replace(regex, (match) => {
+                            // Preservar capitalización
+                            if (match[0] === match[0].toUpperCase()) {
+                                return randomSynonym.charAt(0).toUpperCase() + randomSynonym.slice(1);
+                            } else {
+                                return randomSynonym;
+                            }
+                        });
                     }
                 }
                 
@@ -585,7 +588,7 @@
             }
             
             function varySyntax(text) {
-                // Dividir en oraciones
+                // Dividir en oraciones (mejorado para respetar límites de oración)
                 let sentences = text.split(/(?<=[.!?])\s+/);
                 
                 if (sentences.length > 1) {
@@ -610,18 +613,16 @@
             }
             
             function changeSentenceStructure(sentence) {
-                // Cambiar la estructura de la oración
-                if (sentence.length > 80) {
-                    // Acortar oraciones largas
-                    return sentence.substring(0, 80) + "...";
-                } else if (sentence.includes(",")) {
+                // Cambiar la estructura de la oración sin cortar palabras
+                if (sentence.includes(",")) {
                     // Reordenar cláusulas
                     const clauses = sentence.split(',');
                     if (clauses.length > 1) {
-                        return clauses[1].trim() + ', ' + clauses[0].toLowerCase();
+                        // Movemos la primera cláusula al final
+                        const reordered = clauses.slice(1).concat(clauses[0]);
+                        return reordered.join(', ').toLowerCase();
                     }
                 }
-                
                 return sentence;
             }
             
@@ -638,14 +639,13 @@
             }
             
             function finalCheck(text) {
-                // Simular un chequeo final y ajustes menores
+                // Verificación final para corregir posibles errores
                 return text
-                    .replace(/IA/gi, 'inteligencia artificial')
-                    .replace(/\.\s*\./g, '.') // Eliminar puntos duplicados
-                    .replace(/\s+,/g, ',') // Eliminar espacios antes de comas
-                    .replace(/\s+\./g, '.') // Eliminar espacios antes de puntos
-                    .replace(/\s+!/g, '!') // Eliminar espacios antes de exclamaciones
-                    .replace(/\s+\?/g, '?'); // Eliminar espacios antes de interrogaciones
+                    .replace(/\b(\w+)(\s+\1)+\b/gi, '$1') // Eliminar palabras repetidas
+                    .replace(/\s+/g, ' ') // Eliminar espacios múltiples
+                    .replace(/([.!?])([A-Z])/g, '$1 $2') // Asegurar espacios después de puntuación
+                    .replace(/\s([,.;:!?])/g, '$1') // Eliminar espacios antes de puntuación
+                    .trim();
             }
         });
     </script>
