@@ -1,4 +1,4 @@
-ddd<!DOCTYPE html>
+jjj<!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="utf-8" />
@@ -656,7 +656,7 @@ ddd<!DOCTYPE html>
     function deepSemanticRewrite(text, settings) {
       let paragraphs = text.split(/\n\s*\n/).filter(p => p.trim().length > 5);
       
-      if (paragraphs.length > 3 && Math.random() < 0.7) {
+      if (paragraphs.length > 3 && Math.random() < 0.6) { // Probabilidad reducida
         const intro = paragraphs.shift();
         const conclusion = paragraphs.pop();
         let body = paragraphs;
@@ -792,7 +792,7 @@ ddd<!DOCTYPE html>
         let sentences = para.split(/(?<=[.!?])\s+/).filter(s => s.trim());
         
         // Añadir conectores naturales al inicio de párrafos (excepto el primero)
-        if (settings.connectorVariety && idx > 0 && Math.random() < 0.3) { // Probabilidad reducida
+        if (settings.connectorVariety && idx > 0 && Math.random() < 0.3) { 
           let connector = getSafeIntroPhrase(connectors);
           // Evitar conectores IA y evitar conectores si la oración empieza con uno ya
           if (aiConectors.some(ac => connector.toLowerCase().includes(ac)) && Math.random() < 0.5) { 
@@ -809,7 +809,7 @@ ddd<!DOCTYPE html>
         if (settings.naturalFlow && sentences.length > 2 && Math.random() < 0.4) { 
           const insertAt = Math.floor(sentences.length / 2); 
           const choice = Math.random();
-          if (choice < 0.10) { // Modismos (probabilidad reducida)
+          if (choice < 0.10) { // Modismos (probabilidad más baja)
             const idiom = getSafeIntroPhrase(humanIdioms);
             if (idiom && !usedIdiomsLastRound.has(idiom)) { 
               sentences.splice(insertAt, 0, `Como quien dice, ${idiom}. ¿No crees?`);
