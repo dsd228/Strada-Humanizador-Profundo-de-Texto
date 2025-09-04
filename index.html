@@ -1,4 +1,4 @@
-111<!DOCTYPE html>
+2222<!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="utf-8" />
@@ -575,10 +575,22 @@
         .replace(/([a-zA-Z])\1{2,}/g, '$1') 
         .replace(/([a-zA-Z])\1([a-zA-Z])\1/g, '$1$2') 
         .replace(/(\s)([a-zA-Z])\1/g, '$1$2') 
-        // Corregir espacios faltantes alrededor de puntuación o al inicio de frases
+        // Corregir espacios faltantes
         .replace(/([.!?¿¡])([a-zA-Z])/g, '$1 $2') 
         .replace(/([a-zA-Z])([¿¡])/g, '$1 $2')
-        .replace(/([¿¡])([a-zA-Z])/g, '$1 $2'); // Espacio tras signos de apertura
+        .replace(/([¿¡])([a-zA-Z])/g, '$1 $2')
+        // Corregir duplicación de letras específicas que puedan quedar
+        .replace(/ccantidades/g, 'cantidades')
+        .replace(/jjustos/g, 'justos')
+        .replace(/ccuerpo/g, 'cuerpo')
+        .replace(/cespecial/g, 'especial')
+        .replace(/yyun/g, 'y un')
+        .replace(/yuna/g, 'y una')
+        .replace(/y el/g, ' y el')
+        .replace(/y a/g, ' y a')
+        .replace(/y o/g, ' y o')
+        .replace(/y i/g, ' y i')
+        .replace(/y e/g, ' y e');
         
       return cleaned;
     }
@@ -607,14 +619,17 @@
         
         let availablePhrases = [...phrases];
         
+        // Excluir la última frase introducida si es posible
         if (lastIntroPhrase && availablePhrases.includes(lastIntroPhrase) && availablePhrases.length > 1) {
             availablePhrases = availablePhrases.filter(p => p !== lastIntroPhrase);
         }
         
+        // Excluir modismos usados recientemente
         if (phrases === humanIdioms && usedIdiomsLastRound.size > 0) {
              availablePhrases = availablePhrases.filter(p => !usedIdiomsLastRound.has(p));
         }
         
+        // Evitar insertar frases muy similares a las últimas insertadas o a la oración siguiente
         if (availablePhrases.length > 0) {
              availablePhrases = availablePhrases.filter(p => 
                  !recentPhrases.includes(p.replace(/[\s,.]/g, '').toLowerCase()) && 
@@ -659,7 +674,7 @@
       return paragraphs.map(para => {
         let sentences = para.split(/(?<=[.!?])\s+/).filter(s => s.trim());
         
-        if (settings.styleVariation && sentences.length > 3 && Math.random() < 0.6) { // Probabilidad reducida
+        if (settings.styleVariation && sentences.length > 3 && Math.random() < 0.6) { 
           const patterns = [
             (s) => [s[1], s[0], s[2], s[3], ...s.slice(4)], 
             (s) => { 
@@ -786,7 +801,6 @@
           }
           // Evitar doble conector
           if (connector && !sentences[0].toLowerCase().startsWith(connector.replace(/,$/, '').toLowerCase())) {
-            // Insertar conector limpiamente
             sentences[0] = `${connector.replace(/,$/, '')} ${sentences[0].charAt(0).toLowerCase() + sentences[0].slice(1)}`;
             lastIntroPhrase = connector; 
           }
