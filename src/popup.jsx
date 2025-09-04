@@ -1,5 +1,8 @@
+// src/popup.jsx
 import React, { useState, useRef, useEffect, useCallback } from 'react';
-import ReactDOM from 'react-dom';
+// IMPORTANTE: ReactDOM y React serán empaquetados por esbuild.
+// Asegúrate de tenerlos instalados: npm install react react-dom esbuild
+// Y en tu index.html, enlaza React y ReactDOM desde las CDNs.
 
 // --- Listas de Elementos para Humanizar ---
 const connectors = [
@@ -64,32 +67,60 @@ const RedactaProApp = () => {
   const outputRef = useRef(null);
   const fileInputRef = useRef(null); 
 
-  // --- Funciones de Almacenamiento ---
+  // --- Funciones de Almacenamiento Local (localStorage) ---
   const STORAGE_KEYS = {
     SETTINGS: 'redactapro_settings',
     LAST_TEXT: 'redactapro_last_text'
   };
 
-  const loadSettings = useCallback(async () => {
-    const data = await chrome.storage.sync.get(STORAGE_KEYS.SETTINGS);
-    if (data.redactapro_settings) {
-      setSettings(data.redactapro_settings);
+  // Cargar configuraciones desde localStorage
+  const loadSettings = useCallback(() => {
+    try {
+      const storedSettings = localStorage.getItem(STORAGE_KEYS.SETTINGS);
+      if (storedSettings) {
+        setSettings(JSON.parse(storedSettings));
+        console.log("Settings loaded from localStorage:", JSON.parse(storedSettings));
+      } else {
+        console.log("No settings found in localStorage, using defaults.");
+      }
+    } catch (err) {
+      console.error("Error loading settings from localStorage:", err);
+      setError("Error al cargar las configuraciones guardadas.");
     }
   }, []);
 
-  const saveSettings = useCallback(async (newSettings) => {
-    await chrome.storage.sync.set({ [STORAGE_KEYS.SETTINGS]: newSettings });
-  }, []);
-
-  const loadLastText = useCallback(async () => {
-    const data = await chrome.storage.local.get(STORAGE_KEYS.LAST_TEXT);
-    if (data.redactapro_last_text) {
-      setInputText(data.redactapro_last_text);
+  // Guardar configuraciones en localStorage
+  const saveSettings = useCallback((newSettings) => {
+    try {
+      localStorage.setItem(STORAGE_KEYS.SETTINGS, JSON.stringify(newSettings));
+      console.log("Settings saved to localStorage:", newSettings);
+    } catch (err) {
+      console.error("Error saving settings to localStorage:", err);
+      setError("Error al guardar las configuraciones.");
     }
   }, []);
 
-  const saveInputText = useCallback(async (text) => {
-    await chrome.storage.local.set({ [STORAGE_KEYS.LAST_TEXT]: text });
+  // Cargar el último texto procesado desde localStorage
+  const loadLastText = useCallback(() => {
+    try {
+      const storedText = localStorage.getItem(STORAGE_KEYS.LAST_TEXT);
+      if (storedText) {
+        setInputText(storedText);
+        console.log("Last text loaded from localStorage:", storedText.substring(0, 50) + "...");
+      }
+    } catch (err) {
+      console.error("Error loading last text from localStorage:", err);
+    }
+  }, []);
+
+  // Guardar el texto de entrada en localStorage
+  const saveInputText = useCallback((text) => {
+    try {
+      localStorage.setItem(STORAGE_KEYS.LAST_TEXT, text);
+      console.log("Input text saved to localStorage.");
+    } catch (err) {
+      console.error("Error saving input text to localStorage:", err);
+    }
   }, []);
 
   // --- Efectos para Cargar y Guardar ---
@@ -104,12 +135,17 @@ const RedactaProApp = () => {
     saveSettings(settings);
   }, [settings, saveSettings]);
 
-  // Guardar texto de entrada cuando cambia
+  // Guardar texto de entrada cuando cambia (con debounce)
   useEffect(() => {
-    // Evitar guardar texto vacío o inmediatamente al cargar
-    if (inputText !== '') {
-      saveInputText(inputText);
-    }
+    const handler = setTimeout(() => {
+      if (inputText !== '') { // Solo guardar si hay texto
+        saveInputText(inputText);
+      }
+    }, 1000); // Guarda después de 1 segundo de inactividad en el input
+    
+    return () => {
+      clearTimeout(handler); // Limpiar el timeout si el componente se desmonta o inputText cambia antes de tiempo
+    };
   }, [inputText, saveInputText]);
 
   // --- Funciones de Procesamiento (Callbacks) ---
@@ -371,13 +407,7 @@ const RedactaProApp = () => {
       const totalSteps = 5;
       const stepDuration = 150; // ms per step
 
-      const applyStep = async (func, stepName) => {
-        await new Promise(resolve => setTimeout(resolve, stepDuration));
-        setProcessingProgress(Math.round(((totalSteps - 4) / totalSteps) * 100)); // Progreso después de limpieza
-        let result = func(result || inputText); // Usa el resultado anterior o el input inicial
-        return result;
-      };
-
+      // La lógica de aplicar pasos se puede simplificar llamando directamente a las funciones
       let processedText = inputText;
       
       // Paso 1: Limpieza
@@ -444,6 +474,9 @@ const RedactaProApp = () => {
     setAnalysisScore(0); 
     setError(null);
     setActiveTab('write');
+    // Opcionalmente, podrías querer limpiar el almacenamiento local aquí también:
+    // localStorage.removeItem(STORAGE_KEYS.LAST_TEXT);
+    // localStorage.removeItem(STORAGE_KEYS.SETTINGS);
   }, []);
 
   // Efecto para ocultar el toast de copia
