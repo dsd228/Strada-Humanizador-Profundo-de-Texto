@@ -206,7 +206,7 @@
               RedactaPro Supremo
             </h1>
           </div>
-          <p class="hidden md:block text-slate-400 text-lg">Tu IA definitiva para escritura humana y evasiva.</p>
+          <p class="hidden md:block text-slate-400 text-lg">Tu IA definitiva para escritura humana, natural y evasiva.</p>
           <div class="flex space-x-2">
             <button id="write-tab" class="px-4 py-2 rounded-full text-sm font-medium transition-colors tab-active">Editor</button>
             <button id="analyze-tab" class="px-4 py-2 rounded-full text-sm font-medium transition-colors tab-inactive">Análisis</button>
@@ -315,6 +315,11 @@
                 </div>
               </div>
             </div>
+            <label class="flex items-center gap-3 cursor-pointer group">
+            <input type="checkbox" id="humanErrorCheckbox" class="w-4 h-4 text-accent rounded border-gray-600 shadow-sm focus:ring-accent bg-white/10" />
+            <span class="text-sm text-slate-300">Simular Errores Humanos Sutiles</span>
+            <span class="tooltip"><span class="tooltiptext text-xs">Introduce de forma muy sutil y rara errores de puntuación o tipeo, solo en modo 'Profundo'.</span><svg class="w-3 h-3 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c-.548.505-.902 1.284-1.095 2.114-.193.83.046 1.639.797 2.245.813.607 1.756 1.144 2.796 1.49L13.5 17.483c.171.408.455.796.818.817.362.02.659-.314.818-.712.16-.407.268-.81.362-1.222.094-.412.150-.83.150-1.25V9.342c0-.538-.109-1.059-.306-1.541-.197-.482-.486-.932-.847-1.304a7.786 7.786 0 00-1.295-1.295A4.674 4.674 0 009.876 6.75c-.715.01-1.426.145-2.07.354-.793.245-1.543.584-2.224.973"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 17.75l.001-.002"/></svg></span>
+            </label>
 
             <div class="lg:col-span-3 flex flex-col justify-end">
               <div class="analysis-card p-6">
@@ -534,12 +539,13 @@
         connectorVariety: true,
         lexicalRichness: true,
         avoidRepetition: true,
+        simulateHumanErrors: false, // Nueva opción para errores sutiles
       }
     };
 
     // --- FUNCIONES DE UTILIDAD ---
     function cleanText(text) {
-      return text
+      let cleaned = text
         .replace(/[\u200B-\u200D\uFEFF]/g, '') // Caracteres invisibles
         .replace(/[\u00A0\u1680\u2000-\u200A\u202F\u205F\u3000]/g, ' ') // Espacios extraños
         .replace(/[\r\n]{3,}/g, '\n\n') // Saltos excesivos
@@ -547,6 +553,11 @@
         .replace(/ +([,.!?¿¡:]+)/g, '$1') // Espacios antes de puntuación
         .replace(/([¿¡]) +/g, '$1') // Espacios después de signos de interrogación/exclamación
         .trim();
+      
+      // Corrección específica para el error observado: "democratizacióacceso n"
+      cleaned = cleaned.replace(/democratizacióacceso\s+n/g, 'democratización');
+      
+      return cleaned;
     }
 
     function calculateReadability(text) {
@@ -554,20 +565,31 @@
       const sentences = text.split(/[.!?]+/).filter(s => s.trim().length > 0).length;
       const characters = text.replace(/\s+/g, '').length;
       
-      if (words < 50 || sentences < 3) return 75; // Puntuación moderada si es muy corto
+      if (words < 50 || sentences < 3) return 75; 
 
-      // Fórmula adaptada para legibilidad en español, enfocada en complejidad humana
-      // Un puntaje más alto es más fácil de leer.
       const readabilityScore = 206.835 - 1.015 * (words / sentences) - 84.6 * (words / characters * 100);
-      // Ajuste para texto más coloquial/humano (podría ser un poco más bajo y seguir siendo humano)
-      const humanAdjustedScore = readabilityScore - (Math.random() * 15); // Reducción aleatoria
+      const humanAdjustedScore = readabilityScore - (Math.random() * 15); 
       return Math.max(0, Math.min(100, humanAdjustedScore));
     }
+
+    // Lógica para evitar repeticiones inmediatas de frases introductorias
+    let lastIntroPhrase = '';
+    function getSafeIntroPhrase(phrases, excludeIfRecent = true) {
+        let intro = phrases[Math.floor(Math.random() * phrases.length)];
+        if (excludeIfRecent && intro === lastIntroPhrase) {
+            // Intentar obtener otra si es la misma que la última usada
+            const otherPhrases = phrases.filter(p => p !== intro);
+            if (otherPhrases.length > 0) {
+                intro = otherPhrases[Math.floor(Math.random() * otherPhrases.length)];
+            }
+        }
+        return intro;
+    }
+    function resetLastIntroPhrase() { lastIntroPhrase = ''; } // Resetear después de procesar un texto
 
     function deepSemanticRewrite(text, settings) {
       let paragraphs = text.split(/\n\s*\n/).filter(p => p.trim().length > 5);
       
-      // Reordenar párrafos si hay suficientes
       if (paragraphs.length > 3 && Math.random() < 0.8) {
         const intro = paragraphs.shift();
         const conclusion = paragraphs.pop();
@@ -585,37 +607,36 @@
       return paragraphs.map(para => {
         let sentences = para.split(/(?<=[.!?])\s+/).filter(s => s.trim());
         
-        // Variación Estructural Avanzada
         if (settings.styleVariation && sentences.length > 3 && Math.random() < 0.9) {
           const patterns = [
-            // Patrones que mezclan, dividen y añaden conectores
-            (s) => [s[1], s[0], s[2], s[3], ...s.slice(4)], // Intercambio simple
-            (s) => ["Es interesante notar que,", s[0], s[1], s[3], s[2], ...s.slice(4)], // Añadir frase introductoria
-            (s) => [s[s.length - 1], "En última instancia,", s[0], s[1], s[2], ...s.slice(3)], // Mover última al principio
-            (s) => [s[0], "Por ende,", s[2], s[1], ...s.slice(3)], // Conector y reordenar
-            (s) => [s[1], s[0], "Sin embargo,", s[3], ...s.slice(2)], // Intercambio con conector
-            (s) => ["Para que nos entendamos,", s[2], s[0], s[1], ...s.slice(3)], // Frase explicativa
-            (s) => [s[0], s[3], "Como resultado,", s[1], s[2], ...s.slice(4)], // Conector de resultado
-            (s) => [s[1], s[2], "Por cierto,", s[0], ...s.slice(3)] // Añadir comentario
+            (s) => [s[1], s[0], s[2], s[3], ...s.slice(4)], 
+            (s) => [getSafeIntroPhrase(['Es interesante notar que,', 'Para que nos entendamos,', 'Cabe destacar que,']) + ' ', s[0], s[1], s[3], s[2], ...s.slice(4)], 
+            (s) => [s[s.length - 1], getSafeIntroPhrase(['En última instancia,', 'Para ser honesto,']) + ' ', s[0], s[1], s[2], ...s.slice(3)], 
+            (s) => [s[0], getSafeIntroPhrase(['Por ende,', 'Por lo tanto,', 'Así pues,']) + ' ', s[2], s[1], ...s.slice(3)], 
+            (s) => [s[1], s[0], getSafeIntroPhrase(['Sin embargo,', 'No obstante,']) + ' ', s[3], ...s.slice(2)], 
+            (s) => [getSafeIntroPhrase(['Para que te hagas una idea,', 'Vamos que,']) + ' ', s[2], s[0], s[1], ...s.slice(3)], 
+            (s) => [s[0], s[3], getSafeIntroPhrase(['Como resultado,', 'Consecuentemente,']) + ' ', s[1], s[2], ...s.slice(4)], 
+            (s) => [s[1], s[2], getSafeIntroPhrase(['Por cierto,', 'A propósito,']) + ' ', s[0], ...s.slice(3)] 
           ];
           const pattern = patterns[Math.floor(Math.random() * patterns.length)];
           sentences = pattern(sentences);
         }
-        // Si es modo fuerte, puede intentar dividir oraciones largas
-        if (settings.depth === 'fuerte' && sentences.length > 1 && Math.random() < 0.3) {
+        
+        if (settings.depth === 'fuerte' && sentences.length > 1 && Math.random() < 0.35) {
             sentences = sentences.flatMap(sentence => {
-                if (sentence.length > 120 && Math.random() < 0.7) { // Si es larga y aleatoriamente
-                    const breakPoint = Math.max(50, sentence.lastIndexOf(' ', Math.floor(sentence.length / 2)));
-                    if (breakPoint > 10) {
+                if (sentence.length > 120 && Math.random() < 0.75) { 
+                    const breakPoint = Math.max(60, sentence.lastIndexOf(' ', Math.floor(sentence.length / 2)));
+                    if (breakPoint > 20) { 
                         const firstPart = sentence.slice(0, breakPoint);
                         const secondPart = sentence.slice(breakPoint + 1);
-                        // Asegurar que las partes terminen en puntuación y la segunda empiece en minúscula
-                        const formattedFirst = firstPart.match(/[.!?]$/) ? firstPart : firstPart + '.';
+                        // Intentar simular un error de puntuación sutil si está habilitado
+                        const addPunctuationError = settings.simulateHumanErrors && Math.random() < 0.2; // 20% de probabilidad
+                        const formattedFirst = firstPart.match(/[.!?]$/) ? firstPart : firstPart + (addPunctuationError ? '..' : '.');
                         const formattedSecond = secondPart.match(/[.!?]$/) ? secondPart : secondPart + '.';
                         return [formattedFirst.trim(), formattedSecond.charAt(0).toLowerCase() + formattedSecond.slice(1)];
                     }
                 }
-                return [sentence]; // Devolver la oración sin cambios si no se divide
+                return [sentence]; 
             });
         }
         
@@ -626,32 +647,26 @@
     function translationSimulation(text, settings) {
       let result = text;
       const transformations = [
-        t => t.replace(/(\w+)\s+de\s+(\w+)/g, '$2 $1'), 
-        t => t.replace(/(\w+)\s+(\w+)\s+(\w+)/g, '$3 $1 $2'),
-        t => t.replace(/(\w+)\s+y\s+(\w+)/g, '$1 e $2'), 
-        t => t.replace(/(\w+)\s+o\s+(\w+)/g, '$1 u $2'), 
-        t => t.replace(/(\w+),\s+(\w+)/g, '$2, $1'), 
-        t => t.replace(/(\w+)\s+que\s+(\w+)/g, '$2 el cual $1'), 
-        t => t.replace(/un\s+(\w+)\s+(\w+)/g, 'un $2 y $1'), 
-        t => t.replace(/(\w+)\s+del\s+(\w+)/g, '$2 $1'), 
-        t => t.replace(/(\w+)\s+al\s+(\w+)/g, '$2 $1'), 
-        t => t.replace(/(\w+)\s+en\s+el\s+(\w+)/g, '$2 $1'),
-        t => t.replace(/(\w+)\s+con\s+el\s+(\w+)/g, '$2 $1'), // a con el b -> b a
-        t => t.replace(/(\w+)\s+para\s+(\w+)/g, '$2 $1'), // a para b -> b a
+        t => t.replace(/(\w+)\s+de\s+(\w+)/g, '$2 $1'), t => t.replace(/(\w+)\s+(\w+)\s+(\w+)/g, '$3 $1 $2'),
+        t => t.replace(/(\w+)\s+y\s+(\w+)/g, '$1 e $2'), t => t.replace(/(\w+)\s+o\s+(\w+)/g, '$1 u $2'), 
+        t => t.replace(/(\w+),\s+(\w+)/g, '$2, $1'), t => t.replace(/(\w+)\s+que\s+(\w+)/g, '$2 el cual $1'), 
+        t => t.replace(/un\s+(\w+)\s+(\w+)/g, 'un $2 y $1'), t => t.replace(/(\w+)\s+del\s+(\w+)/g, '$2 $1'), 
+        t => t.replace(/(\w+)\s+al\s+(\w+)/g, '$2 $1'), t => t.replace(/(\w+)\s+en\s+el\s+(\w+)/g, '$2 $1'),
+        t => t.replace(/(\w+)\s+con\s+el\s+(\w+)/g, '$2 $1'), t => t.replace(/(\w+)\s+para\s+(\w+)/g, '$2 $1'),
       ];
       
-      const steps = settings.depth === 'fuerte' ? 6 : settings.depth === 'normal' ? 4 : 2; 
+      const steps = settings.depth === 'fuerte' ? 7 : settings.depth === 'normal' ? 5 : 3; 
       
       for (let i = 0; i < steps; i++) {
         if (settings.styleVariation) {
           const transform = transformations[Math.floor(Math.random() * transformations.length)];
           result = transform(result);
         }
-        if (settings.lexicalRichness && Math.random() < 0.75) { 
+        if (settings.lexicalRichness && Math.random() < 0.8) { 
           for (const [word, synonyms] of Object.entries(richSynonyms)) {
             const regex = new RegExp(`\\b${word}\\b`, 'gi');
             result = result.replace(regex, () => {
-              if (Math.random() < 0.7) { // Mayor probabilidad de reemplazar
+              if (Math.random() < 0.75) { 
                 return synonyms[Math.floor(Math.random() * synonyms.length)];
               }
               return word; 
@@ -659,71 +674,77 @@
           }
         }
       }
-      // Asegurar que no queden espacios dobles después de las transformaciones
       return cleanText(result); 
     }
 
     function addNaturalFlow(text, settings) {
       let paragraphs = text.split(/\n\s*\n/).filter(p => p.trim().length > 5);
+      let paragraphIndex = 0; // Track paragraph index for transitions
       
+      resetLastIntroPhrase(); // Resetear al inicio de cada proceso
+
       return paragraphs.map((para, idx) => {
         let sentences = para.split(/(?<=[.!?])\s+/).filter(s => s.trim());
         
         // Variedad de Conectores
-        if (settings.connectorVariety && idx > 0 && Math.random() < 0.8) { 
-          let connector = connectors[Math.floor(Math.random() * connectors.length)];
+        if (settings.connectorVariety && idx > 0 && Math.random() < 0.85) { 
+          let connector = getSafeIntroPhrase(connectors);
           if (aiConectors.some(ac => connector.toLowerCase().includes(ac)) && Math.random() < 0.7) { 
-              connector = connectors[Math.floor(Math.random() * connectors.length)]; 
+              connector = getSafeIntroPhrase(connectors); 
           }
           if (connector) {
             sentences[0] = `${connector} ${sentences[0].charAt(0).toLowerCase() + sentences[0].slice(1)}`;
+            lastIntroPhrase = connector; // Guardar para evitar repetición inmediata
           }
         }
         
         // Fluidez Natural (Modismos, ejemplos, interjecciones)
-        if (settings.naturalFlow && sentences.length > 2 && Math.random() < 0.7) {
+        if (settings.naturalFlow && sentences.length > 2 && Math.random() < 0.75) {
           const insertAt = Math.floor(sentences.length / 2); 
           const choice = Math.random();
-          if (choice < 0.3) { 
+          if (choice < 0.25) { // Modismos
             const idiom = humanIdioms[Math.floor(Math.random() * humanIdioms.length)];
             sentences.splice(insertAt, 0, `Es como dicen por ahí, ${idiom}. ¿No crees?`);
-          } else if (choice < 0.6) { 
+            lastIntroPhrase = idiom; // Usar el modismo como referencia
+          } else if (choice < 0.55) { // Ejemplos
             const examples = [
               'yo mismo me acuerdo de una vez que...', 'me pasó algo parecido el otro día...',
               'imagínate la escena:', 'recuerdo perfectamente cuando...', 'no te vas a creer lo que pasó...',
               'fue una situación bastante curiosa...', 'de hecho, me recordó a cuando...',
               'piensa en esto:', 'por ejemplo, si te pasa que...'
             ];
-            sentences.splice(insertAt, 0, `Por ejemplo, ${examples[Math.floor(Math.random() * examples.length)]}`);
-          } else if (choice < 0.9) { // Interjecciones/preguntas cortas
-             const interjections = ['¡Vaya!', '¡Ojo!', 'Bueno...', 'Pues mira...', '¿Sabes?', '¿Me sigues?'];
-             sentences.splice(insertAt, 0, `${interjections[Math.floor(Math.random() * interjections.length)]}`);
+            const examplePhrase = getSafeIntroPhrase(examples);
+            sentences.splice(insertAt, 0, `Por ejemplo, ${examplePhrase}`);
+            lastIntroPhrase = 'Por ejemplo';
+          } else if (choice < 0.85) { // Interjecciones/preguntas cortas
+             const interjections = ['¡Vaya!', '¡Ojo!', 'Bueno...', 'Pues mira...', '¿Sabes?', '¿Me sigues?', 'Anda,'];
+             const interjection = getSafeIntroPhrase(interjections);
+             sentences.splice(insertAt, 0, `${interjection}`);
+             lastIntroPhrase = interjection;
+          } else if (settings.depth === 'fuerte' && Math.random() < 0.5) { // Más muletillas
+              const pause = ['eh...', 'pues...', 'bueno...', 'digamos...', 'verá...', 'o sea...', 'este...', 'mmh...', 'a ver,'];
+              const filler = getSafeIntroPhrase(pause);
+              sentences[insertAt] = sentences[insertAt].replace(/^/, `${filler} `);
+              lastIntroPhrase = filler;
           }
         }
         
-        // Simular muletillas y repeticiones de énfasis (modo fuerte)
-        if (settings.depth === 'fuerte') {
-            if (Math.random() < 0.4) { // Muletillas
-              const pause = ['eh...', 'pues...', 'bueno...', 'digamos...', 'verá...', 'o sea...', 'este...', 'mmh...', 'a ver,'];
-              const insertAt = Math.floor(Math.random() * sentences.length);
-              sentences[insertAt] = sentences[insertAt].replace(/^/, `${pause[Math.floor(Math.random() * pause.length)]} `);
-            }
-            if (Math.random() < 0.35) { // Repetición para énfasis
-              const sentenceIdx = Math.floor(Math.random() * sentences.length);
-              if (sentences[sentenceIdx].split(' ').length > 6) { // Solo en oraciones no muy cortas
-                const words = sentences[sentenceIdx].split(' ');
-                // Intentar repetir una palabra que no sea la primera ni la última, y que no se repita ya
-                let repeatIndex = -1;
-                for(let k=1; k < words.length -1; k++) {
-                    if (words[k] && words[k-1] !== words[k] && words[k+1] !== words[k]) {
-                        repeatIndex = k;
-                        break;
-                    }
-                }
-                if (repeatIndex !== -1) { 
-                  words.splice(repeatIndex, 0, words[repeatIndex]); 
-                  sentences[sentenceIdx] = words.join(' ');
-                }
+        // Repetición para énfasis (modo fuerte)
+        if (settings.depth === 'fuerte' && Math.random() < 0.4) { 
+            const sentenceIdx = Math.floor(Math.random() * sentences.length);
+            if (sentences[sentenceIdx].split(' ').length > 6) { 
+              const words = sentences[sentenceIdx].split(' ');
+              let repeatIndex = -1;
+              for(let k=1; k < words.length -1; k++) {
+                  if (words[k] && words[k-1] !== words[k] && words[k+1] !== words[k] && words[k].length > 3) { // Evitar palabras cortas
+                      repeatIndex = k;
+                      break;
+                  }
+              }
+              if (repeatIndex !== -1) { 
+                words.splice(repeatIndex, 0, words[repeatIndex]); 
+                sentences[sentenceIdx] = words.join(' ');
+                lastIntroPhrase = words[repeatIndex]; // Guardar palabra repetida
               }
             }
         }
@@ -746,6 +767,8 @@
       const avgSentenceLength = sentenceLengths.length > 0 ? sentenceLengths.reduce((a, b) => a + b, 0) / sentenceLengths.length : 1;
       const stdDevSentenceLength = sentenceLengths.length > 0 ? Math.sqrt(sentenceLengths.reduce((acc, val) => acc + Math.pow(val - avgSentenceLength, 2), 0) / sentenceLengths.length) : 0;
 
+      resetLastIntroPhrase(); // Resetear para esta función también
+
       return processedParagraphs.map((paraSentences, pIdx) => {
         let finalSentences = paraSentences.map((sentence, idx) => {
           let processed = sentence.trim();
@@ -753,16 +776,18 @@
 
           // Variación de Longitud de Oración
           if (settings.sentenceLengthVariation) {
-            const thresholdShorten = avgSentenceLength + 7; 
-            const thresholdLengthen = avgSentenceLength - 6; 
+            const thresholdShorten = avgSentenceLength + 8; 
+            const thresholdLengthen = avgSentenceLength - 7; 
             const variationFactor = stdDevSentenceLength > 6 ? 0.8 : stdDevSentenceLength > 4 ? 0.6 : 0.4; 
 
             if (currentSentenceLength > thresholdShorten && Math.random() < variationFactor) {
-              const breakPoint = Math.max(15, processed.lastIndexOf(' ', Math.floor(processed.length / 2)));
-              if (breakPoint > 10) { 
+              const breakPoint = Math.max(20, processed.lastIndexOf(' ', Math.floor(processed.length / 2)));
+              if (breakPoint > 15) { 
                 const firstPart = processed.slice(0, breakPoint);
                 const secondPart = processed.slice(breakPoint + 1);
-                processed = `${firstPart}. ${secondPart.charAt(0).toLowerCase() + secondPart.slice(1)}`;
+                const formattedFirst = firstPart.match(/[.!?]$/) ? firstPart : firstPart + '.';
+                const formattedSecond = secondPart.match(/[.!?]$/) ? secondPart : secondPart + '.';
+                processed = `${formattedFirst.trim()}. ${formattedSecond.charAt(0).toLowerCase() + formattedSecond.slice(1)}`;
             }} else if (currentSentenceLength < thresholdLengthen && Math.random() < variationFactor * 0.5) { 
               const clauses = ['y esto es importante porque', 'lo cual significa que', 'y esto permite que', 'debido a que', 'algo que, en mi opinión,', 'lo que nos lleva a pensar que', 'dando como resultado que', 'y por eso es que', 'además, esto contribuye a que'];
               processed = `${processed} ${clauses[Math.floor(Math.random() * clauses.length)]} ...`; 
@@ -771,11 +796,11 @@
 
           // Ajuste de Tono y Legibilidad
           if (settings.toneAdjustment || settings.readabilityFocus) {
-            // Dividir oraciones largas y complejas (legibilidad)
-            if (settings.readabilityFocus && processed.length > 60 && Math.random() < 0.35) {
+            // Dividir oraciones largas y complejas
+            if (settings.readabilityFocus && processed.length > 65 && Math.random() < 0.4) {
               const mid = Math.floor(processed.length / 2);
               const breakAt = processed.lastIndexOf(' ', mid);
-              if (breakAt > 20) { 
+              if (breakAt > 25) { 
                 const first = processed.slice(0, breakAt);
                 const second = processed.slice(breakAt + 1);
                 const formattedFirst = first.match(/[.!?]$/) ? first : first + '.';
@@ -785,19 +810,20 @@
             }
             
             // Añadir introducciones a oraciones (tono conversacional)
-            if (settings.toneAdjustment && idx > 0 && Math.random() < 0.35) {
+            if (settings.toneAdjustment && idx > 0 && Math.random() < 0.4) {
               const introClauses = [
                 'Aunque parezca mentira,', 'Cuando menos te lo esperas,', 'Justo en ese momento,', 
                 'Después de todo lo dicho,', 'Si bien es cierto que,', 'Cabe destacar que,', 
                 'Por si fuera poco,', 'Para sorpresa de muchos,', 'Contrario a lo que se piensa,',
-                'A juzgar por lo visto,', 'De hecho,', 'Y es que,', 'Mira,', 'O sea,'
+                'A juzgar por lo visto,', 'De hecho,', 'Y es que,', 'Mira,', 'O sea,', 'Vamos,'
               ];
-              const clause = introClauses[Math.floor(Math.random() * introClauses.length)];
+              const clause = getSafeIntroPhrase(introClauses);
               processed = `${clause} ${processed.charAt(0).toLowerCase() + processed.slice(1)}`;
+              lastIntroPhrase = clause;
             }
             
             // Simplificar jerga o palabras complejas (legibilidad)
-            if (settings.readabilityFocus && Math.random() < 0.3) {
+            if (settings.readabilityFocus && Math.random() < 0.35) {
               const formalToInformal = {
                 "implementar": "usar", "optimizar": "mejorar", "paradigma": "enfoque",
                 "sinergia": "colaboración", "efectuar": "hacer", "procedimiento": "paso",
@@ -821,7 +847,7 @@
           return processed;
         });
         
-        // Reordenar frases dentro del párrafo para variar el flujo
+        // Reordenar frases dentro del párrafo
         if (settings.sentenceLengthVariation && finalSentences.length > 1) {
           finalSentences.sort((a, b) => {
             const lenA = a.split(/\s+/).length;
@@ -834,7 +860,6 @@
       }).join('\n\n');
     }
 
-    // Simula análisis de IA: Puntuación de "naturalidad humana"
     function simulateStyleAnalysis(text, settings) {
       const words = text.toLowerCase().split(/\W+/).filter(w => w.length > 0);
       const wordCount = words.length;
@@ -844,43 +869,36 @@
 
       const avgSentenceLength = wordCount / sentenceCount;
       const sentenceWordCounts = sentences.map(s => s.split(/\s+/).length);
-      const stdDevSentenceLength = Math.sqrt(sentenceWordCounts.reduce((acc, val) => acc + Math.pow(val - avgSentenceLength, 2), 0) / sentenceCount);
+      const stdDevSentenceLength = sentenceLengths.length > 0 ? Math.sqrt(sentenceLengths.reduce((acc, val) => acc + Math.pow(val - avgSentenceLength, 2), 0) / sentenceLengths.length) : 0;
 
-      let aiScore = 0; // Puntuación de similitud con IA (0 = humano, 100 = IA)
-      let totalPossibleScore = 100; // Base para normalizar
-
-      // 1. Variación de Longitud de Oración ('Burstiness')
-      const lengthVariationScore = Math.max(0, 45 - (stdDevSentenceLength * 3.5)); // Penaliza poca variación
+      let aiScore = 0; 
+      
+      // --- Métricas de Puntuación ---
+      const lengthVariationScore = Math.max(0, 45 - (stdDevSentenceLength * 3.5)); 
       aiScore += lengthVariationScore;
       
-      // 2. Riqueza Léxica
       const uniqueWords = new Set(words.filter(w => w.length > 3)).size;
       const lexicalDiversity = uniqueWords / words.filter(w => w.length > 3).length || 0;
-      const lexicalScore = Math.max(0, lexicalDiversity < 0.20 ? 45 : lexicalDiversity < 0.35 ? 25 : 0); // Penaliza baja diversidad
+      const lexicalScore = Math.max(0, lexicalDiversity < 0.20 ? 45 : lexicalDiversity < 0.35 ? 25 : 0); 
       aiScore += lexicalScore;
 
-      // 3. Uso de Conectores
       let aiConnectorCount = 0;
       const sentenceTokens = sentences.flatMap(s => s.toLowerCase().split(/[\s,.!?;:]+/).filter(w => w.length > 0));
       aiConnectorCount = sentenceTokens.filter(w => aiConectors.includes(w)).length;
       const connectorFrequency = (aiConnectorCount / sentenceCount) * 100;
-      const connectorScore = connectorFrequency > 18 ? 55 : connectorFrequency > 8 ? 30 : 0; // Penaliza alta frecuencia
+      const connectorScore = connectorFrequency > 18 ? 55 : connectorFrequency > 8 ? 30 : 0; 
       aiScore += connectorScore;
       
-      // 4. Repetición de Inicios de Frase
       const sentenceStarts = sentences.map(s => s.trim().split(/\s+/)[0]?.toLowerCase());
       const startCounts = {};
       sentenceStarts.forEach(start => { if (start) startCounts[start] = (startCounts[start] || 0) + 1; });
       const mostFrequentStartCount = Object.values(startCounts).reduce((max, count) => Math.max(max, count), 0);
       const repetitionRatio = (mostFrequentStartCount / sentenceCount) * 100;
-      const repetitionPenalty = repetitionRatio > 35 ? 35 : repetitionRatio > 25 ? 20 : 0; // Penaliza alta repetición
+      const repetitionPenalty = repetitionRatio > 35 ? 35 : repetitionRatio > 25 ? 20 : 0; 
       aiScore += repetitionPenalty;
 
-      // 5. Perplejidad Simulada (qué tan predecible es el texto) - Simplificado
-      // Asumiendo que una mayor variedad de palabras y estructuras reduce la perplejidad (es más humano)
-      // Ya cubierto parcialmente por léxico y estructura, pero añadimos un pequeño factor
-      const perplexityFactor = (lexicalDiversity + (stdDevSentenceLength / 10)) / 2; // Combinación simple
-      const perplexityScore = Math.max(0, (1 - perplexityFactor) * 20); // Menor factor = menor puntuación IA
+      const perplexityFactor = (lexicalDiversity + (stdDevSentenceLength / 10)) / 2; 
+      const perplexityScore = Math.max(0, (1 - perplexityFactor) * 20); 
       aiScore += perplexityScore;
 
       const normalizedAIScore = Math.min(100, aiScore); 
@@ -905,7 +923,6 @@
       try {
         let processedText = inputText;
         
-        // --- Secuencia de Procesamiento Detallada ---
         updateProgress(5, "Limpieza inicial...");
         processedText = cleanText(processedText);
         await sleep(150);
@@ -926,30 +943,26 @@
         processedText = adjustToneAndReadability(processedText, appState.settings);
         await sleep(150);
         
-        // --- Pasadas Adicionales para Mayor Robustez (especialmente en modo 'fuerte') ---
         if (appState.settings.depth === 'fuerte') {
             updateProgress(75, "Refinando estructura...");
-            processedText = deepSemanticRewrite(processedText, { ...appState.settings, depth: 'normal', styleVariation: true }); // Re-aplicar reestructuración
+            processedText = deepSemanticRewrite(processedText, { ...appState.settings, depth: 'normal', styleVariation: true }); 
             await sleep(150);
             updateProgress(85, "Optimizando fluidez...");
-            processedText = addNaturalFlow(processedText, { ...appState.settings, depth: 'normal' }); // Re-aplicar fluidez
+            processedText = addNaturalFlow(processedText, { ...appState.settings, depth: 'normal' }); 
             await sleep(150);
         }
 
         updateProgress(95, "Análisis final de humanidad...");
         const analysisScore = simulateStyleAnalysis(processedText, appState.settings);
         
-        // Calcular estadísticas
         const wordsBefore = inputText.split(/\s+/).filter(w => w.length > 0).length;
         const wordsAfter = processedText.split(/\s+/).filter(w => w.length > 0).length;
         const readability = calculateReadability(processedText);
         
-        // Actualizar estado
         appState.outputText = processedText;
         appState.analysisScore = analysisScore;
         appState.stats = { wordsBefore, wordsAfter, readability };
         
-        // Guardar en historial local
         saveHistoryItem({
           original: inputText.substring(0, 100) + (inputText.length > 100 ? '...' : ''),
           result: processedText.substring(0, 100) + (processedText.length > 100 ? '...' : ''),
@@ -965,7 +978,7 @@
         console.error("Error durante el procesamiento:", err);
         showError("Ocurrió un error crítico al procesar el texto. Revisa la consola.");
         appState.isProcessing = false;
-        appState.activeTab = 'write'; // Volver a editor
+        appState.activeTab = 'write'; 
       } finally {
         updateUI(); 
       }
@@ -990,14 +1003,14 @@
           if (parsedState.settings) appState.settings = { ...appState.settings, ...parsedState.settings };
         } catch (e) {
           console.error("Error al cargar el estado desde localStorage:", e);
-          localStorage.removeItem('redactaproSupremoState'); // Limpiar si está corrupto
+          localStorage.removeItem('redactaproSupremoState'); 
         }
       }
     }
 
     function saveHistoryItem(item) {
       appState.conversionHistory.unshift(item);
-      if (appState.conversionHistory.length > 7) { // Aumentar historial a 7 ítems
+      if (appState.conversionHistory.length > 7) { 
         appState.conversionHistory = appState.conversionHistory.slice(0, 7);
       }
       saveState();
@@ -1019,7 +1032,7 @@
       if (!errorElement) return;
       document.getElementById('error-text').textContent = message;
       errorElement.classList.remove('hidden');
-      setTimeout(() => errorElement.classList.add('hidden'), 7000); // Mostrar error por más tiempo
+      setTimeout(() => errorElement.classList.add('hidden'), 7000); 
     }
 
     function showToast(message) {
@@ -1027,7 +1040,7 @@
       if (!toast) return;
       toast.textContent = message;
       toast.classList.remove('hidden');
-      setTimeout(() => toast.classList.add('hidden'), 2500); // Toast más duradero
+      setTimeout(() => toast.classList.add('hidden'), 2500); 
     }
 
     function sleep(ms) {
@@ -1037,7 +1050,6 @@
     function updateUI() {
       const { inputText, outputText, isProcessing, analysisScore, activeTab, conversionHistory, stats, settings } = appState;
       
-      // --- Navegación y Visibilidad ---
       document.getElementById('write-section').classList.toggle('hidden', activeTab !== 'write');
       document.getElementById('analyze-section').classList.toggle('hidden', activeTab !== 'analyze');
       document.getElementById('review-section').classList.toggle('hidden', activeTab !== 'review');
@@ -1053,7 +1065,6 @@
       updateTabButton('analyze-tab', activeTab === 'analyze');
       updateTabButton('review-tab', activeTab === 'review');
 
-      // --- Editor y Configuración ---
       const inputTextElement = document.getElementById('input-text');
       if (inputTextElement && inputTextElement.value !== inputText) {
           inputTextElement.value = inputText;
@@ -1077,11 +1088,10 @@
       document.getElementById('connectorVariety').checked = settings.connectorVariety;
       document.getElementById('lexicalRichness').checked = settings.lexicalRichness;
       document.getElementById('avoidRepetition').checked = settings.avoidRepetition;
+      // Nueva opción para errores humanos
+      const humanErrorCheckbox = document.getElementById('humanErrorCheckbox'); // Añadir checkbox en HTML si se quiere
+      if (humanErrorCheckbox) humanErrorCheckbox.checked = settings.simulateHumanErrors;
       
-      // --- Progreso y Errores ---
-      document.getElementById('progress-container').classList.toggle('hidden', !isProcessing);
-      
-      // --- Resultados ---
       document.getElementById('output-text').textContent = outputText || "El texto mejorado aparecerá aquí...";
       
       const analysisScoreElement = document.getElementById('analysis-score');
@@ -1103,19 +1113,17 @@
       }
       document.getElementById('analysis-feedback').textContent = feedbackText;
       
-      // --- Estadísticas ---
       document.getElementById('words-before').textContent = stats.wordsBefore;
       document.getElementById('words-after').textContent = stats.wordsAfter;
       document.getElementById('readability-score').textContent = `${stats.readability.toFixed(1)}%`;
       
-      // Cálculo de mejora general más robusto
       const readabilityWeight = 0.3;
       const humanScoreWeight = 0.5;
-      const lengthChangeWeight = 0.1; // Pequeño bonus si la longitud no cambia drásticamente
-      const outputExistsWeight = 0.1; // Bonus si hay output
+      const lengthChangeWeight = 0.1; 
+      const outputExistsWeight = 0.1;
 
       const lengthChange = stats.wordsAfter > 0 ? Math.abs(stats.wordsAfter - stats.wordsBefore) / stats.wordsBefore : 0;
-      const lengthFactor = 1 - Math.min(lengthChange, 0.3); // Penaliza cambios > 30%
+      const lengthFactor = 1 - Math.min(lengthChange, 0.3); 
 
       const improvementScore = (
         (analysisScore * humanScoreWeight) + 
@@ -1125,7 +1133,6 @@
       ).toFixed(1);
       document.getElementById('improvement-score').textContent = `+${improvementScore}%`;
       
-      // --- Historial ---
       const historyContainer = document.getElementById('history-container');
       const historyList = document.getElementById('history-list');
       
@@ -1148,8 +1155,6 @@
             appState.inputText = item.original.replace('...', ''); 
             appState.outputText = item.result.replace('...', ''); 
             appState.analysisScore = item.score;
-            // Nota: Las stats y la configuración exacta del historial no se cargan aquí para simplificar,
-            // pero el texto y la puntuación sí.
             appState.activeTab = 'review';
             updateUI();
           });
@@ -1160,7 +1165,6 @@
         historyContainer.classList.add('hidden');
       }
       
-      // --- Advertencia y Estado del Botón ---
       document.getElementById('input-warning').classList.toggle('hidden', inputText.trim().length > 0);
       
       const processBtn = document.getElementById('process-btn');
@@ -1182,7 +1186,7 @@
         processBtn.disabled = false;
       }
 
-      saveState(); // Guardar estado después de cada actualización de UI
+      saveState(); 
     }
 
     function copyToClipboard() {
@@ -1232,12 +1236,13 @@
         connectorVariety: document.getElementById('connectorVariety').checked,
         lexicalRichness: document.getElementById('lexicalRichness').checked,
         avoidRepetition: document.getElementById('avoidRepetition').checked,
+        simulateHumanErrors: document.getElementById('humanErrorCheckbox')?.checked || false, // Cargar el nuevo checkbox
       };
     }
 
     // --- INICIALIZACIÓN ---
     document.addEventListener('DOMContentLoaded', function() {
-      loadState(); // Cargar estado guardado al inicio
+      loadState(); 
 
       // --- Event Listeners ---
       document.getElementById('write-tab').addEventListener('click', () => { appState.activeTab = 'write'; updateUI(); });
@@ -1287,16 +1292,16 @@
           settings: { // Resetear settings a defaults
             depth: 'suave', styleVariation: true, naturalFlow: true, toneAdjustment: true,
             readabilityFocus: true, sentenceLengthVariation: true, connectorVariety: true,
-            lexicalRichness: true, avoidRepetition: true,
+            lexicalRichness: true, avoidRepetition: true, simulateHumanErrors: false, // Default false
           }
         };
-        localStorage.removeItem('redactaproSupremoState'); // Limpiar localStorage
+        localStorage.removeItem('redactaproSupremoState'); 
         updateUI();
       });
       
       document.getElementById('another-text-btn').addEventListener('click', () => { appState.activeTab = 'write'; updateUI(); });
       
-      updateUI(); // Inicializar la UI con el estado cargado
+      updateUI(); 
     });
   </script>
 </body>
