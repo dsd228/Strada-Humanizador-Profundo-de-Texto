@@ -1,4 +1,4 @@
-999<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
@@ -545,6 +545,7 @@
         UI.updateProgress(20, "Limpieza inicial...");
         let processed = State.inputText;
 
+        // ✅ Corregido: la función está definida aquí y se llama correctamente
         UI.updateProgress(40, "Aplicando variación...");
         processed = this.introduceVariety(processed);
 
@@ -566,6 +567,7 @@
         }, 300);
       },
 
+      // ✅ Mover la función dentro de Processor
       introduceVariety: (text) => {
         let sentences = text.split(/(?<=[.!?])\s+/);
         const settings = SettingsManager.get();
