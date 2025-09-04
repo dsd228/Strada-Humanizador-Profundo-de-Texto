@@ -1,11 +1,11 @@
-<!DOCTYPE html>
+111<!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <meta name="description" content="RedactaPro Supremo: La herramienta definitiva para humanizar textos de IA y evitar detectores académicos." />
+  <meta name="description" content="RedactaPro Supremo: La herramienta definitiva para humanizar textos de IA." />
   <title>RedactaPro Supremo - Evita Detectores de IA</title>
-  <!-- Tailwind CSS vía CDN (válido para GitHub Pages) -->
+  <!-- Tailwind CSS vía CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
@@ -242,989 +242,335 @@
   </div>
 
   <script>
-    // --- Estado de la aplicación ---
-    const State = {
-      inputText: '',
-      outputText: '',
-      isProcessing: false,
-      analysisScore: 0,
-      activeTab: 'write',
-      history: [],
-      progress: 0,
-      progressMessage: 'Esperando...'
-    };
-
-    // --- Datos de humanización ---
-    const Data = {
-      connectors: [
-        "Bueno,", "Mira,", "La verdad es que,", "O sea,", "Tipo,", "Vamos,", "Pues,",
-        "Por otro lado,", "En contraste,", "De hecho,", "Asimismo,", "No obstante,",
-        "Así pues,", "De ahí que,", "En fin,", "Para que te hagas una idea,",
-        "A decir verdad,", "Entre tú y yo,", "Para serte sincero,", "Si te soy honesto,",
-        "De cualquier modo,", "En cualquier caso,", "Eso sí,", "En última instancia,",
-        "Por lo tanto,", "Ahora bien,", "Dicho esto,", "Hecho esto,",
-      ],
-      idioms: [
-        "cuesta abajo", "pan comido", "ponerse las pilas", "dar en el clavo",
-        "tirar la casa por la ventana", "estar en las nubes", "no tener pelos en la lengua",
-        "ser uña y carne", "hacer la vista gorda", "meter la pata",
-        "buscarle la quinta pata al gato", "el que madruga, Dios le ayuda",
-        "la curiosidad mató al gato", "más vale pájaro en mano que ciento volando",
-        "no pegar ojo", "irse por las ramas", "montar un pollo",
-      ],
-      interjections: ["¡Vaya!", "¡Ojo!", "Bueno...", "Pues mira...", "¿Sabes?", "¿Me sigues?", "Anda,", "En fin,"],
-      formalToInformal: {
-        "implementar": "usar", "optimizar": "mejorar", "paradigma": "enfoque",
-        "sinergia": "colaboración", "efectuar": "hacer", "procedimiento": "paso",
-        "facilitar": "ayudar", "consecuentemente": "por eso", "no obstante": "pero",
-        "por consiguiente": "así que", "en consecuencia": "por lo tanto",
-        "utilizar": "usar", "visualizar": "ver", "finalizar": "terminar",
-        "acelerar": "agilizar", "mitigar": "reducir", "viable": "posible",
-        "demostrar": "mostrar", "evaluar": "analizar", "estrategia": "plan",
-      },
-      synonyms: {
-        "crear": ["generar", "hacer", "producir", "elaborar"],
-        "analizar": ["estudiar", "revisar", "examinar", "inspeccionar"],
-        "importante": ["clave", "fundamental", "esencial", "crítico"],
-        "rápido": ["veloz", "ágil", "pronto", "inmediato"],
-        "difícil": ["complicado", "duro", "arduo", "engorroso"],
-      }
-    };
-
-    // --- Utilidades ---
-    const Utils = {
-      getRandom: (arr) => arr[Math.floor(Math.random() * arr.length)],
-      cleanText: (text) => {
-        return text
-          .replace(/[\u200B-\u200D\uFEFF]/g, '')
-          .replace(/[\u00A0\u1680\u2000-\u200A\u202F\u205F\u3000]/g, ' ')
-          .replace(/[\r]{3,}/g, '')
-          .replace(/[ \t]+/g, ' ')
-          .replace(/ +([,.!?¿¡:]+)/g, '$1')
-          .replace(/([¿¡]) +/g, '$1')
-          .trim();
-      },
-      wordCount: (text) => text.trim() ? text.trim().split(/\s+/).length : 0,
-      readability: (text) => {
-        const sentences = (text.match(/[.!?]+/g) || []).length || 1;
-        const words = Utils.wordCount(text);
-        const syllables = text.split(/[aeiouáéíóú]/i).length;
-        const asl = words / sentences;
-        const asw = syllables / words;
-        const flesch = 206.835 - (1.015 * asl) - (84.6 * asw);
-        return Math.max(0, Math.min(100, flesch / 2));
-      },
-      calculateAIScore: (text) => {
-        const patterns = [
-          /(?:además|por otro lado|en conclusión)/g,
-          /\b(?:optimizar|implementar|paradigma|sinergia)\b/g,
-          /(?:es importante destacar que|vale la pena mencionar que)/g,
-          /(?:en el contexto actual|en la actualidad)/g,
-        ];
-        const aiIndicators = patterns.reduce((sum, pattern) => sum + (text.match(pattern)?.length || 0), 0);
-        const wordCount = text.split(/\s+/).length;
-        const aiScore = (aiIndicators / (wordCount / 100)) * 30;
-        return Math.min(100, Math.max(0, aiScore));
-      },
-      copyToClipboard: () => {
-        if (!State.outputText) return;
-        navigator.clipboard.writeText(State.outputText).then(() => {
-          const toast = document.getElementById('toast');
-          toast.classList.remove('hidden');
-          setTimeout(() => toast.classList.add('hidden'), 2000);
-        });
-      },
-      downloadText: (format) => {
-        if (!State.outputText) return;
-        const timestamp = new Date().toISOString().split('T')[0];
-        let blob, filename;
-
-        if (format === 'txt') {
-          blob = new Blob([State.outputText], { type: 'text/plain;charset=utf-8' });
-          filename = `redactapro-supremo-${timestamp}.txt`;
-        } else if (format === 'doc') {
-          const htmlContent = `
-            <!DOCTYPE html>
-            <html>
-            <head>
-              <meta charset="UTF-8">
-              <title>Texto Humanizado - RedactaPro Supremo</title>
-              <style>body { font-family: 'Inter', sans-serif; line-height: 1.7; color: #333; }</style>
-            </head>
-            <body>
-              <p>${State.outputText.replace(/\n/g, '<br>')}</p>
-            </body>
-            </html>`;
-          blob = new Blob([htmlContent], { type: 'application/msword;charset=utf-8' });
-          filename = `redactapro-supremo-${timestamp}.doc`;
-        }
-
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = filename;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
-      }
-    };
-
-    // --- Gestor de Historial ---
-    const HistoryManager = {
-      saveToHistory: () => {
-        const item = {
-          original: State.inputText.substring(0, 100) + (State.inputText.length > 100 ? '...' : ''),
-          result: State.outputText.substring(0, 100) + (State.outputText.length > 100 ? '...' : ''),
-          score: State.analysisScore,
-          date: new Date().toLocaleDateString(),
-        };
-        State.history.unshift(item);
-        State.history = State.history.slice(0, 7);
-        HistoryManager.render();
-      },
-      render: () => {
-        const container = document.getElementById('history-container');
-        if (State.history.length === 0) {
-          container.innerHTML = '<p class="text-sm text-slate-400">No hay historial aún</p>';
-          return;
-        }
-        container.innerHTML = State.history.map(item => `
-          <div onclick="HistoryManager.load('${escapeHtml(item.original)}', '${escapeHtml(item.result)}', ${item.score})" class="p-3 bg-slate-800/30 rounded-lg cursor-pointer hover:bg-slate-700/30 transition-colors text-sm">
-            <p class="text-slate-200 line-clamp-1">${item.original}</p>
-            <p class="text-xs text-teal-400 mt-1">Puntuación: ${item.score.toFixed(1)}%</p>
-          </div>
-        `).join('');
-      },
-      load: (original, result, score) => {
-        document.getElementById('input-text').value = original;
-        State.outputText = result;
-        State.analysisScore = score;
-        UI.setActiveTab('review');
-        UI.updateReviewUI();
-      }
-    };
-
-    // --- Gestor de Configuración ---
-    const SettingsManager = {
-      get: () => {
-        return {
-          depth: document.getElementById('setting-depth').value,
-          naturalFlow: document.getElementById('setting-naturalFlow').checked,
-          toneAdjustment: document.getElementById('setting-toneAdjustment').checked,
-          readabilityFocus: document.getElementById('setting-readabilityFocus').checked,
-          connectorVariety: document.getElementById('setting-connectorVariety').checked,
-          lexicalRichness: document.getElementById('setting-lexicalRichness').checked,
-          avoidRepetition: document.getElementById('setting-avoidRepetition').checked,
-          simulateHumanErrors: document.getElementById('setting-simulateHumanErrors').checked,
-        };
-      },
-      apply: () => {
-        const saved = Storage.loadState();
-        if (saved?.settings) {
-          Object.keys(saved.settings).forEach(key => {
-            const el = document.getElementById(`setting-${key}`);
-            if (el && typeof el.checked !== 'undefined') {
-              el.checked = saved.settings[key];
-            }
-          });
-          document.getElementById('setting-depth').value = saved.settings.depth || 'suave';
-        }
-      }
-    };
-
-    // --- UI Manager ---
-    const UI = {
-      setActiveTab: (tab) => {
-        ['write', 'analyze', 'review'].forEach(t => {
-          document.getElementById(`${t}-section`).classList.add('hidden');
-          document.getElementById(`tab-${t}`).classList.remove('bg-teal-500', 'text-white');
-          document.getElementById(`tab-${t}`).classList.add('text-slate-400');
-        });
-        document.getElementById(`${tab}-section`).classList.remove('hidden');
-        document.getElementById(`tab-${tab}`).classList.remove('text-slate-400');
-        document.getElementById(`tab-${tab}`).classList.add('bg-teal-500', 'text-white');
-        State.activeTab = tab;
-      },
-      updateProgress: (percent, message) => {
-        State.progress = percent;
-        State.progressMessage = message;
-        document.getElementById('progress-bar').style.width = `${percent}%`;
-        document.getElementById('progress-message').textContent = message;
-        document.getElementById('progress-percent').textContent = `${percent}% completado`;
-        document.getElementById('output-analysis').textContent = State.outputText || 'Procesando...';
-      },
-      updateReviewUI: () => {
-        document.getElementById('output-review').textContent = State.outputText;
-        document.getElementById('analysis-score').textContent = State.analysisScore.toFixed(1) + '%';
-        document.getElementById('score-bar').style.width = `${State.analysisScore}%`;
-        document.getElementById('word-count-original').textContent = Utils.wordCount(State.inputText);
-        document.getElementById('word-count-final').textContent = Utils.wordCount(State.outputText);
-        document.getElementById('readability-score').textContent = Utils.readability(State.outputText).toFixed(1) + '%';
-
-        const msg = document.getElementById('score-message');
-        if (State.analysisScore > 70) {
-          msg.textContent = "Texto altamente humano. Baja probabilidad de detección.";
-        } else if (State.analysisScore > 50) {
-          msg.textContent = "Texto razonablemente humano. Algunos ajustes podrían ayudar.";
-        } else {
-          msg.textContent = "Alta probabilidad de ser detectado como IA. Considera ajustes más profundos.";
-        }
-      }
-    };
-
-    // --- Almacenamiento ---
-    const Storage = {
-      saveState: () => {
-        try {
-          const stateToSave = {
-            inputText: State.inputText,
-            outputText: State.outputText,
-            analysisScore: State.analysisScore,
-            activeTab: State.activeTab,
-            history: State.history,
-            settings: SettingsManager.get()
-          };
-          localStorage.setItem('redactaproSupremoState', JSON.stringify(stateToSave));
-        } catch (e) {
-          console.warn("No se pudo guardar el estado:", e);
-        }
-      },
-      loadState: () => {
-        try {
-          const saved = localStorage.getItem('redactaproSupremoState');
-          if (saved) {
-            const parsed = JSON.parse(saved);
-            Object.assign(State, {
-              inputText: parsed.inputText || '',
-              outputText: parsed.outputText || '',
-              analysisScore: parsed.analysisScore || 0,
-              activeTab: parsed.activeTab || 'write',
-              history: parsed.history || []
-            });
-            if (parsed.inputText) {
-              document.getElementById('input-text').value = parsed.inputText;
-            }
-            // Aplicar configuración SIN llamar a loadState nuevamente
-            if (parsed.settings) {
-              Object.keys(parsed.settings).forEach(key => {
-                const el = document.getElementById(`setting-${key}`);
-                if (el && typeof el.checked !== 'undefined') {
-                  el.checked = parsed.settings[key];
-                }
-              });
-              document.getElementById('setting-depth').value = parsed.settings.depth || 'suave';
-            }
-            if (parsed.activeTab) {
-              UI.setActiveTab(parsed.activeTab);
-            }
-            HistoryManager.render();
-          }
-        } catch (e) {
-          console.error("Error al cargar el estado:", e);
-        }
-      }
-    };
-
-    // --- FUNCIONES DE PROCESAMIENTO (definidas antes de ser usadas) ---
-    function deepSemanticRewrite(text) {
-      let paragraphs = text.split(/\n\s*\n/).filter(p => p.trim().length > 10);
-      if (paragraphs.length > 2 && Math.random() < 0.6) {
-        const intro = paragraphs.shift();
-        const conclusion = paragraphs.pop();
-        let body = paragraphs;
-        for (let i = body.length - 1; i > 0; i--) {
-          const j = Math.floor(Math.random() * (i + 1));
-          [body[i], body[j]] = [body[j], body[i]];
-        }
-        if (SettingsManager.get().depth === 'profundo') {
-          body.reverse();
-        }
-        return [intro, ...body, conclusion].join('\n\n');
-      }
-      return text;
-    }
-
-    function translationSimulation(text) {
-      const replacements = {
-        "implementar": "poner en práctica", "optimizar": "mejorar al máximo",
-        "paradigma": "modelo", "sinergia": "cooperación efectiva",
-        "facilitar": "hacer más fácil", "consecuentemente": "por eso mismo",
-        "utilizar": "emplear", "estrategia": "plan de acción"
+    // --- Estado de la aplicación (única instancia) ---
+    if (typeof AppState === 'undefined') {
+      const AppState = {
+        inputText: '',
+        outputText: '',
+        isProcessing: false,
+        analysisScore: 0,
+        activeTab: 'write',
+        history: [],
+        progress: 0,
+        progressMessage: 'Esperando...'
       };
-      let processed = text;
-      for (const [formal, informal] of Object.entries(replacements)) {
-        const regex = new RegExp(`\\b${formal}\\b`, 'gi');
-        if (Math.random() < 0.7) {
-          processed = processed.replace(regex, informal);
-        }
-      }
-      return processed;
     }
 
-    function addNaturalFlow(text) {
-      let sentences = text.split(/(?<=[.!?])\s+/);
-      const settings = SettingsManager.get();
-
-      if (settings.connectorVariety && Math.random() < 0.5) {
-        const connector = Utils.getRandom(Data.connectors);
-        if (!sentences[0].toLowerCase().startsWith(connector.toLowerCase().replace(/,$/, ''))) {
-          sentences[0] = `${connector} ${sentences[0].charAt(0).toLowerCase() + sentences[0].slice(1)}`;
-        }
-      }
-
-      if (settings.naturalFlow && sentences.length > 3 && Math.random() < 0.4) {
-        const insertAt = Math.floor(sentences.length / 2);
-        const choice = Math.random();
-        if (choice < 0.3) {
-          const idiom = Utils.getRandom(Data.idioms);
-          sentences.splice(insertAt, 0, `Como quien dice, ${idiom}.`);
-        } else if (choice < 0.6) {
-          const example = Utils.getRandom(Data.examples);
-          sentences.splice(insertAt, 0, `${example}`);
-        } else {
-          const interjection = Utils.getRandom(Data.interjections);
-          sentences[insertAt] = `${interjection} ${sentences[insertAt]}`;
-        }
-      }
-
-      if (settings.simulateHumanErrors && Math.random() < 0.3) {
-        const errType = Math.random();
-        if (errType < 0.3 && sentences.length > 1) {
-          sentences[1] = sentences[1].replace(/\s+/, '... '); // Pausa
-        } else if (errType < 0.6) {
-          sentences[sentences.length - 1] += ' ¿no crees?'; // Pregunta retórica
-        }
-      }
-
-      return sentences.join(' ');
-    }
-
-    function adjustToneAndReadability(text) {
-      let processed = text;
-      const settings = SettingsManager.get();
-
-      if (settings.toneAdjustment) {
-        for (const [formal, informal] of Object.entries(Data.formalToInformal)) {
-          const regex = new RegExp(`\\b${formal}\\b`, 'gi');
-          if (regex.test(processed) && Math.random() < 0.8) {
-            processed = processed.replace(regex, informal);
-          }
-        }
-      }
-
-      if (settings.avoidRepetition) {
-        const sentences = processed.split(/(?<=[.!?])\s+/);
-        if (sentences.length > 5) {
-          sentences.sort(() => Math.random() - 0.5);
-          processed = sentences.join(' ');
-        }
-      }
-
-      return processed;
-    }
-
-    function addExtraHumanization(text) {
-      const camoPhrase = Utils.getRandom(Data.camoPhrases);
-      const sentences = text.split(/(?<=[.!?])\s+/);
-      const insertAt = Math.floor(sentences.length / 3);
-      sentences.splice(insertAt, 0, camoPhrase);
-      return sentences.join(' ');
-    }
-
-    // --- Función principal de procesamiento ---
-    async function processText() {
-      const inputEl = document.getElementById('input-text');
-      State.inputText = Utils.cleanText(inputEl.value.trim());
-
-      if (!State.inputText) {
-        alert("Por favor, introduce un texto.");
-        return;
-      }
-
-      State.isProcessing = true;
-      UI.setActiveTab('analyze');
-      UI.updateProgress(0, "Iniciando...");
-
-      await Utils.sleep(100);
-      UI.updateProgress(10, "Limpieza profunda...");
-      let processed = Utils.cleanText(State.inputText);
-
-      UI.updateProgress(25, "Reestructurando semánticamente...");
-      processed = deepSemanticRewrite(processed);
-
-      UI.updateProgress(40, "Simulando traducción múltiple...");
-      processed = translationSimulation(processed);
-
-      UI.updateProgress(55, "Añadiendo elementos humanos...");
-      processed = addNaturalFlow(processed);
-
-      UI.updateProgress(70, "Optimizando legibilidad...");
-      processed = adjustToneAndReadability(processed);
-
-      UI.updateProgress(85, "Evaluando contra detectores...");
-      let aiScore = Utils.calculateAIScore(processed);
-      let attempts = 0;
-      while (aiScore > 30 && attempts < 3) {
-        processed = addExtraHumanization(processed);
-        aiScore = Utils.calculateAIScore(processed);
-        attempts++;
-      }
-
-      UI.updateProgress(100, "¡Listo!");
-      State.outputText = processed;
-      State.analysisScore = 100 - aiScore;
-
-      setTimeout(() => {
-        UI.setActiveTab('review');
-        UI.updateReviewUI();
-        HistoryManager.saveToHistory();
-        Storage.saveState();
-      }, 300);
-    }
-
-    // --- Funciones auxiliares ---
-    function escapeHtml(text) {
-      const div = document.createElement('div');
-      div.textContent = text;
-      return div.innerHTML;
-    }
-
-    Utils.sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
-
-    // --- Inicialización ---
+    // Aseguramos que todo se ejecute después del DOM
     document.addEventListener('DOMContentLoaded', () => {
-      Storage.loadState();
-      HistoryManager.render();
-      document.querySelectorAll('input[id^="setting-"], #setting-depth').forEach(el => {
-        el.addEventListener('change', Storage.saveState);
-      });
-    });
-
-    window.addEventListener('beforeunload', Storage.saveState);
-  </script>
-</body>
-</html>        <button onclick="UI.setActiveTab('write')" class="px-6 py-2 rounded-lg font-medium transition-all duration-200 capitalize tab-btn" id="tab-write">
-          Editor
-        </button>
-        <button onclick="UI.setActiveTab('analyze')" class="px-6 py-2 rounded-lg font-medium transition-all duration-200 capitalize tab-btn" id="tab-analyze">
-          Análisis
-        </button>
-        <button onclick="UI.setActiveTab('review')" class="px-6 py-2 rounded-lg font-medium transition-all duration-200 capitalize tab-btn" id="tab-review">
-          Resultado
-        </button>
-      </div>
-    </div>
-
-    <main class="container mx-auto px-4 pb-8">
-      <!-- Editor Tab -->
-      <div id="write-section" class="grid lg:grid-cols-5 gap-8">
-        <div class="lg:col-span-2 space-y-6">
-          <div class="bg-white/10 backdrop-blur-md border border-slate-700/50 rounded-2xl p-6 shadow-xl">
-            <h2 class="text-lg font-semibold mb-4 text-slate-100">Configuración Avanzada</h2>
-            <div class="space-y-4">
-              <div>
-                <label class="block text-sm font-medium text-slate-300 mb-2">Profundidad</label>
-                <select id="setting-depth" class="w-full bg-slate-800 border border-slate-600 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-teal-500 focus:border-transparent">
-                  <option value="suave">Suave</option>
-                  <option value="moderado">Moderado</option>
-                  <option value="profundo">Profundo</option>
-                </select>
-              </div>
-
-              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <label class="flex items-center space-x-2 text-sm">
-                  <input type="checkbox" id="setting-naturalFlow" checked class="w-4 h-4 text-teal-500 rounded focus:ring-teal-500">
-                  <span class="text-slate-300">Flujo natural</span>
-                </label>
-                <label class="flex items-center space-x-2 text-sm">
-                  <input type="checkbox" id="setting-toneAdjustment" checked class="w-4 h-4 text-teal-500 rounded focus:ring-teal-500">
-                  <span class="text-slate-300">Tono informal</span>
-                </label>
-                <label class="flex items-center space-x-2 text-sm">
-                  <input type="checkbox" id="setting-readabilityFocus" checked class="w-4 h-4 text-teal-500 rounded focus:ring-teal-500">
-                  <span class="text-slate-300">Legibilidad</span>
-                </label>
-                <label class="flex items-center space-x-2 text-sm">
-                  <input type="checkbox" id="setting-connectorVariety" checked class="w-4 h-4 text-teal-500 rounded focus:ring-teal-500">
-                  <span class="text-slate-300">Conectores</span>
-                </label>
-                <label class="flex items-center space-x-2 text-sm">
-                  <input type="checkbox" id="setting-lexicalRichness" checked class="w-4 h-4 text-teal-500 rounded focus:ring-teal-500">
-                  <span class="text-slate-300">Sinónimos</span>
-                </label>
-                <label class="flex items-center space-x-2 text-sm">
-                  <input type="checkbox" id="setting-avoidRepetition" checked class="w-4 h-4 text-teal-500 rounded focus:ring-teal-500">
-                  <span class="text-slate-300">Evitar rep.</span>
-                </label>
-              </div>
-
-              <label class="flex items-center space-x-2 text-sm">
-                <input type="checkbox" id="setting-simulateHumanErrors" class="w-4 h-4 text-teal-500 rounded focus:ring-teal-500">
-                <span class="text-slate-300">Simular errores humanos</span>
-              </label>
-            </div>
-          </div>
-
-          <div class="bg-white/10 backdrop-blur-md border border-slate-700/50 rounded-2xl p-6 shadow-xl">
-            <h3 class="text-lg font-semibold mb-4 text-slate-100">Historial</h3>
-            <div id="history-container" class="space-y-2 max-h-60 overflow-y-auto">
-              <p class="text-sm text-slate-400">No hay historial aún</p>
-            </div>
-          </div>
-        </div>
-
-        <div class="lg:col-span-3">
-          <div class="bg-white/10 backdrop-blur-md border border-slate-700/50 rounded-2xl p-6 shadow-xl">
-            <textarea id="input-text" placeholder="Pega tu texto aquí para humanizarlo..." class="w-full h-80 bg-transparent text-slate-100 placeholder-slate-400 resize-none outline-none"></textarea>
-            <div class="flex flex-wrap gap-3 mt-4">
-              <button id="process-btn" onclick="Processor.processText()" class="flex-1 bg-gradient-to-r from-teal-500 to-emerald-600 hover:from-teal-600 hover:to-emerald-700 disabled:from-slate-600 disabled:to-slate-700 text-white font-medium py-3 px-6 rounded-xl transition-all duration-200 flex items-center justify-center gap-2">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
-                </svg>
-                Humanizar y Analizar
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Analysis Tab -->
-      <div id="analyze-section" class="hidden">
-        <div class="grid lg:grid-cols-5 gap-8">
-          <div class="lg:col-span-2">
-            <div class="bg-white/10 backdrop-blur-md border border-slate-700/50 rounded-2xl p-6 shadow-xl h-full">
-              <h2 class="text-xl font-semibold mb-6 text-slate-100">Progreso</h2>
-              <div class="space-y-4">
-                <div class="flex justify-between text-sm">
-                  <span class="text-slate-300">Estado</span>
-                  <span id="progress-message" class="text-teal-400 font-medium">Esperando...</span>
-                </div>
-                <div class="w-full bg-slate-700 rounded-full h-2">
-                  <div id="progress-bar" class="bg-gradient-to-r from-teal-400 to-emerald-500 h-2 rounded-full transition-all duration-300" style="width: 0%"></div>
-                </div>
-                <div id="progress-percent" class="text-sm text-slate-400">0% completado</div>
-              </div>
-            </div>
-          </div>
-
-          <div class="lg:col-span-3">
-            <div class="bg-white/10 backdrop-blur-md border border-slate-700/50 rounded-2xl p-6 shadow-xl">
-              <div class="flex items-center justify-between mb-6">
-                <h2 class="text-xl font-semibold text-slate-100">Texto Procesado</h2>
-                <button onclick="Utils.copyToClipboard()" class="text-sm bg-teal-500 hover:bg-teal-600 px-4 py-2 rounded-lg transition-colors">Copiar</button>
-              </div>
-              <div id="output-analysis" class="min-h-60 bg-slate-800/50 rounded-lg p-4 text-slate-100 whitespace-pre-wrap">
-                El texto procesado aparecerá aquí...
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Review Tab -->
-      <div id="review-section" class="hidden">
-        <div class="grid lg:grid-cols-3 gap-8">
-          <div class="lg:col-span-2">
-            <div class="bg-white/10 backdrop-blur-md border border-slate-700/50 rounded-2xl p-6 shadow-xl">
-              <div class="flex items-center justify-between mb-6">
-                <h2 class="text-xl font-semibold text-slate-100">Texto Final</h2>
-                <div class="flex gap-2">
-                  <button onclick="Utils.downloadText('txt')" class="text-sm bg-slate-600 hover:bg-slate-700 px-3 py-1 rounded">TXT</button>
-                  <button onclick="Utils.downloadText('doc')" class="text-sm bg-slate-600 hover:bg-slate-700 px-3 py-1 rounded">DOC</button>
-                </div>
-              </div>
-              <div id="output-review" class="bg-slate-800/50 rounded-lg p-4 h-96 overflow-y-auto text-slate-100 whitespace-pre-wrap">
-                El texto final aparecerá aquí...
-              </div>
-            </div>
-          </div>
-
-          <div>
-            <div class="bg-white/10 backdrop-blur-md border border-slate-700/50 rounded-2xl p-6 shadow-xl space-y-6">
-              <div>
-                <h3 class="text-lg font-semibold text-slate-100 mb-4">Análisis de Calidad</h3>
-                <div class="bg-gradient-to-r from-yellow-500/10 to-orange-500/10 rounded-lg p-4 border border-orange-400/30">
-                  <div class="flex justify-between text-sm text-slate-300 mb-2">
-                    <span>Probabilidad de ser Humano</span>
-                    <span id="analysis-score" class="font-bold text-yellow-300">0%</span>
-                  </div>
-                  <div class="w-full bg-slate-700 rounded-full h-2">
-                    <div id="score-bar" class="bg-gradient-to-r from-yellow-400 to-orange-500 h-2 rounded-full" style="width: 0%"></div>
-                  </div>
-                  <p id="score-message" class="mt-2 text-sm text-orange-200">Introduce texto para analizar.</p>
-                </div>
-              </div>
-
-              <div class="grid grid-cols-2 gap-4">
-                <div class="bg-slate-800/40 p-4 rounded-lg">
-                  <div id="word-count-original" class="text-2xl font-bold text-teal-400">0</div>
-                  <div class="text-xs text-slate-400">Palabras Original</div>
-                </div>
-                <div class="bg-slate-800/40 p-4 rounded-lg">
-                  <div id="word-count-final" class="text-2xl font-bold text-emerald-400">0</div>
-                  <div class="text-xs text-slate-400">Palabras Final</div>
-                </div>
-                <div class="bg-slate-800/40 p-4 rounded-lg col-span-2">
-                  <div id="readability-score" class="text-lg font-bold text-blue-400">0%</div>
-                  <div class="text-xs text-slate-400">Legibilidad</div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </main>
-
-    <!-- Toast -->
-    <div id="toast" class="fixed bottom-4 right-4 bg-teal-500 text-white px-4 py-2 rounded-lg shadow-lg hidden animate-fade-in">
-      ¡Texto copiado al portapapeles!
-    </div>
-
-    <footer class="py-6 border-t border-slate-700/50 mt-8 backdrop-blur-md">
-      <div class="container mx-auto px-4 text-center text-sm text-slate-300">
-        <p>RedactaPro Supremo © 2024. Procesamiento 100% local.</p>
-      </div>
-    </footer>
-  </div>
-
-  <script>
-    // --- Estado de la aplicación ---
-    const State = {
-      inputText: '',
-      outputText: '',
-      isProcessing: false,
-      analysisScore: 0,
-      activeTab: 'write',
-      history: [],
-      progress: 0,
-      progressMessage: 'Esperando...'
-    };
-
-    // --- Datos de humanización ---
-    const Data = {
-      connectors: [
-        "Bueno,", "Mira,", "La verdad es que,", "O sea,", "Tipo,", "Vamos,", "Pues,",
-        "Por otro lado,", "En contraste,", "De hecho,", "Asimismo,", "No obstante,",
-        "Así pues,", "De ahí que,", "En fin,", "Para que te hagas una idea,",
-        "A decir verdad,", "Entre tú y yo,", "Para serte sincero,", "Si te soy honesto,",
-        "De cualquier modo,", "En cualquier caso,", "Eso sí,", "En última instancia,",
-        "Por lo tanto,", "Ahora bien,", "Dicho esto,", "Hecho esto,",
-      ],
-      idioms: [
-        "cuesta abajo", "pan comido", "ponerse las pilas", "dar en el clavo",
-        "tirar la casa por la ventana", "estar en las nubes", "no tener pelos en la lengua",
-        "ser uña y carne", "hacer la vista gorda", "meter la pata",
-        "buscarle la quinta pata al gato", "el que madruga, Dios le ayuda",
-        "la curiosidad mató al gato", "más vale pájaro en mano que ciento volando",
-        "no pegar ojo", "irse por las ramas", "montar un pollo",
-      ],
-      interjections: ["¡Vaya!", "¡Ojo!", "Bueno...", "Pues mira...", "¿Sabes?", "¿Me sigues?", "Anda,", "En fin,"],
-      formalToInformal: {
-        "implementar": "usar", "optimizar": "mejorar", "paradigma": "enfoque",
-        "sinergia": "colaboración", "efectuar": "hacer", "procedimiento": "paso",
-        "facilitar": "ayudar", "consecuentemente": "por eso", "no obstante": "pero",
-        "por consiguiente": "así que", "en consecuencia": "por lo tanto",
-        "utilizar": "usar", "visualizar": "ver", "finalizar": "terminar",
-        "acelerar": "agilizar", "mitigar": "reducir", "viable": "posible",
-        "demostrar": "mostrar", "evaluar": "analizar", "estrategia": "plan",
-      },
-      synonyms: {
-        "crear": ["generar", "hacer", "producir", "elaborar"],
-        "analizar": ["estudiar", "revisar", "examinar", "inspeccionar"],
-        "importante": ["clave", "fundamental", "esencial", "crítico"],
-        "rápido": ["veloz", "ágil", "pronto", "inmediato"],
-        "difícil": ["complicado", "duro", "arduo", "engorroso"],
-      },
-      camoPhrases: [
-        "según estudios recientes...",
-        "como bien señala la literatura...",
-        "esto se alinea con lo observado en...",
-        "un caso similar fue documentado en...",
-        "esto refleja una tendencia creciente...",
-        "desde una perspectiva crítica...",
-        "como se ha argumentado anteriormente..."
-      ]
-    };
-
-    // --- Utilidades ---
-    const Utils = {
-      getRandom: (arr) => arr[Math.floor(Math.random() * arr.length)],
-      cleanText: (text) => {
-        return text
-          .replace(/[\u200B-\u200D\uFEFF]/g, '')
-          .replace(/[\u00A0\u1680\u2000-\u200A\u202F\u205F\u3000]/g, ' ')
-          .replace(/[\r]{3,}/g, '')
-          .replace(/[ \t]+/g, ' ')
-          .replace(/ +([,.!?¿¡:]+)/g, '$1')
-          .replace(/([¿¡]) +/g, '$1')
-          .trim();
-      },
-      wordCount: (text) => text.trim() ? text.trim().split(/\s+/).length : 0,
-      readability: (text) => {
-        const sentences = (text.match(/[.!?]+/g) || []).length || 1;
-        const words = Utils.wordCount(text);
-        const syllables = text.split(/[aeiouáéíóú]/i).length;
-        const asl = words / sentences;
-        const asw = syllables / words;
-        const flesch = 206.835 - (1.015 * asl) - (84.6 * asw);
-        return Math.max(0, Math.min(100, flesch / 2));
-      },
-      calculateAIScore: (text) => {
-        const patterns = [
-          /(?:además|por otro lado|en conclusión)/g,
-          /\b(?:optimizar|implementar|paradigma|sinergia)\b/g,
-          /(?:es importante destacar que|vale la pena mencionar que)/g,
-          /(?:en el contexto actual|en la actualidad)/g,
-        ];
-        const aiIndicators = patterns.reduce((sum, pattern) => sum + (text.match(pattern)?.length || 0), 0);
-        const wordCount = text.split(/\s+/).length;
-        const aiScore = (aiIndicators / (wordCount / 100)) * 30;
-        return Math.min(100, Math.max(0, aiScore));
-      },
-      copyToClipboard: () => {
-        if (!State.outputText) return;
-        navigator.clipboard.writeText(State.outputText).then(() => {
-          const toast = document.getElementById('toast');
-          toast.classList.remove('hidden');
-          setTimeout(() => toast.classList.add('hidden'), 2000);
-        });
-      },
-      downloadText: (format) => {
-        if (!State.outputText) return;
-        const timestamp = new Date().toISOString().split('T')[0];
-        let blob, filename;
-
-        if (format === 'txt') {
-          blob = new Blob([State.outputText], { type: 'text/plain;charset=utf-8' });
-          filename = `redactapro-supremo-${timestamp}.txt`;
-        } else if (format === 'doc') {
-          const htmlContent = `
-            <!DOCTYPE html>
-            <html>
-            <head>
-              <meta charset="UTF-8">
-              <title>Texto Humanizado - RedactaPro Supremo</title>
-              <style>body { font-family: 'Inter', sans-serif; line-height: 1.7; color: #333; }</style>
-            </head>
-            <body>
-              <p>${State.outputText.replace(/\n/g, '<br>')}</p>
-            </body>
-            </html>`;
-          blob = new Blob([htmlContent], { type: 'application/msword;charset=utf-8' });
-          filename = `redactapro-supremo-${timestamp}.doc`;
+      // --- Datos de humanización ---
+      const Data = {
+        connectors: [
+          "Bueno,", "Mira,", "La verdad es que,", "O sea,", "Tipo,", "Vamos,", "Pues,",
+          "Por otro lado,", "En contraste,", "De hecho,", "Asimismo,", "No obstante,",
+          "Así pues,", "De ahí que,", "En fin,", "Para que te hagas una idea,",
+          "A decir verdad,", "Entre tú y yo,", "Para serte sincero,", "Si te soy honesto,",
+          "De cualquier modo,", "En cualquier caso,", "Eso sí,", "En última instancia,",
+          "Por lo tanto,", "Ahora bien,", "Dicho esto,", "Hecho esto,",
+        ],
+        idioms: [
+          "cuesta abajo", "pan comido", "ponerse las pilas", "dar en el clavo",
+          "tirar la casa por la ventana", "estar en las nubes", "no tener pelos en la lengua",
+          "ser uña y carne", "hacer la vista gorda", "meter la pata",
+          "buscarle la quinta pata al gato", "el que madruga, Dios le ayuda",
+          "la curiosidad mató al gato", "más vale pájaro en mano que ciento volando",
+          "no pegar ojo", "irse por las ramas", "montar un pollo",
+        ],
+        interjections: ["¡Vaya!", "¡Ojo!", "Bueno...", "Pues mira...", "¿Sabes?", "¿Me sigues?", "Anda,", "En fin,"],
+        formalToInformal: {
+          "implementar": "usar", "optimizar": "mejorar", "paradigma": "enfoque",
+          "sinergia": "colaboración", "efectuar": "hacer", "procedimiento": "paso",
+          "facilitar": "ayudar", "consecuentemente": "por eso", "no obstante": "pero",
+          "por consiguiente": "así que", "en consecuencia": "por lo tanto",
+          "utilizar": "usar", "visualizar": "ver", "finalizar": "terminar",
+          "acelerar": "agilizar", "mitigar": "reducir", "viable": "posible",
+          "demostrar": "mostrar", "evaluar": "analizar", "estrategia": "plan",
+        },
+        synonyms: {
+          "crear": ["generar", "hacer", "producir", "elaborar"],
+          "analizar": ["estudiar", "revisar", "examinar", "inspeccionar"],
+          "importante": ["clave", "fundamental", "esencial", "crítico"],
+          "rápido": ["veloz", "ágil", "pronto", "inmediato"],
+          "difícil": ["complicado", "duro", "arduo", "engorroso"],
         }
+      };
 
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = filename;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
-      }
-    };
-
-    // --- Gestor de Historial ---
-    const HistoryManager = {
-      saveToHistory: () => {
-        const item = {
-          original: State.inputText.substring(0, 100) + (State.inputText.length > 100 ? '...' : ''),
-          result: State.outputText.substring(0, 100) + (State.outputText.length > 100 ? '...' : ''),
-          score: State.analysisScore,
-          date: new Date().toLocaleDateString(),
-        };
-        State.history.unshift(item);
-        State.history = State.history.slice(0, 7);
-        HistoryManager.render();
-      },
-      render: () => {
-        const container = document.getElementById('history-container');
-        if (State.history.length === 0) {
-          container.innerHTML = '<p class="text-sm text-slate-400">No hay historial aún</p>';
-          return;
-        }
-        container.innerHTML = State.history.map(item => `
-          <div onclick="HistoryManager.load('${escapeHtml(item.original)}', '${escapeHtml(item.result)}', ${item.score})" class="p-3 bg-slate-800/30 rounded-lg cursor-pointer hover:bg-slate-700/30 transition-colors text-sm">
-            <p class="text-slate-200 line-clamp-1">${item.original}</p>
-            <p class="text-xs text-teal-400 mt-1">Puntuación: ${item.score.toFixed(1)}%</p>
-          </div>
-        `).join('');
-      },
-      load: (original, result, score) => {
-        document.getElementById('input-text').value = original;
-        State.outputText = result;
-        State.analysisScore = score;
-        UI.setActiveTab('review');
-        UI.updateReviewUI();
-      }
-    };
-
-    // --- Gestor de Configuración ---
-    const SettingsManager = {
-      get: () => {
-        return {
-          depth: document.getElementById('setting-depth').value,
-          naturalFlow: document.getElementById('setting-naturalFlow').checked,
-          toneAdjustment: document.getElementById('setting-toneAdjustment').checked,
-          readabilityFocus: document.getElementById('setting-readabilityFocus').checked,
-          connectorVariety: document.getElementById('setting-connectorVariety').checked,
-          lexicalRichness: document.getElementById('setting-lexicalRichness').checked,
-          avoidRepetition: document.getElementById('setting-avoidRepetition').checked,
-          simulateHumanErrors: document.getElementById('setting-simulateHumanErrors').checked,
-        };
-      },
-      apply: () => {
-        const saved = Storage.loadState();
-        if (saved?.settings) {
-          Object.keys(saved.settings).forEach(key => {
-            const el = document.getElementById(`setting-${key}`);
-            if (el && typeof el.checked !== 'undefined') {
-              el.checked = saved.settings[key];
-            }
+      // --- Utilidades ---
+      const Utils = {
+        getRandom: (arr) => arr[Math.floor(Math.random() * arr.length)],
+        cleanText: (text) => {
+          return text
+            .replace(/[\u200B-\u200D\uFEFF]/g, '')
+            .replace(/[\u00A0\u1680\u2000-\u200A\u202F\u205F\u3000]/g, ' ')
+            .replace(/[\r]{3,}/g, '')
+            .replace(/[ \t]+/g, ' ')
+            .replace(/ +([,.!?¿¡:]+)/g, '$1')
+            .replace(/([¿¡]) +/g, '$1')
+            .trim();
+        },
+        wordCount: (text) => text.trim() ? text.trim().split(/\s+/).length : 0,
+        readability: (text) => {
+          const sentences = (text.match(/[.!?]+/g) || []).length || 1;
+          const words = Utils.wordCount(text);
+          const syllables = text.split(/[aeiouáéíóú]/i).length;
+          const asl = words / sentences;
+          const asw = syllables / words;
+          const flesch = 206.835 - (1.015 * asl) - (84.6 * asw);
+          return Math.max(0, Math.min(100, flesch / 2));
+        },
+        calculateAIScore: (text) => {
+          const patterns = [
+            /(?:además|por otro lado|en conclusión)/g,
+            /\b(?:optimizar|implementar|paradigma|sinergia)\b/g,
+            /(?:es importante destacar que|vale la pena mencionar que)/g,
+            /(?:en el contexto actual|en la actualidad)/g,
+          ];
+          const aiIndicators = patterns.reduce((sum, pattern) => sum + (text.match(pattern)?.length || 0), 0);
+          const wordCount = text.split(/\s+/).length;
+          const aiScore = (aiIndicators / (wordCount / 100)) * 30;
+          return Math.min(100, Math.max(0, aiScore));
+        },
+        copyToClipboard: () => {
+          if (!AppState.outputText) return;
+          navigator.clipboard.writeText(AppState.outputText).then(() => {
+            const toast = document.getElementById('toast');
+            toast.classList.remove('hidden');
+            setTimeout(() => toast.classList.add('hidden'), 2000);
           });
-          document.getElementById('setting-depth').value = saved.settings.depth || 'suave';
-        }
-      }
-    };
+        },
+        downloadText: (format) => {
+          if (!AppState.outputText) return;
+          const timestamp = new Date().toISOString().split('T')[0];
+          let blob, filename;
 
-    // --- UI Manager ---
-    const UI = {
-      setActiveTab: (tab) => {
-        ['write', 'analyze', 'review'].forEach(t => {
-          document.getElementById(`${t}-section`).classList.add('hidden');
-          document.getElementById(`tab-${t}`).classList.remove('bg-teal-500', 'text-white');
-          document.getElementById(`tab-${t}`).classList.add('text-slate-400');
-        });
-        document.getElementById(`${tab}-section`).classList.remove('hidden');
-        document.getElementById(`tab-${tab}`).classList.remove('text-slate-400');
-        document.getElementById(`tab-${tab}`).classList.add('bg-teal-500', 'text-white');
-        State.activeTab = tab;
-      },
-      updateProgress: (percent, message) => {
-        State.progress = percent;
-        State.progressMessage = message;
-        document.getElementById('progress-bar').style.width = `${percent}%`;
-        document.getElementById('progress-message').textContent = message;
-        document.getElementById('progress-percent').textContent = `${percent}% completado`;
-        document.getElementById('output-analysis').textContent = State.outputText || 'Procesando...';
-      },
-      updateReviewUI: () => {
-        document.getElementById('output-review').textContent = State.outputText;
-        document.getElementById('analysis-score').textContent = State.analysisScore.toFixed(1) + '%';
-        document.getElementById('score-bar').style.width = `${State.analysisScore}%`;
-        document.getElementById('word-count-original').textContent = Utils.wordCount(State.inputText);
-        document.getElementById('word-count-final').textContent = Utils.wordCount(State.outputText);
-        document.getElementById('readability-score').textContent = Utils.readability(State.outputText).toFixed(1) + '%';
-
-        const msg = document.getElementById('score-message');
-        if (State.analysisScore > 70) {
-          msg.textContent = "Texto altamente humano. Baja probabilidad de detección.";
-        } else if (State.analysisScore > 50) {
-          msg.textContent = "Texto razonablemente humano. Algunos ajustes podrían ayudar.";
-        } else {
-          msg.textContent = "Alta probabilidad de ser detectado como IA. Considera ajustes más profundos.";
-        }
-      }
-    };
-
-    // --- Almacenamiento ---
-    const Storage = {
-      saveState: () => {
-        try {
-          const stateToSave = {
-            inputText: State.inputText,
-            outputText: State.outputText,
-            analysisScore: State.analysisScore,
-            activeTab: State.activeTab,
-            history: State.history,
-            settings: SettingsManager.get()
-          };
-          localStorage.setItem('redactaproSupremoState', JSON.stringify(stateToSave));
-        } catch (e) {
-          console.warn("No se pudo guardar el estado:", e);
-        }
-      },
-      loadState: () => {
-        try {
-          const saved = localStorage.getItem('redactaproSupremoState');
-          if (saved) {
-            const parsed = JSON.parse(saved);
-            Object.assign(State, {
-              inputText: parsed.inputText || '',
-              outputText: parsed.outputText || '',
-              analysisScore: parsed.analysisScore || 0,
-              activeTab: parsed.activeTab || 'write',
-              history: parsed.history || []
-            });
-            if (parsed.inputText) {
-              document.getElementById('input-text').value = parsed.inputText;
-            }
-            // Aplicar configuración SIN llamar a loadState nuevamente
-            if (parsed.settings) {
-              Object.keys(parsed.settings).forEach(key => {
-                const el = document.getElementById(`setting-${key}`);
-                if (el && typeof el.checked !== 'undefined') {
-                  el.checked = parsed.settings[key];
-                }
-              });
-              document.getElementById('setting-depth').value = parsed.settings.depth || 'suave';
-            }
-            if (parsed.activeTab) {
-              UI.setActiveTab(parsed.activeTab);
-            }
-            HistoryManager.render();
+          if (format === 'txt') {
+            blob = new Blob([AppState.outputText], { type: 'text/plain;charset=utf-8' });
+            filename = `redactapro-supremo-${timestamp}.txt`;
+          } else if (format === 'doc') {
+            const htmlContent = `
+              <!DOCTYPE html>
+              <html>
+              <head>
+                <meta charset="UTF-8">
+                <title>Texto Humanizado - RedactaPro Supremo</title>
+                <style>body { font-family: 'Inter', sans-serif; line-height: 1.7; color: #333; }</style>
+              </head>
+              <body>
+                <p>${AppState.outputText.replace(/\n/g, '<br>')}</p>
+              </body>
+              </html>`;
+            blob = new Blob([htmlContent], { type: 'application/msword;charset=utf-8' });
+            filename = `redactapro-supremo-${timestamp}.doc`;
           }
-        } catch (e) {
-          console.error("Error al cargar el estado:", e);
+
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = filename;
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          URL.revokeObjectURL(url);
         }
-      }
-    };
+      };
 
-    // --- Procesador de Texto Avanzado ---
-    const Processor = {
-      processText: async () => {
+      // --- Gestor de Historial ---
+      const HistoryManager = {
+        saveToHistory: () => {
+          const item = {
+            original: AppState.inputText.substring(0, 100) + (AppState.inputText.length > 100 ? '...' : ''),
+            result: AppState.outputText.substring(0, 100) + (AppState.outputText.length > 100 ? '...' : ''),
+            score: AppState.analysisScore,
+            date: new Date().toLocaleDateString(),
+          };
+          AppState.history.unshift(item);
+          AppState.history = AppState.history.slice(0, 7);
+          HistoryManager.render();
+        },
+        render: () => {
+          const container = document.getElementById('history-container');
+          if (AppState.history.length === 0) {
+            container.innerHTML = '<p class="text-sm text-slate-400">No hay historial aún</p>';
+            return;
+          }
+          container.innerHTML = AppState.history.map(item => `
+            <div onclick="HistoryManager.load('${escapeHtml(item.original)}', '${escapeHtml(item.result)}', ${item.score})" class="p-3 bg-slate-800/30 rounded-lg cursor-pointer hover:bg-slate-700/30 transition-colors text-sm">
+              <p class="text-slate-200 line-clamp-1">${item.original}</p>
+              <p class="text-xs text-teal-400 mt-1">Puntuación: ${item.score.toFixed(1)}%</p>
+            </div>
+          `).join('');
+        },
+        load: (original, result, score) => {
+          document.getElementById('input-text').value = original;
+          AppState.outputText = result;
+          AppState.analysisScore = score;
+          UI.setActiveTab('review');
+          UI.updateReviewUI();
+        }
+      };
+
+      // --- Gestor de Configuración ---
+      const SettingsManager = {
+        get: () => {
+          return {
+            depth: document.getElementById('setting-depth').value,
+            naturalFlow: document.getElementById('setting-naturalFlow').checked,
+            toneAdjustment: document.getElementById('setting-toneAdjustment').checked,
+            readabilityFocus: document.getElementById('setting-readabilityFocus').checked,
+            connectorVariety: document.getElementById('setting-connectorVariety').checked,
+            lexicalRichness: document.getElementById('setting-lexicalRichness').checked,
+            avoidRepetition: document.getElementById('setting-avoidRepetition').checked,
+            simulateHumanErrors: document.getElementById('setting-simulateHumanErrors').checked,
+          };
+        },
+        apply: () => {
+          const saved = Storage.loadState();
+          if (saved?.settings) {
+            Object.keys(saved.settings).forEach(key => {
+              const el = document.getElementById(`setting-${key}`);
+              if (el && typeof el.checked !== 'undefined') {
+                el.checked = saved.settings[key];
+              }
+            });
+            document.getElementById('setting-depth').value = saved.settings.depth || 'suave';
+          }
+        }
+      };
+
+      // --- UI Manager ---
+      const UI = {
+        setActiveTab: (tab) => {
+          ['write', 'analyze', 'review'].forEach(t => {
+            document.getElementById(`${t}-section`).classList.add('hidden');
+            document.getElementById(`tab-${t}`).classList.remove('bg-teal-500', 'text-white');
+            document.getElementById(`tab-${t}`).classList.add('text-slate-400');
+          });
+          document.getElementById(`${tab}-section`).classList.remove('hidden');
+          document.getElementById(`tab-${tab}`).classList.remove('text-slate-400');
+          document.getElementById(`tab-${tab}`).classList.add('bg-teal-500', 'text-white');
+          AppState.activeTab = tab;
+        },
+        updateProgress: (percent, message) => {
+          AppState.progress = percent;
+          AppState.progressMessage = message;
+          document.getElementById('progress-bar').style.width = `${percent}%`;
+          document.getElementById('progress-message').textContent = message;
+          document.getElementById('progress-percent').textContent = `${percent}% completado`;
+          document.getElementById('output-analysis').textContent = AppState.outputText || 'Procesando...';
+        },
+        updateReviewUI: () => {
+          document.getElementById('output-review').textContent = AppState.outputText;
+          document.getElementById('analysis-score').textContent = AppState.analysisScore.toFixed(1) + '%';
+          document.getElementById('score-bar').style.width = `${AppState.analysisScore}%`;
+          document.getElementById('word-count-original').textContent = Utils.wordCount(AppState.inputText);
+          document.getElementById('word-count-final').textContent = Utils.wordCount(AppState.outputText);
+          document.getElementById('readability-score').textContent = Utils.readability(AppState.outputText).toFixed(1) + '%';
+
+          const msg = document.getElementById('score-message');
+          if (AppState.analysisScore > 70) {
+            msg.textContent = "Texto altamente humano. Baja probabilidad de detección.";
+          } else if (AppState.analysisScore > 50) {
+            msg.textContent = "Texto razonablemente humano. Algunos ajustes podrían ayudar.";
+          } else {
+            msg.textContent = "Alta probabilidad de ser detectado como IA. Considera ajustes más profundos.";
+          }
+        }
+      };
+
+      // --- Almacenamiento ---
+      const Storage = {
+        saveState: () => {
+          try {
+            const stateToSave = {
+              inputText: AppState.inputText,
+              outputText: AppState.outputText,
+              analysisScore: AppState.analysisScore,
+              activeTab: AppState.activeTab,
+              history: AppState.history,
+              settings: SettingsManager.get()
+            };
+            localStorage.setItem('redactaproSupremoState', JSON.stringify(stateToSave));
+          } catch (e) {
+            console.warn("No se pudo guardar el estado:", e);
+          }
+        },
+        loadState: () => {
+          try {
+            const saved = localStorage.getItem('redactaproSupremoState');
+            if (saved) {
+              const parsed = JSON.parse(saved);
+              Object.assign(AppState, {
+                inputText: parsed.inputText || '',
+                outputText: parsed.outputText || '',
+                analysisScore: parsed.analysisScore || 0,
+                activeTab: parsed.activeTab || 'write',
+                history: parsed.history || []
+              });
+              if (parsed.inputText) {
+                document.getElementById('input-text').value = parsed.inputText;
+              }
+              if (parsed.settings) {
+                Object.keys(parsed.settings).forEach(key => {
+                  const el = document.getElementById(`setting-${key}`);
+                  if (el && typeof el.checked !== 'undefined') {
+                    el.checked = parsed.settings[key];
+                  }
+                });
+                document.getElementById('setting-depth').value = parsed.settings.depth || 'suave';
+              }
+              if (parsed.activeTab) {
+                UI.setActiveTab(parsed.activeTab);
+              }
+              HistoryManager.render();
+            }
+          } catch (e) {
+            console.error("Error al cargar el estado:", e);
+          }
+        }
+      };
+
+      // --- Funciones globales (para onclick) ---
+      window.processText = async () => {
         const inputEl = document.getElementById('input-text');
-        State.inputText = Utils.cleanText(inputEl.value.trim());
+        AppState.inputText = Utils.cleanText(inputEl.value.trim());
 
-        if (!State.inputText) {
+        if (!AppState.inputText) {
           alert("Por favor, introduce un texto.");
           return;
         }
 
-        State.isProcessing = true;
+        AppState.isProcessing = true;
         UI.setActiveTab('analyze');
         UI.updateProgress(0, "Iniciando...");
 
         await Utils.sleep(100);
         UI.updateProgress(10, "Limpieza profunda...");
-        let processed = Utils.cleanText(State.inputText);
+        let processed = AppState.inputText;
 
         UI.updateProgress(25, "Reestructurando semánticamente...");
-        processed = this.deepSemanticRewrite(processed);
+        processed = deepSemanticRewrite(processed);
 
         UI.updateProgress(40, "Simulando traducción múltiple...");
-        processed = this.translationSimulation(processed);
+        processed = translationSimulation(processed);
 
         UI.updateProgress(55, "Añadiendo elementos humanos...");
-        processed = this.addNaturalFlow(processed);
+        processed = addNaturalFlow(processed);
 
         UI.updateProgress(70, "Optimizando legibilidad...");
-        processed = this.adjustToneAndReadability(processed);
+        processed = adjustToneAndReadability(processed);
 
         UI.updateProgress(85, "Evaluando contra detectores...");
         let aiScore = Utils.calculateAIScore(processed);
         let attempts = 0;
         while (aiScore > 30 && attempts < 3) {
-          processed = this.addExtraHumanization(processed);
+          processed = addExtraHumanization(processed);
           aiScore = Utils.calculateAIScore(processed);
           attempts++;
         }
 
         UI.updateProgress(100, "¡Listo!");
-        State.outputText = processed;
-        State.analysisScore = 100 - aiScore;
+        AppState.outputText = processed;
+        AppState.analysisScore = 100 - aiScore;
 
         setTimeout(() => {
           UI.setActiveTab('review');
@@ -1232,9 +578,14 @@
           HistoryManager.saveToHistory();
           Storage.saveState();
         }, 300);
-      },
+      };
 
-      deepSemanticRewrite: (text) => {
+      window.copyToClipboard = Utils.copyToClipboard;
+      window.downloadText = Utils.downloadText;
+      window.HistoryManager = HistoryManager;
+
+      // --- Funciones de procesamiento ---
+      function deepSemanticRewrite(text) {
         let paragraphs = text.split(/\n\s*\n/).filter(p => p.trim().length > 10);
         if (paragraphs.length > 2 && Math.random() < 0.6) {
           const intro = paragraphs.shift();
@@ -1250,9 +601,9 @@
           return [intro, ...body, conclusion].join('\n\n');
         }
         return text;
-      },
+      }
 
-      translationSimulation: (text) => {
+      function translationSimulation(text) {
         const replacements = {
           "implementar": "poner en práctica", "optimizar": "mejorar al máximo",
           "paradigma": "modelo", "sinergia": "cooperación efectiva",
@@ -1267,9 +618,9 @@
           }
         }
         return processed;
-      },
+      }
 
-      addNaturalFlow: (text) => {
+      function addNaturalFlow(text) {
         let sentences = text.split(/(?<=[.!?])\s+/);
         const settings = SettingsManager.get();
 
@@ -1305,9 +656,9 @@
         }
 
         return sentences.join(' ');
-      },
+      }
 
-      adjustToneAndReadability: (text) => {
+      function adjustToneAndReadability(text) {
         let processed = text;
         const settings = SettingsManager.get();
 
@@ -1329,36 +680,25 @@
         }
 
         return processed;
-      },
+      }
 
-      addExtraHumanization: (text) => {
+      function addExtraHumanization(text) {
         const camoPhrase = Utils.getRandom(Data.camoPhrases);
         const sentences = text.split(/(?<=[.!?])\s+/);
         const insertAt = Math.floor(sentences.length / 3);
         sentences.splice(insertAt, 0, camoPhrase);
         return sentences.join(' ');
       }
-    };
 
-    // --- Funciones auxiliares ---
-    function escapeHtml(text) {
-      const div = document.createElement('div');
-      div.textContent = text;
-      return div.innerHTML;
-    }
-
-    Utils.sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
-
-    // --- Inicialización ---
-    document.addEventListener('DOMContentLoaded', () => {
+      // --- Inicialización ---
       Storage.loadState();
       HistoryManager.render();
       document.querySelectorAll('input[id^="setting-"], #setting-depth').forEach(el => {
         el.addEventListener('change', Storage.saveState);
       });
-    });
 
-    window.addEventListener('beforeunload', Storage.saveState);
+      window.addEventListener('beforeunload', Storage.saveState);
+    });
   </script>
 </body>
 </html>
