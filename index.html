@@ -76,8 +76,10 @@
       resize: vertical; /* Permitir redimensionamiento vertical */
     }
     .input-textarea:focus {
-      ring-2 ring-emerald-500 border-transparent;
-      box-shadow: 0 0 0 3px rgba(40, 199, 111, 0.3); /* Focus ring */
+      outline: 2px solid #10b981; /* emerald-500 */
+      outline-offset: 2px;
+      border-color: transparent;
+      box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.3); /* Focus ring */
     }
     
     .progress-bar-container {
@@ -165,6 +167,38 @@
       border-style: solid;
       border-color: #555 transparent transparent #555;
     }
+
+    /* Nuevos estilos para mejoras */
+    .history-item {
+      transition: all 0.2s ease;
+      border-left: 3px solid transparent;
+    }
+    .history-item:hover {
+      border-left-color: var(--color-primary);
+      background-color: #f8fafc;
+    }
+    
+    .stats-card {
+      background: linear-gradient(135deg, #f0fdf4 0%, #ecfdf5 100%);
+      border: 1px solid #bbf7d0;
+    }
+    
+    .export-option {
+      transition: all 0.2s ease;
+    }
+    .export-option:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
+    }
+    
+    .fade-in {
+      animation: fadeIn 0.5s ease-in-out;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
   </style>
 </head>
 <body class="antialiased">
@@ -180,8 +214,11 @@
       const [copyFeedback, setCopyFeedback] = useState(false);
       const [analysisScore, setAnalysisScore] = useState(0);
       const [error, setError] = useState(null);
-      const [processingProgress, setProcessingProgress] = useState(0); // Progreso visual
+      const [processingProgress, setProcessingProgress] = useState(0);
       const [activeTab, setActiveTab] = useState('write');
+      const [conversionHistory, setConversionHistory] = useState([]);
+      const [stats, setStats] = useState({ wordsBefore: 0, wordsAfter: 0, readability: 0 });
+      
       const [settings, setSettings] = useState({
         depth: 'profundo', // 'suave', 'normal', 'fuerte'
         styleVariation: true,
@@ -195,7 +232,7 @@
       });
       
       const outputRef = useRef(null);
-      const fileInputRef = useRef(null); // Ref para el input de archivo
+      const fileInputRef = useRef(null);
 
       // --- Listas de Elementos para Humanizar ---
       const connectors = [
@@ -204,7 +241,9 @@
         'No sé si me explico,', 'En criollo,', 'Te cuento que,', 'Fíjate que,',
         'A ver,', 'Por otro lado,', 'En contraste,', 'De hecho,',
         'Asimismo,', 'No obstante,', 'Así pues,', 'De ahí que,',
-        'Vale,', 'En fin,', 'Para que te hagas una idea,', 'Vamos, que,'
+        'Vale,', 'En fin,', 'Para que te hagas una idea,', 'Vamos, que,',
+        'Pues mira,', 'A decir verdad,', 'Entre tú y yo,', 'No te voy a engañar,',
+        'Para serte sincero,', 'Si te soy honesto,', 'Por si no lo sabías,'
       ];
       
       const aiConectors = [
@@ -219,20 +258,27 @@
         'ser uña y carne', 'hacer la vista gorda', 'meter la pata', 'buscarle la quinta pata al gato',
         'donde hubo fuego, cenizas quedan', 'el que madruga, Dios le ayuda', 'la curiosidad mató al gato',
         'más vale pájaro en mano que ciento volando', 'no hay mal que dure cien años, ni cuerpo que lo resista',
-        'en un abrir y cerrar de ojos', 'poner los puntos sobre las íes', 'sacar las castañas del fuego'
+        'en un abrir y cerrar de ojos', 'poner los puntos sobre las íes', 'sacar las castañas del fuego',
+        'a las primeras de cambio', 'no pegar ojo', 'estar en el quinto pino', 'irse por las ramas',
+        'montar un pollo', 'estar en la luna de Valencia', 'dar la vuelta a la tortilla'
       ];
       
       const richSynonyms = {
-          "importante": ["crucial", "trascendental", "fundamental", "esencial", "relevante", "clave", "imperativo"],
-          "decir": ["manifestar", "expresar", "comunicar", "señalar", "indicar", "proclamar", "declarar", "articular"],
-          "usar": ["emplear", "utilizar", "recurrir a", "aplicar", "desplegar", "implementar", "valerse de"],
-          "bueno": ["adecuado", "óptimo", "pertinente", "idóneo", "propicio", "beneficioso", "acertado"],
-          "mucho": ["considerablemente", "sustancialmente", "ampliamente", "notablemente", "abundantemente", "significativamente"],
-          "gran": ["enorme", "amplio", "extenso", "considerable", "significativo", "voluminoso"],
-          "poder": ["capacidad", "facultad", "potestad", "habilidad", "competencia"],
-          "tener": ["poseer", "disponer de", "contar con", "ostentar", "acaparar"],
-          "crear": ["generar", "concebir", "producir", "elaborar", "forjar", "gestar"],
-          "mejorar": ["optimizar", "perfeccionar", "pulir", "refinar", "potenciar", "apsack"]
+          "importante": ["crucial", "trascendental", "fundamental", "esencial", "relevante", "clave", "imperativo", "decisivo", "vital"],
+          "decir": ["manifestar", "expresar", "comunicar", "señalar", "indicar", "proclamar", "declarar", "articular", "mencionar", "comentar"],
+          "usar": ["emplear", "utilizar", "recurrir a", "aplicar", "desplegar", "implementar", "valerse de", "hacer uso de", "manejar"],
+          "bueno": ["adecuado", "óptimo", "pertinente", "idóneo", "propicio", "beneficioso", "acertado", "favorable", "conveniente"],
+          "mucho": ["considerablemente", "sustancialmente", "ampliamente", "notablemente", "abundantemente", "significativamente", "profusamente"],
+          "gran": ["enorme", "amplio", "extenso", "considerable", "significativo", "voluminoso", "colosal", "monumental", "vastísimo"],
+          "poder": ["capacidad", "facultad", "potestad", "habilidad", "competencia", "autoridad", "potencial"],
+          "tener": ["poseer", "disponer de", "contar con", "ostentar", "acaparar", "albergar", "conservar"],
+          "crear": ["generar", "concebir", "producir", "elaborar", "forjar", "gestar", "desarrollar", "inventar", "establecer"],
+          "mejorar": ["optimizar", "perfeccionar", "pulir", "refinar", "potenciar", "apsack", "elevar", "enriquecer", "fortalecer"],
+          "necesario": ["imprescindible", "indispensable", "requerido", "obligatorio", "preciso", "inexorable"],
+          "hacer": ["realizar", "efectuar", "ejecutar", "llevar a cabo", "confeccionar", "elaborar", "producir"],
+          "utilizar": ["emplear", "usar", "aplicar", "manipular", "operar", "explotar", "manejar"],
+          "mostrar": ["exhibir", "presentar", "demostrar", "evidenciar", "revelar", "exponer", "visualizar"],
+          "cambiar": ["modificar", "alterar", "transformar", "variar", "mutar", "convertir", "transmutar"]
       };
 
       // --- Funciones de Procesamiento ---
@@ -248,14 +294,27 @@
           .trim();
       }, []);
 
+      const calculateReadability = useCallback((text) => {
+        const words = text.split(/\s+/).length;
+        const sentences = text.split(/[.!?]+/).length;
+        const characters = text.replace(/\s+/g, '').length;
+        
+        if (words === 0 || sentences === 0) return 100;
+        
+        // Fórmula simplificada de legibilidad en español
+        const readability = 206.84 - (0.6 * (characters / words)) - (1.02 * (words / sentences));
+        return Math.max(0, Math.min(100, readability));
+      }, []);
+
       const deepSemanticRewrite = useCallback((text, settings) => {
-        let paragraphs = text.split(/\n\s*\n/).filter(p => p.trim().length > 5); // Reducido umbral para más granularidad
+        let paragraphs = text.split(/\n\s*\n/).filter(p => p.trim().length > 5);
         
         if (paragraphs.length > 3) {
           const intro = paragraphs.shift();
           const conclusion = paragraphs.pop();
           let body = paragraphs;
           
+          // Reordenar párrafos del cuerpo
           for (let i = body.length - 1; i > 0; i--) {
             const j = Math.floor(Math.random() * (i + 1));
             [body[i], body[j]] = [body[j], body[i]];
@@ -278,7 +337,9 @@
               (s) => [s[s.length - 1], "En realidad,", ...s.slice(0, -1)],
               (s) => [s[0], "No obstante,", s[1], s[2], ...s.slice(3)],
               (s) => [s[1], "Y es que,", s[0], ...s.slice(2)],
-              (s) => [s[0], s[2], "Por cierto,", s[1], ...s.slice(3)] // Otro patrón
+              (s) => [s[0], s[2], "Por cierto,", s[1], ...s.slice(3)],
+              (s) => ["Resulta que,", s[1], s[0], ...s.slice(2)],
+              (s) => [s[1], s[0], "Sin embargo,", ...s.slice(2)]
             ];
             
             const pattern = patterns[Math.floor(Math.random() * patterns.length)];
@@ -298,7 +359,10 @@
           t => t.replace(/(\w+)\s+o\s+(\w+)/g, '$1 u $2'),
           t => t.replace(/(\w+),\s+(\w+)/g, '$2, $1'),
           t => t.replace(/(\w+)\s+que\s+(\w+)/g, '$2 el cual $1'), 
-          t => t.replace(/un\s+(\w+)\s+(\w+)/g, 'un $2 y $1') 
+          t => t.replace(/un\s+(\w+)\s+(\w+)/g, 'un $2 y $1'),
+          t => t.replace(/(\w+)\s+del\s+(\w+)/g, '$2 $1'),
+          t => t.replace(/(\w+)\s+al\s+(\w+)/g, '$2 $1'),
+          t => t.replace(/(\w+)\s+en\s+el\s+(\w+)/g, '$2 $1')
         ];
         
         const steps = settings.depth === 'fuerte' ? 5 : settings.depth === 'normal' ? 3 : 1; 
@@ -310,7 +374,12 @@
           if (settings.lexicalRichness) {
             for (const [word, synonyms] of Object.entries(richSynonyms)) {
               const regex = new RegExp(`\\b${word}\\b`, 'gi');
-              result = result.replace(regex, () => synonyms[Math.floor(Math.random() * synonyms.length)]);
+              result = result.replace(regex, () => {
+                if (Math.random() < 0.7) { // 70% de probabilidad de reemplazar
+                  return synonyms[Math.floor(Math.random() * synonyms.length)];
+                }
+                return word; // Mantener la palabra original
+              });
             }
           }
         }
@@ -349,7 +418,9 @@
                  'yo mismo me acuerdo de una vez que...',
                  'me pasó algo parecido el otro día...',
                  'imagínate la escena:',
-                 'recuerdo perfectamente cuando...'
+                 'recuerdo perfectamente cuando...',
+                 'no te vas a creer lo que pasó...',
+                 'fue una situación bastante curiosa...'
                ];
                sentences.splice(insertAt, 0, `Por ejemplo, ${examples[Math.floor(Math.random() * examples.length)]}`);
             }
@@ -368,7 +439,7 @@
           }
           
           if (settings.depth === 'fuerte' && Math.random() < 0.2) {
-             const pause = ['eh...', 'pues...', 'bueno...', 'digamos...', 'verá...'];
+             const pause = ['eh...', 'pues...', 'bueno...', 'digamos...', 'verá...', 'o sea...', 'este...'];
              const insertAt = Math.floor(Math.random() * sentences.length);
              sentences[insertAt] = sentences[insertAt].replace(/^/, `${pause[Math.floor(Math.random() * pause.length)]} `);
           }
@@ -407,7 +478,7 @@
                   const secondPart = processed.slice(breakPoint + 1);
                   processed = `${firstPart}. ${secondPart.charAt(0).toLowerCase() + secondPart.slice(1)}`;
               }} else if (shouldLengthen) {
-                const clauses = ['y esto es importante porque', 'lo cual significa que', 'y esto permite que', 'debido a que', 'algo que, en mi opinión,'];
+                const clauses = ['y esto es importante porque', 'lo cual significa que', 'y esto permite que', 'debido a que', 'algo que, en mi opinión,', 'lo que nos lleva a pensar que', 'dando como resultado que'];
                 processed = `${processed} ${clauses[Math.floor(Math.random() * clauses.length)]} ...`; 
               }
             }
@@ -427,17 +498,20 @@
                 const introClauses = [
                   'Aunque parezca mentira,', 'Cuando menos te lo esperas,', 
                   'Justo en ese momento,', 'Después de todo lo dicho,', 'Si bien es cierto que,',
-                  'Cabe destacar que,'
+                  'Cabe destacar que,', 'Por si fuera poco,', 'Para sorpresa de muchos,',
+                  'Contrario a lo que se piensa,', 'A juzgar por lo visto,'
                 ];
                 const clause = introClauses[Math.floor(Math.random() * introClauses.length)];
                 processed = `${clause} ${processed.charAt(0).toLowerCase() + processed.slice(1)}`;
               }
               
-              if (settings.readabilityFocus && Math.random() < 0.15) { // Mayor probabilidad de simplificar
+              if (settings.readabilityFocus && Math.random() < 0.15) {
                   const formalToInformal = {
                       "implementar": "usar", "optimizar": "mejorar", "paradigma": "enfoque",
                       "sinergia": "colaboración", "efectuar": "hacer", "procedimiento": "paso",
-                      "facilitar": "ayudar", "consecuentemente": "por eso"
+                      "facilitar": "ayudar", "consecuentemente": "por eso", "no obstante": "pero",
+                      "por consiguiente": "así que", "en consecuencia": "por lo tanto",
+                      "utilizar": "usar", "visualizar": "ver", "finalizar": "terminar"
                   };
                   for (const [formal, informal] of Object.entries(formalToInformal)) {
                       const regex = new RegExp(`\\b${formal}\\b`, 'gi');
@@ -514,7 +588,7 @@
 
         setAnalysisScore(humanQualityScore);
         return humanQualityScore;
-      }, [settings, aiConectors]);
+      }, [aiConectors]);
 
       const processText = useCallback(async () => {
         if (!inputText.trim()) {
@@ -523,21 +597,13 @@
         };
         
         setIsProcessing(true);
-        setError(null); // Limpiar errores previos
-        setProcessingProgress(0); // Resetear progreso
+        setError(null);
+        setProcessingProgress(0);
         setActiveTab('analyze');
         
         try {
-          // Simulación de progreso
           const totalSteps = 5;
-          const stepDuration = 150; // ms per step
-
-          const applyStep = async (func, stepName) => {
-            await new Promise(resolve => setTimeout(resolve, stepDuration));
-            setProcessingProgress(Math.round(((totalSteps - 4) / totalSteps) * 100)); // Progreso después de limpieza
-            let result = func(result || inputText); // Usa el resultado anterior o el input inicial
-            return result;
-          };
+          const stepDuration = 150;
 
           let processedText = inputText;
           
@@ -563,18 +629,42 @@
 
           setOutputText(processedText);
           simulateStyleAnalysis(processedText, settings);
+          
+          // Calcular estadísticas
+          const wordsBefore = inputText.split(/\s+/).filter(w => w.length > 0).length;
+          const wordsAfter = processedText.split(/\s+/).filter(w => w.length > 0).length;
+          const readability = calculateReadability(processedText);
+          
+          setStats({
+            wordsBefore,
+            wordsAfter,
+            readability
+          });
+          
+          // Guardar en historial
+          setConversionHistory(prev => [
+            {
+              id: Date.now(),
+              original: inputText.substring(0, 100) + (inputText.length > 100 ? '...' : ''),
+              result: processedText.substring(0, 100) + (processedText.length > 100 ? '...' : ''),
+              date: new Date().toLocaleString(),
+              score: analysisScore
+            },
+            ...prev.slice(0, 4) // Mantener solo los últimos 5
+          ]);
+          
           setActiveTab('review');
           
         } catch (err) {
           console.error("Error during processing:", err);
           setError("Ocurrió un error al procesar el texto. Intenta de nuevo.");
-          setOutputText(''); // Limpiar salida en caso de error
+          setOutputText('');
           setAnalysisScore(0);
         } finally {
           setIsProcessing(false);
-          setProcessingProgress(0); // Resetear progreso al finalizar
+          setProcessingProgress(0);
         }
-      }, [inputText, settings, cleanText, deepSemanticRewrite, translationSimulation, addNaturalFlow, adjustToneAndReadability, simulateStyleAnalysis]);
+      }, [inputText, settings, cleanText, deepSemanticRewrite, translationSimulation, addNaturalFlow, adjustToneAndReadability, simulateStyleAnalysis, calculateReadability]);
 
       const copyToClipboard = useCallback(() => {
         if (!outputText) return;
@@ -586,13 +676,41 @@
         });
       }, [outputText]);
 
-      const downloadText = useCallback(() => {
+      const downloadText = useCallback((format = 'txt') => {
         if (!outputText) return;
-        const blob = new Blob([outputText], { type: 'text/plain;charset=utf-8' });
+        
+        let blob, filename, type;
+        
+        if (format === 'txt') {
+          blob = new Blob([outputText], { type: 'text/plain;charset=utf-8' });
+          filename = `texto-redactado-${new Date().toISOString().split('T')[0]}.txt`;
+        } else if (format === 'doc') {
+          // Crear contenido HTML para documento de Word
+          const htmlContent = `
+            <!DOCTYPE html>
+            <html>
+            <head>
+              <meta charset="UTF-8">
+              <title>Texto Humanizado</title>
+            </head>
+            <body>
+              <div>${outputText.replace(/\n/g, '<br>')}</div>
+            </body>
+            </html>
+          `;
+          blob = new Blob([htmlContent], { type: 'application/msword' });
+          filename = `texto-redactado-${new Date().toISOString().split('T')[0]}.doc`;
+        } else if (format === 'pdf') {
+          // Para PDF necesitaríamos una librería como jsPDF
+          // Por ahora ofrecemos descargar como texto plano
+          blob = new Blob([outputText], { type: 'text/plain;charset=utf-8' });
+          filename = `texto-redactado-${new Date().toISOString().split('T')[0]}.txt`;
+        }
+        
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = `texto-redactado-${new Date().toISOString().split('T')[0]}.txt`;
+        a.download = filename;
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
@@ -607,6 +725,12 @@
         setActiveTab('write');
       }, []);
 
+      const loadFromHistory = useCallback((item) => {
+        // Esta función podría cargar el texto completo si lo guardamos
+        // Por ahora solo mostramos un mensaje
+        setError(`Texto del ${item.date} seleccionado. La funcionalidad completa de historial está en desarrollo.`);
+      }, []);
+
       // Efecto para ocultar el toast de copia
       useEffect(() => {
         if (copyFeedback) {
@@ -618,9 +742,8 @@
       // Efecto para manejar el cambio de tab
       useEffect(() => {
         if (activeTab === 'write') {
-          window.scrollTo(0, 0); // Scroll a la cima al ir a la pestaña de escritura
+          window.scrollTo(0, 0);
         } else if (activeTab === 'review') {
-           // Scroll suave al área de resultados si existe
            const outputElement = document.getElementById('output-section');
            if (outputElement) {
                outputElement.scrollIntoView({ behavior: 'smooth' });
@@ -628,7 +751,7 @@
         }
       }, [activeTab]);
 
-      // Manejo de entrada de archivo (opcional)
+      // Manejo de entrada de archivo
       const handleFileChange = (event) => {
         const file = event.target.files[0];
         if (!file) return;
@@ -695,7 +818,7 @@
                     </div>
                     <textarea
                       value={inputText}
-                      onChange={(e) => { setInputText(e.target.value); setError(null); }} // Limpiar error al escribir
+                      onChange={(e) => { setInputText(e.target.value); setError(null); }}
                       placeholder="Pega tu texto aquí o cárgalo desde un archivo..."
                       className="input-textarea w-full h-64 p-4 text-slate-700 focus:ring-primary focus:border-transparent"
                       rows="8"
@@ -716,6 +839,33 @@
                       </button>
                     </div>
                   </div>
+
+                  {/* Historial de conversiones */}
+                  {conversionHistory.length > 0 && (
+                    <div className="analysis-card p-6">
+                      <div className="flex items-center gap-2 mb-4">
+                        <svg className="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        <h3 className="text-xl font-semibold text-slate-800">Historial Reciente</h3>
+                      </div>
+                      <div className="space-y-3">
+                        {conversionHistory.map(item => (
+                          <div 
+                            key={item.id} 
+                            className="history-item p-3 bg-slate-50 rounded-lg cursor-pointer"
+                            onClick={() => loadFromHistory(item)}
+                          >
+                            <div className="flex justify-between items-start">
+                              <div className="text-sm text-slate-700 truncate">{item.original}</div>
+                              <div className="text-xs text-slate-500 whitespace-nowrap">{item.date}</div>
+                            </div>
+                            <div className="text-xs text-slate-600 mt-1">Puntuación: {item.score.toFixed(1)}% humano</div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
 
                   {/* Configuración de Humanización */}
                   <div className="analysis-card p-6">
@@ -772,7 +922,7 @@
                             <span className="tooltip">
                                 <span className="tooltiptext text-xs">{tooltip}</span>
                                 <svg className="w-3 h-3 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8.228 9c-.548.505-.902 1.284-1.095 2.114-.193.83.046 1.639.797 2.245.813.607 1.756 1.144 2.796 1.49L13.5 17.483c.171.408.455.796.818.817.362.02.659-.314.818-.712.16-.407.268-.81.362-1.222.094-.412.15-.83.15-1.25V9.342c0-.538-.109-1.059-.306-1.541-.197-.482-.486-.932-.847-1.304a7.786 7.786 0 00-1.295-1.295A4.674 4.674 0 009.876 6.75c-.715.01-1.426.145-2.07.354-.793.245-1.543.584-2.224.973" />
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8.228 9c-.548.505-.902 1.284-1.095 2.114-.193.83.046 1.639.797 2.245.813.607 1.756 1.144 2.796 1.49L13.5 17.483c.171.408.455.796.818.817.362.02.659-.314.818-.712.16-.407.268-.81.362-1.222.094-.412.150-.83.150-1.25V9.342c0-.538-.109-1.059-.306-1.541-.197-.482-.486-.932-.847-1.304a7.786 7.786 0 00-1.295-1.295A4.674 4.674 0 009.876 6.75c-.715.01-1.426.145-2.07.354-.793.245-1.543.584-2.224.973" />
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 17.75l.001-.002" />
                                 </svg>
                             </span>
@@ -828,6 +978,14 @@
                         </>
                       )}
                     </button>
+                    {!inputText.trim() && (
+                      <div className="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg text-yellow-800 text-sm">
+                        <svg className="w-5 h-5 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                        </svg>
+                        Introduce texto o carga un archivo para comenzar
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>
@@ -835,7 +993,7 @@
 
             {/* Sección de Resultados y Análisis */}
             {activeTab === 'review' && outputText && (
-              <section id="output-section" className="grid lg:grid-cols-3 gap-8">
+              <section id="output-section" className="grid lg:grid-cols-3 gap-8 fade-in">
                 <div className="lg:col-span-2">
                   <div className="analysis-card p-6">
                     <div className="flex items-center justify-between mb-4">
@@ -855,15 +1013,22 @@
                           </svg>
                           {copyFeedback ? '¡Copiado!' : 'Copiar'}
                         </button>
-                        <button
-                          onClick={downloadText}
-                          className="flex items-center gap-2 px-3 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors text-sm shadow-md"
-                        >
-                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.707.707V19a2 2 0 01-2 2z" />
-                          </svg>
-                          Descargar
-                        </button>
+                        <div className="relative group">
+                          <button className="flex items-center gap-2 px-3 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors text-sm shadow-md">
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.707.707V19a2 2 0 01-2 2z" />
+                            </svg>
+                            Descargar
+                          </button>
+                          <div className="absolute right-0 mt-1 w-48 bg-white rounded-lg shadow-lg py-2 z-10 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
+                            <button onClick={() => downloadText('txt')} className="export-option block w-full text-left px-4 py-2 text-sm text-slate-700 hover:bg-slate-100">
+                              Como archivo de texto (.txt)
+                            </button>
+                            <button onClick={() => downloadText('doc')} className="export-option block w-full text-left px-4 py-2 text-sm text-slate-700 hover:bg-slate-100">
+                              Como documento Word (.doc)
+                            </button>
+                          </div>
+                        </div>
                       </div>
                     </div>
                     
@@ -875,9 +1040,9 @@
                   </div>
                 </div>
 
-                {/* Análisis de "Humanidad" */}
-                <div className="lg:col-span-1">
-                  <div className="analysis-card p-6 sticky top-24"> {/* Sticky para mantenerlo visible */}
+                <div className="lg:col-span-1 space-y-6">
+                  {/* Análisis de "Humanidad" */}
+                  <div className="analysis-card p-6">
                     <div className="flex items-center gap-2 mb-6">
                       <svg className="w-5 h-5 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
@@ -911,6 +1076,54 @@
                       </div>
                     </div>
                   </div>
+
+                  {/* Estadísticas de mejora */}
+                  <div className="stats-card p-6 rounded-xl">
+                    <div className="flex items-center gap-2 mb-4">
+                      <svg className="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                      </svg>
+                      <h3 className="text-xl font-semibold text-slate-800">Estadísticas</h3>
+                    </div>
+                    
+                    <div className="space-y-4">
+                      <div className="flex justify-between items-center">
+                        <span className="text-slate-600">Palabras antes:</span>
+                        <span className="font-semibold">{stats.wordsBefore}</span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-slate-600">Palabras después:</span>
+                        <span className="font-semibold">{stats.wordsAfter}</span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-slate-600">Legibilidad:</span>
+                        <span className="font-semibold">{stats.readability.toFixed(1)}%</span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-slate-600">Mejora general:</span>
+                        <span className="font-semibold text-primary">+{((analysisScore / 100) * 30 + (stats.readability / 100) * 20 + (stats.wordsAfter > stats.wordsBefore ? 10 : 0)).toFixed(1)}%</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Acciones rápidas */}
+                  <div className="analysis-card p-6">
+                    <h3 className="text-lg font-semibold text-slate-800 mb-4">Acciones Rápidas</h3>
+                    <div className="space-y-3">
+                      <button
+                        onClick={() => setActiveTab('write')}
+                        className="w-full btn-secondary text-center"
+                      >
+                        Procesar otro texto
+                      </button>
+                      <button
+                        onClick={clearAll}
+                        className="w-full btn-secondary text-center"
+                      >
+                        Limpiar todo y comenzar de nuevo
+                      </button>
+                    </div>
+                  </div>
                 </div>
               </section>
             )}
@@ -940,7 +1153,7 @@
 
           {/* Toast de Copia Exitosa */}
           {copyFeedback && (
-            <div className="toast-success animate-toastIn">¡Texto copiado al portapapeles!</div>
+            <div className="toast-success">¡Texto copiado al portapapeles!</div>
           )}
 
           {/* Footer */}
