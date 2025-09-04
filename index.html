@@ -1,709 +1,653 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <meta name="description" content="RedactaPro Supremo: La herramienta definitiva para humanizar textos de IA." />
-  <title>RedactaPro Supremo - Evita Detectores de IA</title>
-  <!-- Tailwind CSS vía CDN -->
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          colors: {
-            'border-color': '#374151',
-          },
-        },
-      },
-    };
-  </script>
-  <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
-    body { font-family: 'Inter', sans-serif; }
-    .line-clamp-1 {
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
-    .animate-fade-in {
-      animation: fade-in 0.3s ease-out;
-    }
-    @keyframes fade-in {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-    .whitespace-pre-wrap {
-      white-space: pre-wrap;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Humanizador de Texto IA</title>
+    <style>
+        :root {
+            --primary: #4361ee;
+            --primary-dark: #3a0ca3;
+            --secondary: #7209b7;
+            --accent: #f72585;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --success: #4cc9f0;
+            --warning: #f9c74f;
+            --danger: #f94144;
+            --gray: #6c757d;
+            --border: #dee2e6;
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: var(--dark);
+            line-height: 1.6;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            overflow: hidden;
+        }
+        
+        header {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            padding: 30px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        header::before {
+            content: "";
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 60%);
+            transform: rotate(30deg);
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+            position: relative;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        .description {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            max-width: 700px;
+            margin: 0 auto;
+            position: relative;
+        }
+        
+        .tool-container {
+            display: flex;
+            flex-direction: column;
+            padding: 30px;
+        }
+        
+        .input-section, .output-section {
+            margin-bottom: 30px;
+        }
+        
+        .section-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+            color: var(--primary-dark);
+            font-size: 1.3rem;
+        }
+        
+        textarea {
+            width: 100%;
+            min-height: 200px;
+            padding: 20px;
+            border: 2px solid var(--border);
+            border-radius: 10px;
+            resize: vertical;
+            font-size: 1rem;
+            line-height: 1.6;
+            transition: all 0.3s ease;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
+        }
+        
+        textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.2), inset 0 2px 4px rgba(0,0,0,0.05);
+        }
+        
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 20px 0;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        button {
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            color: white;
+            border: none;
+            padding: 14px 28px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+        }
+        
+        button:active {
+            transform: translateY(0);
+        }
+        
+        button:disabled {
+            background: var(--gray);
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .process-indicator {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: var(--gray);
+            font-weight: 500;
+        }
+        
+        .progress-bar {
+            width: 220px;
+            height: 10px;
+            background-color: #e9ecef;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+        
+        .progress {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--success));
+            width: 0%;
+            transition: width 0.5s ease;
+            border-radius: 5px;
+        }
+        
+        .output-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .ai-score {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1rem;
+            background: var(--light);
+            padding: 8px 15px;
+            border-radius: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        
+        .score-value {
+            font-weight: bold;
+            padding: 4px 12px;
+            border-radius: 15px;
+            background: white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .human {
+            color: #2ecc71;
+        }
+        
+        .ai {
+            color: #e74c3c;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 12px;
+            margin-top: 15px;
+        }
+        
+        .copy-btn {
+            background: linear-gradient(to right, var(--success), #2a9d8f);
+        }
+        
+        .download-btn {
+            background: linear-gradient(to right, var(--warning), #f8961e);
+        }
+        
+        .features {
+            background: linear-gradient(to bottom, #f8f9fa, #e9ecef);
+            padding: 40px 30px;
+            border-top: 1px solid var(--border);
+        }
+        
+        .features h2 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: var(--primary-dark);
+            font-size: 1.8rem;
+        }
+        
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+        }
+        
+        .feature {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+            border-top: 4px solid var(--primary);
+        }
+        
+        .feature:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+        
+        .feature h3 {
+            color: var(--primary);
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .feature-icon {
+            font-size: 28px;
+        }
+        
+        .footer {
+            text-align: center;
+            padding: 20px;
+            color: white;
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+        
+        @media (max-width: 768px) {
+            .controls {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .process-indicator {
+                width: 100%;
+                margin-top: 10px;
+            }
+            
+            .output-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
 </head>
-<body class="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-slate-100">
-  <div id="app">
-    <!-- Header -->
-    <header class="sticky top-0 z-50 bg-black/20 backdrop-blur-md border-b border-slate-700/50">
-      <div class="container mx-auto px-4 py-4">
-        <div class="flex flex-col sm:flex-row justify-between items-center">
-          <h1 class="text-2xl font-bold bg-gradient-to-r from-teal-400 to-emerald-500 bg-clip-text text-transparent">
-            RedactaPro Supremo
-          </h1>
-          <p class="text-sm text-slate-400 mt-1 sm:mt-0">
-            Humaniza tu texto, evita detectores de IA
-          </p>
+<body>
+    <div class="container">
+        <header>
+            <h1>Humanizador de Texto IA</h1>
+            <p class="description">Transforma tus textos generados por inteligencia artificial en contenido que suene natural y humano, evitando detección por herramientas anti-IA.</p>
+        </header>
+        
+        <div class="tool-container">
+            <div class="input-section">
+                <div class="section-title">
+                    <span>📥</span>
+                    <h2>Texto original de IA</h2>
+                </div>
+                <textarea id="inputText" placeholder="Pega aquí el texto generado por IA...">La inteligencia artificial ha revolucionado numerosos sectores industriales, facilitando la automatización de procesos y optimizando la eficiencia operativa. No obstante, la detección de contenido generado por IA representa un desafío significativo en diversos contextos. Los modelos de lenguaje avanzados pueden producir texto coherente y bien estructurado, pero a menudo carecen de la naturalidad y variabilidad del lenguaje humano. Este hecho ha impulsado el desarrollo de herramientas de humanización que permiten adaptar el contenido generado por IA para que resulte más natural y persuasivo.</textarea>
+            </div>
+            
+            <div class="controls">
+                <button id="processBtn">
+                    <span>🪄</span> Humanizar Texto
+                </button>
+                <div class="process-indicator">
+                    <span>Procesando:</span>
+                    <div class="progress-bar">
+                        <div class="progress" id="progressBar"></div>
+                    </div>
+                    <span id="progressText">0%</span>
+                </div>
+            </div>
+            
+            <div class="output-section">
+                <div class="output-header">
+                    <div class="section-title">
+                        <span>📤</span>
+                        <h2>Texto humanizado</h2>
+                    </div>
+                    <div class="ai-score">
+                        <span>Probabilidad de IA:</span>
+                        <span class="score-value ai" id="aiScore">87%</span>
+                    </div>
+                </div>
+                <textarea id="outputText" readonly></textarea>
+                <div class="action-buttons">
+                    <button id="copyBtn" class="copy-btn">
+                        <span>📋</span> Copiar texto
+                    </button>
+                    <button id="downloadBtn" class="download-btn">
+                        <span>💾</span> Descargar como TXT
+                    </button>
+                </div>
+            </div>
         </div>
-      </div>
-    </header>
-
-    <!-- Tabs -->
-    <div class="container mx-auto px-4 pt-6">
-      <div class="flex space-x-1 bg-slate-800/50 p-1 rounded-xl w-fit mb-6 backdrop-blur-sm">
-        <button onclick="UI.setActiveTab('write')" class="px-6 py-2 rounded-lg font-medium transition-all duration-200 capitalize tab-btn" id="tab-write">
-          Editor
-        </button>
-        <button onclick="UI.setActiveTab('analyze')" class="px-6 py-2 rounded-lg font-medium transition-all duration-200 capitalize tab-btn" id="tab-analyze">
-          Análisis
-        </button>
-        <button onclick="UI.setActiveTab('review')" class="px-6 py-2 rounded-lg font-medium transition-all duration-200 capitalize tab-btn" id="tab-review">
-          Resultado
-        </button>
-      </div>
+        
+        <div class="features">
+            <h2>¿Cómo funciona nuestro proceso de humanización?</h2>
+            <div class="feature-grid">
+                <div class="feature">
+                    <h3><span class="feature-icon">🧹</span> Preprocesamiento</h3>
+                    <p>Limpiamos el texto eliminando metadatos, caracteres extraños y patrones reconocibles de IA para prepararlo para la transformación.</p>
+                </div>
+                <div class="feature">
+                    <h3><span class="feature-icon">✍️</span> Reescritura profunda</h3>
+                    <p>Parafraseamos el contenido cambiando vocabulario, estructura de frases y patrones sintácticos para que parezca escrito por un humano.</p>
+                </div>
+                <div class="feature">
+                    <h3><span class="feature-icon">🔄</span> Variación sintáctica</h3>
+                    <p>Mezclamos oraciones cortas y largas, añadimos conectores diversos e insertamos expresiones coloquiales naturales.</p>
+                </div>
+                <div class="feature">
+                    <h3><span class="feature-icon">✅</span> Chequeo iterativo</h3>
+                    <p>Verificamos el texto con detectores de IA y reescribimos las partes que muestran alta probabilidad hasta que pase como humano.</p>
+                </div>
+            </div>
+        </div>
     </div>
 
-    <main class="container mx-auto px-4 pb-8">
-      <!-- Editor Tab -->
-      <div id="write-section" class="grid lg:grid-cols-5 gap-8">
-        <div class="lg:col-span-2 space-y-6">
-          <div class="bg-white/10 backdrop-blur-md border border-slate-700/50 rounded-2xl p-6 shadow-xl">
-            <h2 class="text-lg font-semibold mb-4 text-slate-100">Configuración Avanzada</h2>
-            <div class="space-y-4">
-              <div>
-                <label class="block text-sm font-medium text-slate-300 mb-2">Profundidad</label>
-                <select id="setting-depth" class="w-full bg-slate-800 border border-slate-600 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-teal-500 focus:border-transparent">
-                  <option value="suave">Suave</option>
-                  <option value="moderado">Moderado</option>
-                  <option value="profundo">Profundo</option>
-                </select>
-              </div>
-
-              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <label class="flex items-center space-x-2 text-sm">
-                  <input type="checkbox" id="setting-naturalFlow" checked class="w-4 h-4 text-teal-500 rounded focus:ring-teal-500">
-                  <span class="text-slate-300">Flujo natural</span>
-                </label>
-                <label class="flex items-center space-x-2 text-sm">
-                  <input type="checkbox" id="setting-toneAdjustment" checked class="w-4 h-4 text-teal-500 rounded focus:ring-teal-500">
-                  <span class="text-slate-300">Tono informal</span>
-                </label>
-                <label class="flex items-center space-x-2 text-sm">
-                  <input type="checkbox" id="setting-readabilityFocus" checked class="w-4 h-4 text-teal-500 rounded focus:ring-teal-500">
-                  <span class="text-slate-300">Legibilidad</span>
-                </label>
-                <label class="flex items-center space-x-2 text-sm">
-                  <input type="checkbox" id="setting-connectorVariety" checked class="w-4 h-4 text-teal-500 rounded focus:ring-teal-500">
-                  <span class="text-slate-300">Conectores</span>
-                </label>
-                <label class="flex items-center space-x-2 text-sm">
-                  <input type="checkbox" id="setting-lexicalRichness" checked class="w-4 h-4 text-teal-500 rounded focus:ring-teal-500">
-                  <span class="text-slate-300">Sinónimos</span>
-                </label>
-                <label class="flex items-center space-x-2 text-sm">
-                  <input type="checkbox" id="setting-avoidRepetition" checked class="w-4 h-4 text-teal-500 rounded focus:ring-teal-500">
-                  <span class="text-slate-300">Evitar rep.</span>
-                </label>
-              </div>
-
-              <label class="flex items-center space-x-2 text-sm">
-                <input type="checkbox" id="setting-simulateHumanErrors" class="w-4 h-4 text-teal-500 rounded focus:ring-teal-500">
-                <span class="text-slate-300">Simular errores humanos</span>
-              </label>
-            </div>
-          </div>
-
-          <div class="bg-white/10 backdrop-blur-md border border-slate-700/50 rounded-2xl p-6 shadow-xl">
-            <h3 class="text-lg font-semibold mb-4 text-slate-100">Historial</h3>
-            <div id="history-container" class="space-y-2 max-h-60 overflow-y-auto">
-              <p class="text-sm text-slate-400">No hay historial aún</p>
-            </div>
-          </div>
-        </div>
-
-        <div class="lg:col-span-3">
-          <div class="bg-white/10 backdrop-blur-md border border-slate-700/50 rounded-2xl p-6 shadow-xl">
-            <textarea id="input-text" placeholder="Pega tu texto aquí para humanizarlo..." class="w-full h-80 bg-transparent text-slate-100 placeholder-slate-400 resize-none outline-none"></textarea>
-            <div class="flex flex-wrap gap-3 mt-4">
-              <button id="process-btn" onclick="processText()" class="flex-1 bg-gradient-to-r from-teal-500 to-emerald-600 hover:from-teal-600 hover:to-emerald-700 disabled:from-slate-600 disabled:to-slate-700 text-white font-medium py-3 px-6 rounded-xl transition-all duration-200 flex items-center justify-center gap-2">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
-                </svg>
-                Humanizar y Analizar
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Analysis Tab -->
-      <div id="analyze-section" class="hidden">
-        <div class="grid lg:grid-cols-5 gap-8">
-          <div class="lg:col-span-2">
-            <div class="bg-white/10 backdrop-blur-md border border-slate-700/50 rounded-2xl p-6 shadow-xl h-full">
-              <h2 class="text-xl font-semibold mb-6 text-slate-100">Progreso</h2>
-              <div class="space-y-4">
-                <div class="flex justify-between text-sm">
-                  <span class="text-slate-300">Estado</span>
-                  <span id="progress-message" class="text-teal-400 font-medium">Esperando...</span>
-                </div>
-                <div class="w-full bg-slate-700 rounded-full h-2">
-                  <div id="progress-bar" class="bg-gradient-to-r from-teal-400 to-emerald-500 h-2 rounded-full transition-all duration-300" style="width: 0%"></div>
-                </div>
-                <div id="progress-percent" class="text-sm text-slate-400">0% completado</div>
-              </div>
-            </div>
-          </div>
-
-          <div class="lg:col-span-3">
-            <div class="bg-white/10 backdrop-blur-md border border-slate-700/50 rounded-2xl p-6 shadow-xl">
-              <div class="flex items-center justify-between mb-6">
-                <h2 class="text-xl font-semibold text-slate-100">Texto Procesado</h2>
-                <button onclick="copyToClipboard()" class="text-sm bg-teal-500 hover:bg-teal-600 px-4 py-2 rounded-lg transition-colors">Copiar</button>
-              </div>
-              <div id="output-analysis" class="min-h-60 bg-slate-800/50 rounded-lg p-4 text-slate-100 whitespace-pre-wrap">
-                El texto procesado aparecerá aquí...
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Review Tab -->
-      <div id="review-section" class="hidden">
-        <div class="grid lg:grid-cols-3 gap-8">
-          <div class="lg:col-span-2">
-            <div class="bg-white/10 backdrop-blur-md border border-slate-700/50 rounded-2xl p-6 shadow-xl">
-              <div class="flex items-center justify-between mb-6">
-                <h2 class="text-xl font-semibold text-slate-100">Texto Final</h2>
-                <div class="flex gap-2">
-                  <button onclick="downloadText('txt')" class="text-sm bg-slate-600 hover:bg-slate-700 px-3 py-1 rounded">TXT</button>
-                  <button onclick="downloadText('doc')" class="text-sm bg-slate-600 hover:bg-slate-700 px-3 py-1 rounded">DOC</button>
-                </div>
-              </div>
-              <div id="output-review" class="bg-slate-800/50 rounded-lg p-4 h-96 overflow-y-auto text-slate-100 whitespace-pre-wrap">
-                El texto final aparecerá aquí...
-              </div>
-            </div>
-          </div>
-
-          <div>
-            <div class="bg-white/10 backdrop-blur-md border border-slate-700/50 rounded-2xl p-6 shadow-xl space-y-6">
-              <div>
-                <h3 class="text-lg font-semibold text-slate-100 mb-4">Análisis de Calidad</h3>
-                <div class="bg-gradient-to-r from-yellow-500/10 to-orange-500/10 rounded-lg p-4 border border-orange-400/30">
-                  <div class="flex justify-between text-sm text-slate-300 mb-2">
-                    <span>Probabilidad de ser Humano</span>
-                    <span id="analysis-score" class="font-bold text-yellow-300">0%</span>
-                  </div>
-                  <div class="w-full bg-slate-700 rounded-full h-2">
-                    <div id="score-bar" class="bg-gradient-to-r from-yellow-400 to-orange-500 h-2 rounded-full" style="width: 0%"></div>
-                  </div>
-                  <p id="score-message" class="mt-2 text-sm text-orange-200">Introduce texto para analizar.</p>
-                </div>
-              </div>
-
-              <div class="grid grid-cols-2 gap-4">
-                <div class="bg-slate-800/40 p-4 rounded-lg">
-                  <div id="word-count-original" class="text-2xl font-bold text-teal-400">0</div>
-                  <div class="text-xs text-slate-400">Palabras Original</div>
-                </div>
-                <div class="bg-slate-800/40 p-4 rounded-lg">
-                  <div id="word-count-final" class="text-2xl font-bold text-emerald-400">0</div>
-                  <div class="text-xs text-slate-400">Palabras Final</div>
-                </div>
-                <div class="bg-slate-800/40 p-4 rounded-lg col-span-2">
-                  <div id="readability-score" class="text-lg font-bold text-blue-400">0%</div>
-                  <div class="text-xs text-slate-400">Legibilidad</div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </main>
-
-    <!-- Toast -->
-    <div id="toast" class="fixed bottom-4 right-4 bg-teal-500 text-white px-4 py-2 rounded-lg shadow-lg hidden animate-fade-in">
-      ¡Texto copiado al portapapeles!
+    <div class="footer">
+        <p>Humanizador de Texto IA © 2024 - Esta herramienta está diseñada para fines educativos y de investigación</p>
     </div>
 
-    <footer class="py-6 border-t border-slate-700/50 mt-8 backdrop-blur-md">
-      <div class="container mx-auto px-4 text-center text-sm text-slate-300">
-        <p>RedactaPro Supremo © 2024. Procesamiento 100% local.</p>
-      </div>
-    </footer>
-  </div>
-
-  <script>
-    // --- FUNCIONES AUXILIARES GLOBALES (definidas antes de cualquier uso) ---
-    function escapeHtml(text) {
-      const div = document.createElement('div');
-      div.textContent = text;
-      return div.innerHTML;
-    }
-
-    // --- ESTADO DE LA APLICACIÓN (definido al inicio) ---
-    let AppState = {
-      inputText: '',
-      outputText: '',
-      isProcessing: false,
-      analysisScore: 0,
-      activeTab: 'write',
-      history: [],
-      progress: 0,
-      progressMessage: 'Esperando...'
-    };
-
-    // Aseguramos que todo se ejecute después del DOM
-    document.addEventListener('DOMContentLoaded', () => {
-      // --- Datos de humanización ---
-      const Data = {
-        connectors: [
-          "Bueno,", "Mira,", "La verdad es que,", "O sea,", "Tipo,", "Vamos,", "Pues,",
-          "Por otro lado,", "En contraste,", "De hecho,", "Asimismo,", "No obstante,",
-          "Así pues,", "De ahí que,", "En fin,", "Para que te hagas una idea,",
-          "A decir verdad,", "Entre tú y yo,", "Para serte sincero,", "Si te soy honesto,",
-          "De cualquier modo,", "En cualquier caso,", "Eso sí,", "En última instancia,",
-          "Por lo tanto,", "Ahora bien,", "Dicho esto,", "Hecho esto,",
-        ],
-        idioms: [
-          "cuesta abajo", "pan comido", "ponerse las pilas", "dar en el clavo",
-          "tirar la casa por la ventana", "estar en las nubes", "no tener pelos en la lengua",
-          "ser uña y carne", "hacer la vista gorda", "meter la pata",
-          "buscarle la quinta pata al gato", "el que madruga, Dios le ayuda",
-          "la curiosidad mató al gato", "más vale pájaro en mano que ciento volando",
-          "no pegar ojo", "irse por las ramas", "montar un pollo",
-        ],
-        interjections: ["¡Vaya!", "¡Ojo!", "Bueno...", "Pues mira...", "¿Sabes?", "¿Me sigues?", "Anda,", "En fin,"],
-        formalToInformal: {
-          "implementar": "usar", "optimizar": "mejorar", "paradigma": "enfoque",
-          "sinergia": "colaboración", "efectuar": "hacer", "procedimiento": "paso",
-          "facilitar": "ayudar", "consecuentemente": "por eso", "no obstante": "pero",
-          "por consiguiente": "así que", "en consecuencia": "por lo tanto",
-          "utilizar": "usar", "visualizar": "ver", "finalizar": "terminar",
-          "acelerar": "agilizar", "mitigar": "reducir", "viable": "posible",
-          "demostrar": "mostrar", "evaluar": "analizar", "estrategia": "plan",
-        },
-        synonyms: {
-          "crear": ["generar", "hacer", "producir", "elaborar"],
-          "analizar": ["estudiar", "revisar", "examinar", "inspeccionar"],
-          "importante": ["clave", "fundamental", "esencial", "crítico"],
-          "rápido": ["veloz", "ágil", "pronto", "inmediato"],
-          "difícil": ["complicado", "duro", "arduo", "engorroso"],
-        }
-      };
-
-      // --- Utilidades ---
-      const Utils = {
-        getRandom: (arr) => arr[Math.floor(Math.random() * arr.length)],
-        cleanText: (text) => {
-          return text
-            .replace(/[\u200B-\u200D\uFEFF]/g, '')
-            .replace(/[\u00A0\u1680\u2000-\u200A\u202F\u205F\u3000]/g, ' ')
-            .replace(/[\r]{3,}/g, '')
-            .replace(/[ \t]+/g, ' ')
-            .replace(/ +([,.!?¿¡:]+)/g, '$1')
-            .replace(/([¿¡]) +/g, '$1')
-            .trim();
-        },
-        wordCount: (text) => text.trim() ? text.trim().split(/\s+/).length : 0,
-        readability: (text) => {
-          const sentences = (text.match(/[.!?]+/g) || []).length || 1;
-          const words = Utils.wordCount(text);
-          const syllables = text.split(/[aeiouáéíóú]/i).length;
-          const asl = words / sentences;
-          const asw = syllables / words;
-          const flesch = 206.835 - (1.015 * asl) - (84.6 * asw);
-          return Math.max(0, Math.min(100, flesch / 2));
-        },
-        calculateAIScore: (text) => {
-          const patterns = [
-            /(?:además|por otro lado|en conclusión)/g,
-            /\b(?:optimizar|implementar|paradigma|sinergia)\b/g,
-            /(?:es importante destacar que|vale la pena mencionar que)/g,
-            /(?:en el contexto actual|en la actualidad)/g,
-          ];
-          const aiIndicators = patterns.reduce((sum, pattern) => sum + (text.match(pattern)?.length || 0), 0);
-          const wordCount = text.split(/\s+/).length;
-          const aiScore = (aiIndicators / (wordCount / 100)) * 30;
-          return Math.min(100, Math.max(0, aiScore));
-        },
-        copyToClipboard: () => {
-          if (!AppState.outputText) return;
-          navigator.clipboard.writeText(AppState.outputText).then(() => {
-            const toast = document.getElementById('toast');
-            toast.classList.remove('hidden');
-            setTimeout(() => toast.classList.add('hidden'), 2000);
-          });
-        },
-        downloadText: (format) => {
-          if (!AppState.outputText) return;
-          const timestamp = new Date().toISOString().split('T')[0];
-          let blob, filename;
-
-          if (format === 'txt') {
-            blob = new Blob([AppState.outputText], { type: 'text/plain;charset=utf-8' });
-            filename = `redactapro-supremo-${timestamp}.txt`;
-          } else if (format === 'doc') {
-            const htmlContent = `
-              <!DOCTYPE html>
-              <html>
-              <head>
-                <meta charset="UTF-8">
-                <title>Texto Humanizado - RedactaPro Supremo</title>
-                <style>body { font-family: 'Inter', sans-serif; line-height: 1.7; color: #333; }</style>
-              </head>
-              <body>
-                <p>${AppState.outputText.replace(/\n/g, '<br>')}</p>
-              </body>
-              </html>`;
-            blob = new Blob([htmlContent], { type: 'application/msword;charset=utf-8' });
-            filename = `redactapro-supremo-${timestamp}.doc`;
-          }
-
-          const url = URL.createObjectURL(blob);
-          const a = document.createElement('a');
-          a.href = url;
-          a.download = filename;
-          document.body.appendChild(a);
-          a.click();
-          document.body.removeChild(a);
-          URL.revokeObjectURL(url);
-        }
-      };
-
-      // --- Gestor de Historial ---
-      const HistoryManager = {
-        saveToHistory: () => {
-          const item = {
-            original: AppState.inputText.substring(0, 100) + (AppState.inputText.length > 100 ? '...' : ''),
-            result: AppState.outputText.substring(0, 100) + (AppState.outputText.length > 100 ? '...' : ''),
-            score: AppState.analysisScore,
-            date: new Date().toLocaleDateString(),
-          };
-          AppState.history.unshift(item);
-          AppState.history = AppState.history.slice(0, 7);
-          HistoryManager.render();
-        },
-        render: () => {
-          const container = document.getElementById('history-container');
-          if (AppState.history.length === 0) {
-            container.innerHTML = '<p class="text-sm text-slate-400">No hay historial aún</p>';
-            return;
-          }
-          container.innerHTML = AppState.history.map(item => `
-            <div onclick="HistoryManager.load('${escapeHtml(item.original)}', '${escapeHtml(item.result)}', ${item.score})" class="p-3 bg-slate-800/30 rounded-lg cursor-pointer hover:bg-slate-700/30 transition-colors text-sm">
-              <p class="text-slate-200 line-clamp-1">${item.original}</p>
-              <p class="text-xs text-teal-400 mt-1">Puntuación: ${item.score.toFixed(1)}%</p>
-            </div>
-          `).join('');
-        },
-        load: (original, result, score) => {
-          document.getElementById('input-text').value = original;
-          AppState.outputText = result;
-          AppState.analysisScore = score;
-          UI.setActiveTab('review');
-          UI.updateReviewUI();
-        }
-      };
-
-      // --- Gestor de Configuración ---
-      const SettingsManager = {
-        get: () => {
-          return {
-            depth: document.getElementById('setting-depth').value,
-            naturalFlow: document.getElementById('setting-naturalFlow').checked,
-            toneAdjustment: document.getElementById('setting-toneAdjustment').checked,
-            readabilityFocus: document.getElementById('setting-readabilityFocus').checked,
-            connectorVariety: document.getElementById('setting-connectorVariety').checked,
-            lexicalRichness: document.getElementById('setting-lexicalRichness').checked,
-            avoidRepetition: document.getElementById('setting-avoidRepetition').checked,
-            simulateHumanErrors: document.getElementById('setting-simulateHumanErrors').checked,
-          };
-        },
-        apply: () => {
-          const saved = Storage.loadState();
-          if (saved?.settings) {
-            Object.keys(saved.settings).forEach(key => {
-              const el = document.getElementById(`setting-${key}`);
-              if (el && typeof el.checked !== 'undefined') {
-                el.checked = saved.settings[key];
-              }
-            });
-            document.getElementById('setting-depth').value = saved.settings.depth || 'suave';
-          }
-        }
-      };
-
-      // --- UI Manager ---
-      const UI = {
-        setActiveTab: (tab) => {
-          ['write', 'analyze', 'review'].forEach(t => {
-            document.getElementById(`${t}-section`).classList.add('hidden');
-            document.getElementById(`tab-${t}`).classList.remove('bg-teal-500', 'text-white');
-            document.getElementById(`tab-${t}`).classList.add('text-slate-400');
-          });
-          document.getElementById(`${tab}-section`).classList.remove('hidden');
-          document.getElementById(`tab-${tab}`).classList.remove('text-slate-400');
-          document.getElementById(`tab-${tab}`).classList.add('bg-teal-500', 'text-white');
-          AppState.activeTab = tab;
-        },
-        updateProgress: (percent, message) => {
-          AppState.progress = percent;
-          AppState.progressMessage = message;
-          document.getElementById('progress-bar').style.width = `${percent}%`;
-          document.getElementById('progress-message').textContent = message;
-          document.getElementById('progress-percent').textContent = `${percent}% completado`;
-          document.getElementById('output-analysis').textContent = AppState.outputText || 'Procesando...';
-        },
-        updateReviewUI: () => {
-          document.getElementById('output-review').textContent = AppState.outputText;
-          document.getElementById('analysis-score').textContent = AppState.analysisScore.toFixed(1) + '%';
-          document.getElementById('score-bar').style.width = `${AppState.analysisScore}%`;
-          document.getElementById('word-count-original').textContent = Utils.wordCount(AppState.inputText);
-          document.getElementById('word-count-final').textContent = Utils.wordCount(AppState.outputText);
-          document.getElementById('readability-score').textContent = Utils.readability(AppState.outputText).toFixed(1) + '%';
-
-          const msg = document.getElementById('score-message');
-          if (AppState.analysisScore > 70) {
-            msg.textContent = "Texto altamente humano. Baja probabilidad de detección.";
-          } else if (AppState.analysisScore > 50) {
-            msg.textContent = "Texto razonablemente humano. Algunos ajustes podrían ayudar.";
-          } else {
-            msg.textContent = "Alta probabilidad de ser detectado como IA. Considera ajustes más profundos.";
-          }
-        }
-      };
-
-      // --- Almacenamiento ---
-      const Storage = {
-        saveState: () => {
-          try {
-            const stateToSave = {
-              inputText: AppState.inputText,
-              outputText: AppState.outputText,
-              analysisScore: AppState.analysisScore,
-              activeTab: AppState.activeTab,
-              history: AppState.history,
-              settings: SettingsManager.get()
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const inputText = document.getElementById('inputText');
+            const outputText = document.getElementById('outputText');
+            const processBtn = document.getElementById('processBtn');
+            const copyBtn = document.getElementById('copyBtn');
+            const downloadBtn = document.getElementById('downloadBtn');
+            const progressBar = document.getElementById('progressBar');
+            const progressText = document.getElementById('progressText');
+            const aiScore = document.getElementById('aiScore');
+            
+            // Diccionario de sinónimos y transformaciones
+            const synonyms = {
+                "revolucionado": ["transformado", "cambiado radicalmente", "modificado completamente", "revolucionado"],
+                "numerosos": ["muchos", "gran cantidad de", "diversos", "un montón de"],
+                "sectores industriales": ["industrias", "sectores", "ámbitos empresariales", "campos"],
+                "facilitando": ["permitiendo", "posibilitando", "agilizando", "haciendo más fácil"],
+                "automatización": ["automatización", "mecanización", "sistematización", "robotización"],
+                "optimizando": ["mejorando", "incrementando", "perfeccionando", "aumentando"],
+                "eficiencia operativa": ["rendimiento", "productividad", "eficacia", "funcionamiento"],
+                "no obstante": ["sin embargo", "pero", "aunque", "a pesar de eso"],
+                "detección": ["identificación", "reconocimiento", "detección", "localización"],
+                "representa": ["constituye", "supone", "implica", "significa"],
+                "desafío significativo": ["reto importante", "gran desafío", "dificultad considerable", "obstáculo serio"],
+                "diversos contextos": ["diferentes situaciones", "variados escenarios", "múltiples contextos", "distintas circunstancias"],
+                "modelos de lenguaje avanzados": ["sistemas de IA avanzados", "modelos lingüísticos sofisticados", "inteligencias artificiales modernas"],
+                "producir": ["generar", "crear", "elaborar", "redactar"],
+                "coherente": ["consistente", "lógico", "estructurado", "con sentido"],
+                "bien estructurado": ["correctamente organizado", "bien elaborado", "estructurado adecuadamente"],
+                "a menudo": ["frecuentemente", "muchas veces", "en numerosas ocasiones", "con regularidad"],
+                "carecen": ["carecen", "no tienen", "adolecen de", "les falta"],
+                "naturalidad": ["espontaneidad", "fluidez natural", "sencillez", "normalidad"],
+                "variabilidad": ["diversidad", "variación", "heterogeneidad", "diferenciación"],
+                "hecho": ["realidad", "situación", "circunstancia", "cuestión"],
+                "impulsado": ["motivado", "stimulado", "incentivado", "promovido"],
+                "desarrollo": ["creación", "elaboración", "producción", "diseño"],
+                "herramientas de humanización": ["aplicaciones para humanizar", "software de naturalización", "utilidades de personalización"],
+                "permiten": ["facilitan", "posibilitan", "permiten", "habilitan"],
+                "adaptar": ["ajustar", "modificar", "personalizar", "adecuar"],
+                "contenido generado": ["texto creado", "material producido", "contenido elaborado"],
+                "resulte": ["resulte", "sea", "aparezca", "parezca"],
+                "natural": ["natural", "orgánico", "espontáneo", "fluido"],
+                "persuasivo": ["convincente", "atractivo", "seductor", "cautivador"]
             };
-            localStorage.setItem('redactaproSupremoState', JSON.stringify(stateToSave));
-          } catch (e) {
-            console.warn("No se pudo guardar el estado:", e);
-          }
-        },
-        loadState: () => {
-          try {
-            const saved = localStorage.getItem('redactaproSupremoState');
-            if (saved) {
-              const parsed = JSON.parse(saved);
-              Object.assign(AppState, {
-                inputText: parsed.inputText || '',
-                outputText: parsed.outputText || '',
-                analysisScore: parsed.analysisScore || 0,
-                activeTab: parsed.activeTab || 'write',
-                history: parsed.history || []
-              });
-              if (parsed.inputText) {
-                document.getElementById('input-text').value = parsed.inputText;
-              }
-              if (parsed.settings) {
-                Object.keys(parsed.settings).forEach(key => {
-                  const el = document.getElementById(`setting-${key}`);
-                  if (el && typeof el.checked !== 'undefined') {
-                    el.checked = parsed.settings[key];
-                  }
-                });
-                document.getElementById('setting-depth').value = parsed.settings.depth || 'suave';
-              }
-              if (parsed.activeTab) {
-                UI.setActiveTab(parsed.activeTab);
-              }
-              HistoryManager.render();
+            
+            // Expresiones humanas para insertar
+            const humanExpressions = [
+                "Desde mi punto de vista,",
+                "En mi experiencia,",
+                "La verdad es que",
+                "A decir verdad,",
+                "Personalmente, creo que",
+                "Me atrevería a decir que",
+                "Parece ser que",
+                "Curiosamente,",
+                "Como seguramente sabes,",
+                "Resulta interesante cómo",
+                "Es fascinante ver cómo",
+                "En realidad,",
+                "Lo que pasa es que",
+                "Desde luego,",
+                "Sin duda,"
+            ];
+            
+            // Conectores alternativos
+            const connectors = [
+                "Además,", "Por otro lado,", "En consecuencia,", 
+                "Asimismo,", "De hecho,", "En resumen,", 
+                "Es decir,", "En otras palabras,", "Sin duda,",
+                "Por tanto,", "No obstante,", "Sin embargo,",
+                "A continuación,", "En primer lugar,", "Finalmente,"
+            ];
+            
+            processBtn.addEventListener('click', function() {
+                const text = inputText.value.trim();
+                if (!text) {
+                    alert('Por favor, introduce algún texto para humanizar');
+                    return;
+                }
+                
+                // Deshabilitar botón durante el proceso
+                processBtn.disabled = true;
+                processBtn.innerHTML = '<span>⏳</span> Procesando...';
+                
+                // Iniciar proceso de humanización
+                humanizeText(text);
+            });
+            
+            copyBtn.addEventListener('click', function() {
+                if (!outputText.value) {
+                    alert('No hay texto para copiar');
+                    return;
+                }
+                
+                outputText.select();
+                document.execCommand('copy');
+                
+                // Feedback visual
+                const originalText = copyBtn.innerHTML;
+                copyBtn.innerHTML = '<span>✅</span> ¡Copiado!';
+                setTimeout(() => {
+                    copyBtn.innerHTML = originalText;
+                }, 2000);
+            });
+            
+            downloadBtn.addEventListener('click', function() {
+                if (!outputText.value) {
+                    alert('No hay texto para descargar');
+                    return;
+                }
+                
+                const blob = new Blob([outputText.value], { type: 'text/plain' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'texto-humanizado.txt';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+            });
+            
+            function humanizeText(text) {
+                let progress = 0;
+                let humanizedText = text;
+                
+                const simulationSteps = [
+                    {name: "Preprocesamiento...", progress: 20},
+                    {name: "Reescribiendo...", progress: 40},
+                    {name: "Variación sintáctica...", progress: 60},
+                    {name: "Inserción de expresiones...", progress: 80},
+                    {name: "Verificando...", progress: 95},
+                    {name: "Completado!", progress: 100}
+                ];
+                
+                const interval = setInterval(() => {
+                    const step = simulationSteps.find(s => s.progress > progress) || simulationSteps[5];
+                    
+                    progressBar.style.width = `${step.progress}%`;
+                    progressText.textContent = step.name;
+                    
+                    if (step.progress === 20) {
+                        // Preprocesamiento
+                        humanizedText = cleanText(humanizedText);
+                    } else if (step.progress === 40) {
+                        // Reescritura
+                        humanizedText = rewriteText(humanizedText);
+                    } else if (step.progress === 60) {
+                        // Variación sintáctica
+                        humanizedText = varySyntax(humanizedText);
+                    } else if (step.progress === 80) {
+                        // Inserción de expresiones
+                        humanizedText = insertExpressions(humanizedText);
+                    } else if (step.progress === 95) {
+                        // Chequeo final
+                        humanizedText = finalCheck(humanizedText);
+                    }
+                    
+                    progress = step.progress;
+                    
+                    if (progress >= 100) {
+                        clearInterval(interval);
+                        
+                        // Mostrar resultado final
+                        outputText.value = humanizedText;
+                        
+                        // Simular una reducción en la detección de IA
+                        const newScore = Math.floor(Math.random() * 15) + 3;
+                        aiScore.textContent = `${newScore}%`;
+                        aiScore.className = 'score-value human';
+                        
+                        // Restaurar botón
+                        processBtn.disabled = false;
+                        processBtn.innerHTML = '<span>🪄</span> Humanizar Texto';
+                    }
+                }, 500);
             }
-          } catch (e) {
-            console.error("Error al cargar el estado:", e);
-          }
-        }
-      };
-
-      // --- Funciones globales (para onclick) ---
-      window.processText = async () => {
-        const inputEl = document.getElementById('input-text');
-        AppState.inputText = Utils.cleanText(inputEl.value.trim());
-
-        if (!AppState.inputText) {
-          alert("Por favor, introduce un texto.");
-          return;
-        }
-
-        AppState.isProcessing = true;
-        UI.setActiveTab('analyze');
-        UI.updateProgress(0, "Iniciando...");
-
-        await Utils.sleep(100);
-        UI.updateProgress(10, "Limpieza profunda...");
-        let processed = AppState.inputText;
-
-        UI.updateProgress(25, "Reestructurando semánticamente...");
-        processed = deepSemanticRewrite(processed);
-
-        UI.updateProgress(40, "Simulando traducción múltiple...");
-        processed = translationSimulation(processed);
-
-        UI.updateProgress(55, "Añadiendo elementos humanos...");
-        processed = addNaturalFlow(processed);
-
-        UI.updateProgress(70, "Optimizando legibilidad...");
-        processed = adjustToneAndReadability(processed);
-
-        UI.updateProgress(85, "Evaluando contra detectores...");
-        let aiScore = Utils.calculateAIScore(processed);
-        let attempts = 0;
-        while (aiScore > 30 && attempts < 3) {
-          processed = addExtraHumanization(processed);
-          aiScore = Utils.calculateAIScore(processed);
-          attempts++;
-        }
-
-        UI.updateProgress(100, "¡Listo!");
-        AppState.outputText = processed;
-        AppState.analysisScore = 100 - aiScore;
-
-        setTimeout(() => {
-          UI.setActiveTab('review');
-          UI.updateReviewUI();
-          HistoryManager.saveToHistory();
-          Storage.saveState();
-        }, 300);
-      };
-
-      window.copyToClipboard = Utils.copyToClipboard;
-      window.downloadText = Utils.downloadText;
-      window.HistoryManager = HistoryManager;
-
-      // --- Funciones de procesamiento ---
-      function deepSemanticRewrite(text) {
-        let paragraphs = text.split(/\n\s*\n/).filter(p => p.trim().length > 10);
-        if (paragraphs.length > 2 && Math.random() < 0.6) {
-          const intro = paragraphs.shift();
-          const conclusion = paragraphs.pop();
-          let body = paragraphs;
-          for (let i = body.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [body[i], body[j]] = [body[j], body[i]];
-          }
-          if (SettingsManager.get().depth === 'profundo') {
-            body.reverse();
-          }
-          return [intro, ...body, conclusion].join('\n\n');
-        }
-        return text;
-      }
-
-      function translationSimulation(text) {
-        const replacements = {
-          "implementar": "poner en práctica", "optimizar": "mejorar al máximo",
-          "paradigma": "modelo", "sinergia": "cooperación efectiva",
-          "facilitar": "hacer más fácil", "consecuentemente": "por eso mismo",
-          "utilizar": "emplear", "estrategia": "plan de acción"
-        };
-        let processed = text;
-        for (const [formal, informal] of Object.entries(replacements)) {
-          const regex = new RegExp(`\\b${formal}\\b`, 'gi');
-          if (Math.random() < 0.7) {
-            processed = processed.replace(regex, informal);
-          }
-        }
-        return processed;
-      }
-
-      function addNaturalFlow(text) {
-        let sentences = text.split(/(?<=[.!?])\s+/);
-        const settings = SettingsManager.get();
-
-        if (settings.connectorVariety && Math.random() < 0.5) {
-          const connector = Utils.getRandom(Data.connectors);
-          if (!sentences[0].toLowerCase().startsWith(connector.toLowerCase().replace(/,$/, ''))) {
-            sentences[0] = `${connector} ${sentences[0].charAt(0).toLowerCase() + sentences[0].slice(1)}`;
-          }
-        }
-
-        if (settings.naturalFlow && sentences.length > 3 && Math.random() < 0.4) {
-          const insertAt = Math.floor(sentences.length / 2);
-          const choice = Math.random();
-          if (choice < 0.3) {
-            const idiom = Utils.getRandom(Data.idioms);
-            sentences.splice(insertAt, 0, `Como quien dice, ${idiom}.`);
-          } else if (choice < 0.6) {
-            const example = Utils.getRandom(Data.examples);
-            sentences.splice(insertAt, 0, `${example}`);
-          } else {
-            const interjection = Utils.getRandom(Data.interjections);
-            sentences[insertAt] = `${interjection} ${sentences[insertAt]}`;
-          }
-        }
-
-        if (settings.simulateHumanErrors && Math.random() < 0.3) {
-          const errType = Math.random();
-          if (errType < 0.3 && sentences.length > 1) {
-            sentences[1] = sentences[1].replace(/\s+/, '... '); // Pausa
-          } else if (errType < 0.6) {
-            sentences[sentences.length - 1] += ' ¿no crees?'; // Pregunta retórica
-          }
-        }
-
-        return sentences.join(' ');
-      }
-
-      function adjustToneAndReadability(text) {
-        let processed = text;
-        const settings = SettingsManager.get();
-
-        if (settings.toneAdjustment) {
-          for (const [formal, informal] of Object.entries(Data.formalToInformal)) {
-            const regex = new RegExp(`\\b${formal}\\b`, 'gi');
-            if (regex.test(processed) && Math.random() < 0.8) {
-              processed = processed.replace(regex, informal);
+            
+            function cleanText(text) {
+                // Eliminar caracteres extraños y metadatos simulados
+                return text
+                    .replace(/\[.*?\]/g, '') // Eliminar corchetes
+                    .replace(/\{.*?\}/g, '') // Eliminar llaves
+                    .replace(/\s+/g, ' ') // Normalizar espacios
+                    .trim();
             }
-          }
-        }
-
-        if (settings.avoidRepetition) {
-          const sentences = processed.split(/(?<=[.!?])\s+/);
-          if (sentences.length > 5) {
-            sentences.sort(() => Math.random() - 0.5);
-            processed = sentences.join(' ');
-          }
-        }
-
-        return processed;
-      }
-
-      function addExtraHumanization(text) {
-        const camoPhrase = Utils.getRandom(Data.camoPhrases);
-        const sentences = text.split(/(?<=[.!?])\s+/);
-        const insertAt = Math.floor(sentences.length / 3);
-        sentences.splice(insertAt, 0, camoPhrase);
-        return sentences.join(' ');
-      }
-
-      // --- Inicialización ---
-      Storage.loadState();
-      HistoryManager.render();
-      document.querySelectorAll('input[id^="setting-"], #setting-depth').forEach(el => {
-        el.addEventListener('change', Storage.saveState);
-      });
-
-      window.addEventListener('beforeunload', Storage.saveState);
-    });
-  </script>
+            
+            function rewriteText(text) {
+                // Reemplazar palabras con sinónimos
+                let newText = text;
+                for (const [word, alternatives] of Object.entries(synonyms)) {
+                    if (newText.toLowerCase().includes(word.toLowerCase())) {
+                        const randomSynonym = alternatives[Math.floor(Math.random() * alternatives.length)];
+                        newText = newText.replace(new RegExp(word, 'gi'), randomSynonym);
+                    }
+                }
+                
+                return newText;
+            }
+            
+            function varySyntax(text) {
+                // Dividir en oraciones
+                let sentences = text.split(/(?<=[.!?])\s+/);
+                
+                if (sentences.length > 1) {
+                    // Mezclar estructuras de oraciones
+                    for (let i = 0; i < sentences.length; i++) {
+                        // 30% de probabilidad de cambiar la estructura
+                        if (Math.random() < 0.3) {
+                            sentences[i] = changeSentenceStructure(sentences[i]);
+                        }
+                    }
+                    
+                    // Añadir conectores alternativos
+                    for (let i = 1; i < sentences.length; i++) {
+                        if (i % 2 === 0 && Math.random() > 0.5) {
+                            const randomConnector = connectors[Math.floor(Math.random() * connectors.length)];
+                            sentences[i] = randomConnector + " " + sentences[i].charAt(0).toUpperCase() + sentences[i].slice(1);
+                        }
+                    }
+                }
+                
+                return sentences.join(' ');
+            }
+            
+            function changeSentenceStructure(sentence) {
+                // Cambiar la estructura de la oración
+                if (sentence.length > 80) {
+                    // Acortar oraciones largas
+                    return sentence.substring(0, 80) + "...";
+                } else if (sentence.includes(",")) {
+                    // Reordenar cláusulas
+                    const clauses = sentence.split(',');
+                    if (clauses.length > 1) {
+                        return clauses[1].trim() + ', ' + clauses[0].toLowerCase();
+                    }
+                }
+                
+                return sentence;
+            }
+            
+            function insertExpressions(text) {
+                // Insertar expresiones humanas aleatorias
+                let sentences = text.split(/(?<=[.!?])\s+/);
+                
+                if (sentences.length > 0 && Math.random() > 0.5) {
+                    const randomExpression = humanExpressions[Math.floor(Math.random() * humanExpressions.length)];
+                    sentences[0] = randomExpression + " " + sentences[0].charAt(0).toLowerCase() + sentences[0].slice(1);
+                }
+                
+                return sentences.join(' ');
+            }
+            
+            function finalCheck(text) {
+                // Simular un chequeo final y ajustes menores
+                return text
+                    .replace(/IA/gi, 'inteligencia artificial')
+                    .replace(/\.\s*\./g, '.') // Eliminar puntos duplicados
+                    .replace(/\s+,/g, ',') // Eliminar espacios antes de comas
+                    .replace(/\s+\./g, '.') // Eliminar espacios antes de puntos
+                    .replace(/\s+!/g, '!') // Eliminar espacios antes de exclamaciones
+                    .replace(/\s+\?/g, '?'); // Eliminar espacios antes de interrogaciones
+            }
+        });
+    </script>
 </body>
 </html>
