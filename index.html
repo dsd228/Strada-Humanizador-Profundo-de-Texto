@@ -3,17 +3,12 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="description" content="RedactaPro: editor de texto profesional para mejorar tu estilo de escritura académica y técnica." />
-  <title>RedactaPro - Editor de Texto Profesional</title>
+  <meta name="description" content="RedactaPro: editor de texto profesional para mejorar tu estilo de escritura académica y técnica, evadiendo detectores de IA." />
+  <title>RedactaPro - Anti-Detector IA</title>
   
-  <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
-  
-  <!-- React -->
   <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
   <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-  
-  <!-- Babel -->
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 
   <style>
@@ -86,11 +81,13 @@
       background: #ecfdf5;
       border-left: 3px solid #059669;
     }
-    
-    /* Ocultar cualquier rastro de React o Babel */
-    #root, body, html {
-      margin: 0;
-      padding: 0;
+
+    /* Ajustes para el análisis */
+    .analysis-meter-bg {
+      background: linear-gradient(to right, #e2e8f0, #cbd5e1);
+    }
+    .analysis-meter-fill {
+      background: linear-gradient(to right, #34d399, #10b981);
     }
   </style>
 </head>
@@ -98,24 +95,68 @@
   <div id="editor-container"></div>
 
   <script type="text/babel">
-    const { useState, useRef } = React;
+    const { useState, useRef, useEffect } = React;
 
     const RedactaPro = () => {
       const [inputText, setInputText] = useState('');
       const [outputText, setOutputText] = useState('');
       const [isProcessing, setIsProcessing] = useState(false);
       const [copyFeedback, setCopyFeedback] = useState(false);
-      const [analysisScore, setAnalysisScore] = useState(100);
+      const [analysisScore, setAnalysisScore] = useState(0); // Inicializado a 0
       const [activeTab, setActiveTab] = useState('write');
       const [settings, setSettings] = useState({
-        depth: 'profundo',
+        depth: 'profundo', // 'suave', 'normal', 'fuerte'
         styleVariation: true,
         naturalFlow: true,
         toneAdjustment: true,
-        readabilityFocus: true
+        readabilityFocus: true,
+        // Nuevos ajustes para evadir detectores
+        sentenceLengthVariation: true,
+        connectorVariety: true,
+        lexicalRichness: true,
+        avoidRepetition: true,
       });
       
       const outputRef = useRef(null);
+
+      // === LISTAS DE ELEMENTOS PARA HUMANIZAR ===
+      // Expandidas para mayor variedad
+      const connectors = [
+        'Bueno,', 'Mira,', 'La verdad es que', 'O sea,', 'Tipo,',
+        'Como quien no quiere la cosa,', 'Al final del día,', 'Si me preguntas,',
+        'No sé si me explico,', 'En criollo,', 'Te cuento que,', 'Fíjate que,',
+        'A ver,', 'Por otro lado,', 'En contraste,', 'De hecho,',
+        'Además,', 'Asimismo,', 'Sin embargo,', 'No obstante,',
+        'Así pues,', 'En consecuencia,', 'Por consiguiente,', 'De ahí que,'
+      ];
+      
+      // Conectores que los detectores suelen marcar como "IA"
+      const aiConectors = [
+          "además", "asimismo", "por lo tanto", "en conclusión", 
+          "por consiguiente", "en consecuencia", "así pues", "de hecho",
+          "por ende", "en resumen", "finalmente"
+      ];
+
+      // Frases y expresiones idiomáticas o coloquiales
+      const humanIdioms = [
+        'cuesta abajo', 'pan comido', 'ponerse las pilas', 'dar en el clavo',
+        'tirar la casa por la ventana', 'estar en las nubes', 'no tener pelos en la lengua',
+        'ser uña y carne', 'hacer la vista gorda', 'meter la pata', 'buscarle la quinta pata al gato',
+        'donde hubo fuego, cenizas quedan', 'el que madruga, Dios le ayuda', 'a quien madruga, Dios le ayuda',
+        'la curiosidad mató al gato', 'más vale pájaro en mano que ciento volando', 'no hay mal que dure cien años, ni cuerpo que lo resista'
+      ];
+      
+      // Sinónimos menos comunes pero naturales
+      const richSynonyms = {
+          "importante": ["crucial", "trascendental", "fundamental", "esencial", "relevante", "clave"],
+          "decir": ["manifestar", "expresar", "comunicar", "señalar", "indicar", "proclamar", "declarar"],
+          "usar": ["emplear", "utilizar", "recurrir a", "aplicar", "desplegar", "implementar"],
+          "bueno": ["adecuado", "óptimo", "pertinente", "idóneo", "propicio", "beneficioso"],
+          "mucho": ["considerablemente", "sustancialmente", "ampliamente", "notablemente", "abundantemente"],
+          "gran": ["enorme", "amplio", "extenso", "considerable", "significativo"],
+          "poder": ["capacidad", "facultad", "potestad", "habilidad"],
+          "tener": ["poseer", "disponer de", "contar con", "ostentar"]
+      };
 
       // === LIMPIEZA TOTAL (elimina huellas de IA) ===
       const cleanText = (text) => {
@@ -124,28 +165,29 @@
           .replace(/[\u00A0\u1680\u2000-\u200A\u202F\u205F\u3000]/g, ' ') // espacios extraños
           .replace(/[\r\n]{3,}/g, '\n\n') // saltos excesivos
           .replace(/[ \t]+/g, ' ') // espacios múltiples
-          .replace(/ +([,.!?])/g, '$1') // espacios antes de puntuación
-          .replace(/([¿¡]) /g, '$1') // espacios después de signos
+          .replace(/ +([,.!?¿¡:]+)/g, '$1') // espacios antes de puntuación
+          .replace(/([¿¡]) +/g, '$1') // espacios después de signos
           .trim();
       };
 
-      // === REESCRITURA SEMÁNTICA PROFUNDA ===
+      // === REESCRITURA SEMÁNTICA PROFUNDA (con énfasis en variación) ===
       const deepSemanticRewrite = (text) => {
         let paragraphs = text.split(/\n\s*\n/).filter(p => p.trim().length > 10);
         
-        // Reorganización lógica de párrafos
+        // Reorganización lógica de párrafos (más aleatoria)
         if (paragraphs.length > 3) {
-          const intro = paragraphs[0];
-          const conclusion = paragraphs[paragraphs.length - 1];
-          let body = paragraphs.slice(1, -1);
+          const intro = paragraphs.shift(); // Tomar el primero
+          const conclusion = paragraphs.pop(); // Tomar el último
+          let body = paragraphs;
           
-          // Cambia flujo lógico: causa-efecto → ejemplo-conclusión
+          // Mezcla aleatoria del cuerpo
           for (let i = body.length - 1; i > 0; i--) {
             const j = Math.floor(Math.random() * (i + 1));
             [body[i], body[j]] = [body[j], body[i]];
           }
           
-          if (settings.depth === 'profundo') {
+          // Inversión solo si la profundidad es 'fuerte' (como antes)
+          if (settings.depth === 'fuerte' && body.length > 1) {
             body.reverse();
           }
           
@@ -155,12 +197,14 @@
         return paragraphs.map(para => {
           let sentences = para.split(/(?<=[.!?])\s+/).filter(s => s.trim());
           
-          // Cambia estructura semántica
-          if (sentences.length > 3) {
+          // Cambia estructura semántica de oraciones (más opciones)
+          if (sentences.length > 3 && Math.random() < 0.8) { // Mayor probabilidad de aplicar
             const patterns = [
-              (s) => [s[1], s[2], s[0], ...s.slice(3)],
-              (s) => ["Por ejemplo,", s[2], s[0], s[1], ...s.slice(3)],
-              (s) => [s[s.length - 1], "En realidad,", ...s.slice(0, -1)]
+              (s) => [s[1], s[2], s[0], ...s.slice(3)], // Reordena las 3 primeras
+              (s) => ["Para ilustrar,", s[2], s[0], s[1], ...s.slice(3)], // Añade ejemplo al inicio
+              (s) => [s[s.length - 1], "En realidad,", ...s.slice(0, -1)], // Mueve la última al principio con matiz
+              (s) => [s[0], "No obstante,", s[1], s[2], ...s.slice(3)], // Inserta un contraste
+              (s) => [s[1], "Y es que,", s[0], ...s.slice(2)] // Introduce una explicación
             ];
             
             const pattern = patterns[Math.floor(Math.random() * patterns.length)];
@@ -171,151 +215,268 @@
         }).join('\n\n');
       };
 
-      // === SIMULACIÓN DE TRADUCCIÓN MÚLTIPLE (camuflaje) ===
+      // === SIMULACIÓN DE TRADUCCIÓN MÚLTIPLE (camuflaje y riqueza léxica) ===
       const translationSimulation = (text) => {
-        if (!settings.styleVariation) return text;
-        
-        const transformations = [
-          t => t.replace(/(\w+)\s+de\s+(\w+)/g, '$2 $1'),
-          t => t.replace(/(\w+)\s+(\w+)\s+(\w+)/g, '$3 $1 $2'),
-          t => t.replace(/(\w+)\s+y\s+(\w+)/g, '$1 e $2'),
-          t => t.replace(/(\w+)\s+o\s+(\w+)/g, '$1 u $2'),
-          t => t.replace(/(\w+),\s+(\w+)/g, '$2, $1')
-        ];
+        if (!settings.styleVariation && !settings.lexicalRichness) return text;
         
         let result = text;
-        const steps = settings.depth === 'profundo' ? 4 : 2;
+        const transformations = [
+          // Patrones de estructura y sintaxis
+          t => t.replace(/(\w+)\s+de\s+(\w+)/g, '$2 $1'), // Inversión de posesivos (simulando otro idioma)
+          t => t.replace(/(\w+)\s+(\w+)\s+(\w+)/g, '$3 $1 $2'), // Reordenamiento simple
+          t => t.replace(/(\w+)\s+y\s+(\w+)/g, '$1 e $2'), // 'y' -> 'e'
+          t => t.replace(/(\w+)\s+o\s+(\w+)/g, '$1 u $2'), // 'o' -> 'u'
+          t => t.replace(/(\w+),\s+(\w+)/g, '$2, $1'), // Inversión simple de elementos
+          t => t.replace(/(\w+)\s+que\s+(\w+)/g, '$2 el cual $1'), // Reemplazo de 'que'
+          t => t.replace(/un\s+(\w+)\s+(\w+)/g, 'un $2 y $1') // Combinación
+        ];
+        
+        const steps = settings.depth === 'fuerte' ? 5 : settings.depth === 'normal' ? 3 : 1; // Más pasos si es más profundo
         
         for (let i = 0; i < steps; i++) {
-          result = transformations[i % transformations.length](result);
+          if (settings.styleVariation) {
+            result = transformations[i % transformations.length](result);
+          }
+          if (settings.lexicalRichness) {
+             // Reemplazo de sinónimos menos comunes
+            for (const [word, synonyms] of Object.entries(richSynonyms)) {
+              const regex = new RegExp(`\\b${word}\\b`, 'gi');
+              result = result.replace(regex, () => synonyms[Math.floor(Math.random() * synonyms.length)]);
+            }
+          }
         }
         
         return result;
       };
 
-      // === INSERCIÓN DE FLUIDEZ HUMANA ===
+      // === INSERCIÓN DE FLUIDEZ HUMANA (conectores, modismos, imperfecciones) ===
       const addNaturalFlow = (text) => {
-        if (!settings.naturalFlow) return text;
+        if (!settings.naturalFlow && !settings.connectorVariety) return text;
         
         const paragraphs = text.split(/\n\s*\n/);
         
         return paragraphs.map((para, idx) => {
           let sentences = para.split(/(?<=[.!?])\s+/).filter(s => s.trim());
           
-          // 1. Conectores naturales
-          const connectors = [
-            'La verdad es que', 'Básicamente', 'O sea', 'Tipo', 
-            'Como quien no quiere la cosa', 'Al final del día',
-            'Si me preguntás', 'No sé si me explico', 'En criollo',
-            'Te cuento que', 'Mira', 'Fijate que', 'A ver'
-          ];
-          
-          if (idx > 0 && Math.random() < 0.6) {
+          // 1. Conectores naturales variados
+          if (settings.connectorVariety && idx > 0 && Math.random() < 0.7) { // Mayor probabilidad
             const connector = connectors[Math.floor(Math.random() * connectors.length)];
-            sentences[0] = `${connector} ${sentences[0].charAt(0).toLowerCase() + sentences[0].slice(1)}`;
-          }
-          
-          // 2. Ejemplos personales
-          if (sentences.length > 2 && Math.random() < 0.4) {
-            const examples = [
-              'como cuando intenté cocinar esa receta viral y terminé llamando a mi mamá desesperado',
-              'recuerdo que en mi pueblo solíamos hacerlo de otra manera, más artesanal'
-            ];
-            const insertAt = Math.floor(sentences.length / 2);
-            sentences.splice(insertAt, 0, `Por ejemplo, ${examples[Math.floor(Math.random() * examples.length)]}.`);
-          }
-          
-          // 3. Imperfecciones realistas
-          if (settings.depth === 'profundo' && Math.random() < 0.35) {
-            // Repetición ligera
-            const words = sentences[Math.floor(Math.random() * sentences.length)].split(' ');
-            if (words.length > 5) {
-              const repeatIndex = Math.floor(Math.random() * (words.length - 2)) + 1;
-              words.splice(repeatIndex, 0, words[repeatIndex]);
-              sentences[Math.floor(Math.random() * sentences.length)] = words.join(' ');
+            // Evitar conectores de IA si están activados
+            if (aiConectors.some(ac => connector.toLowerCase().includes(ac))) {
+               // Si es un conector de IA común, buscar uno alternativo o saltar
+               if (Math.random() < 0.6) { // 60% de probabilidad de evitar
+                  connector = connectors[Math.floor(Math.random() * connectors.length)]; // Intentar otro
+               } else {
+                  connector = null; // Omitir conector
+               }
             }
+            if (connector) {
+               sentences[0] = `${connector} ${sentences[0].charAt(0).toLowerCase() + sentences[0].slice(1)}`;
+            }
+          }
+          
+          // 2. Ejemplos personales / Modismos
+          if (settings.naturalFlow && sentences.length > 2 && Math.random() < 0.5) {
+            const insertAt = Math.floor(sentences.length / 2);
+            const choice = Math.random();
+            if (choice < 0.4) { // Insertar modismo
+               const idiom = humanIdioms[Math.floor(Math.random() * humanIdioms.length)];
+               sentences.splice(insertAt, 0, `Es como dicen, ${idiom}.`);
+            } else if (choice < 0.8) { // Insertar ejemplo personal
+               const examples = [
+                 'yo mismo me acuerdo de una vez que...',
+                 'me pasó algo parecido el otro día...',
+                 'imagínate la escena:'
+               ];
+               sentences.splice(insertAt, 0, `Por ejemplo, ${examples[Math.floor(Math.random() * examples.length)]}`);
+            }
+          }
+          
+          // 3. Imperfecciones realistas (ligera repetición, pausas)
+          if (settings.depth === 'fuerte' && Math.random() < 0.4) {
+            const sentenceIdx = Math.floor(Math.random() * sentences.length);
+            if (sentences[sentenceIdx].split(' ').length > 5) {
+              // Repetición ligera
+              const words = sentences[sentenceIdx].split(' ');
+              const repeatIndex = Math.floor(Math.random() * (words.length - 2)) + 1;
+              if (words[repeatIndex] && words[repeatIndex -1] !== words[repeatIndex]) { // Evitar repetición doble
+                 words.splice(repeatIndex, 0, words[repeatIndex]);
+                 sentences[sentenceIdx] = words.join(' ');
+              }
+            }
+          }
+          
+          // 4. Pausas o muletillas sutiles
+          if (settings.depth === 'fuerte' && Math.random() < 0.2) {
+             const pause = ['eh...', 'pues...', 'bueno...', 'digamos...'];
+             const insertAt = Math.floor(Math.random() * sentences.length);
+             sentences[insertAt] = sentences[insertAt].replace(/^/, `${pause[Math.floor(Math.random() * pause.length)]} `);
           }
           
           return sentences.join(' ');
         }).join('\n\n');
       };
 
-      // === AJUSTE DE TONO Y LEGIBILIDAD ===
+      // === AJUSTE DE TONO Y LEGIBILIDAD (con énfasis en variedad de longitud y estructura) ===
       const adjustToneAndReadability = (text) => {
-        if (!settings.toneAdjustment) return text;
+        if (!settings.toneAdjustment && !settings.readabilityFocus && !settings.sentenceLengthVariation) return text;
         
         const paragraphs = text.split(/\n\s*\n/);
-        
-        return paragraphs.map(para => {
+        let processedParagraphs = [];
+        let sentenceLengths = []; // Para calcular la variación
+
+        // 1. Segmentar y contar longitudes de oración primero
+        paragraphs.forEach(para => {
           let sentences = para.split(/(?<=[.!?])\s+/).filter(s => s.trim());
-          
-          return sentences.map((sentence, idx) => {
+          sentenceLengths.push(...sentences.map(s => s.split(/\s+/).length));
+          processedParagraphs.push(sentences);
+        });
+
+        const avgSentenceLength = sentenceLengths.reduce((a, b) => a + b, 0) / sentenceLengths.length || 1;
+        const stdDevSentenceLength = Math.sqrt(sentenceLengths.reduce((acc, val) => acc + Math.pow(val - avgSentenceLength, 2), 0) / sentenceLengths.length);
+
+        return processedParagraphs.map((paraSentences, pIdx) => {
+          let finalSentences = paraSentences.map((sentence, idx) => {
             let processed = sentence.trim();
-            
-            // Frases muy cortas para impacto
-            if (processed.length > 40 && Math.random() < 0.25) {
-              const mid = Math.floor(processed.length / 2);
-              const breakAt = processed.lastIndexOf(' ', mid);
-              if (breakAt > 15) {
-                const first = processed.slice(0, breakAt);
-                const second = processed.slice(breakAt + 1);
-                processed = `${first}. ${second.charAt(0).toUpperCase() + second.slice(1)}.`;
+            const currentSentenceLength = processed.split(/\s+/).length;
+
+            // --- Lógica de Variación de Longitud ---
+            if (settings.sentenceLengthVariation) {
+              const shouldShorten = currentSentenceLength > avgSentenceLength + 10 && stdDevSentenceLength > 5 && Math.random() < 0.6;
+              const shouldLengthen = currentSentenceLength < avgSentenceLength - 5 && stdDevSentenceLength > 5 && Math.random() < 0.4;
+
+              if (shouldShorten) {
+                const breakPoint = Math.max(10, processed.lastIndexOf(' ', Math.floor(processed.length / 2)));
+                if (breakPoint > 5) {
+                  const firstPart = processed.slice(0, breakPoint);
+                  const secondPart = processed.slice(breakPoint + 1);
+                  processed = `${firstPart}. ${secondPart.charAt(0).toLowerCase() + secondPart.slice(1)}`;
+                  // Actualizamos la longitud para la siguiente iteración si fuera necesario
+                  sentenceLengths[pIdx * paraSentences.length + idx] = firstPart.split(/\s+/).length; 
+              }} else if (shouldLengthen) {
+                // Añadir una cláusula o descripción simple
+                const clauses = ['y esto es importante porque', 'lo cual significa que', 'y esto permite que', 'debido a que'];
+                processed = `${processed} ${clauses[Math.floor(Math.random() * clauses.length)]} ...`; // '...' simula continuación
+              }
+            }
+
+            // --- Lógica de Ajuste de Tono y Legibilidad ---
+            if (settings.toneAdjustment || settings.readabilityFocus) {
+              // Frases muy cortas para impacto (si readabilityFocus está activo)
+              if (settings.readabilityFocus && processed.length > 40 && Math.random() < 0.2) {
+                const mid = Math.floor(processed.length / 2);
+                const breakAt = processed.lastIndexOf(' ', mid);
+                if (breakAt > 15) {
+                  const first = processed.slice(0, breakAt);
+                  const second = processed.slice(breakAt + 1);
+                  processed = `${first}. ${second.charAt(0).toUpperCase() + second.slice(1)}.`;
+                }
+              }
+              
+              // Cláusulas dependientes o adverbios al inicio (si toneAdjustment está activo)
+              if (settings.toneAdjustment && idx > 0 && Math.random() < 0.25) {
+                const introClauses = [
+                  'Aunque parezca mentira,', 'Cuando menos te lo esperas,', 
+                  'Justo en ese momento,', 'Después de todo lo dicho,', 'Si bien es cierto que,'
+                ];
+                const clause = introClauses[Math.floor(Math.random() * introClauses.length)];
+                processed = `${clause} ${processed.charAt(0).toLowerCase() + processed.slice(1)}`;
+              }
+              
+              // Evitar jerga demasiado formal o técnica si readabilityFocus está activo
+              if (settings.readabilityFocus && Math.random() < 0.1) {
+                  const formalToInformal = {
+                      "implementar": "usar", "optimizar": "mejorar", "paradigma": "enfoque",
+                      "sinergia": "colaboración", "escala": "tamaño", "efectuar": "hacer"
+                  };
+                  for (const [formal, informal] of Object.entries(formalToInformal)) {
+                      const regex = new RegExp(`\\b${formal}\\b`, 'gi');
+                      if (regex.test(processed)) {
+                          processed = processed.replace(regex, informal);
+                          break;
+                      }
+                  }
               }
             }
             
-            // Cláusulas dependientes
-            const clauses = [
-              'Aunque parezca mentira,', 'Cuando menos te lo esperas,', 
-              'Justo en ese momento,', 'Después de todo lo dicho,'
-            ];
-            if (idx > 0 && Math.random() < 0.15) {
-              const clause = clauses[Math.floor(Math.random() * clauses.length)];
-              processed = `${clause} ${processed.charAt(0).toLowerCase() + processed.slice(1)}`;
-            }
-            
             return processed;
-          }).join(' ');
+          });
+          
+          // Si la variación de longitud está activa, reordenar oraciones dentro del párrafo para maximizarla
+          if (settings.sentenceLengthVariation && finalSentences.length > 1) {
+             const lengths = finalSentences.map(s => s.split(/\s+/).length);
+             finalSentences.sort((a, b) => {
+                 const lenA = a.split(/\s+/).length;
+                 const lenB = b.split(/\s+/).length;
+                 // Ordenar de más corto a más largo o viceversa aleatoriamente
+                 return Math.random() < 0.5 ? lenA - lenB : lenB - lenA;
+             });
+          }
+
+          return finalSentences.join(' ');
         }).join('\n\n');
       };
 
-      // === SIMULACIÓN DE ANÁLISIS DE ESTILO (no menciona IA) ===
+      // === SIMULACIÓN DE ANÁLISIS DE ESTILO (para dar feedback tipo "detector") ===
       const simulateStyleAnalysis = (text) => {
-        const wordCount = text.split(/\s+/).length;
-        const sentenceCount = text.split(/[.!?]+/).length;
-        const avgSentenceLength = wordCount / sentenceCount;
+        const words = text.toLowerCase().split(/\W+/).filter(w => w.length > 0);
+        const wordCount = words.length;
+        const sentences = text.split(/[.!?]+/).filter(s => s.trim().length > 0);
+        const sentenceCount = sentences.length;
+        const avgSentenceLength = wordCount / sentenceCount || 1;
         
-        // Métricas que simulan "análisis de estilo", no detección de IA
-        const factors = {
-          structuralVariety: () => {
-            const sentences = text.split(/[.!?]+/).map(s => s.split(/\s+/).length);
-            const variance = sentences.reduce((acc, val) => acc + Math.pow(val - avgSentenceLength, 2), 0) / sentences.length;
-            return variance < 20 ? 90 : variance < 40 ? 60 : 25;
-          },
-          
-          vocabularyRichness: () => {
-            const words = text.toLowerCase().split(/\W+/).filter(w => w.length > 3);
-            const unique = new Set(words).size;
-            const ratio = unique / words.length;
-            return ratio < 0.25 ? 95 : ratio < 0.4 ? 70 : 35;
-          },
-          
-          naturalFlow: () => {
-            const humanRegexes = [
-              /como cuando|recuerdo que|mi abuela|mi vecino|en mi pueblo/i,
-              /la verdad es que|básicamente|o sea|tipo|al final del día/i,
-              /no sé si me explico|si me preguntás|en criollo/i
-            ];
-            const matches = humanRegexes.filter(r => r.test(text)).length;
-            return matches === 0 ? 95 : matches === 1 ? 70 : matches === 2 ? 50 : 25;
-          }
-        };
+        const sentenceWordCounts = sentences.map(s => s.split(/\s+/).length);
+        const stdDevSentenceLength = Math.sqrt(sentenceWordCounts.reduce((acc, val) => acc + Math.pow(val - avgSentenceLength, 2), 0) / sentenceCount);
+
+        // Métricas clave para simular detección IA
+        let aiScore = 0;
+        let totalMetrics = 0;
+
+        // 1. Variación de Longitud de Oración
+        const lengthVariationScore = stdDevSentenceLength < 5 ? 0 : stdDevSentenceLength < 10 ? 20 : 40; // Más alta si hay poca variación
+        aiScore += lengthVariationScore;
+        totalMetrics += 40;
+
+        // 2. Riqueza Léxica (menos diversidad = más IA)
+        const uniqueWords = new Set(words.filter(w => w.length > 3)).size;
+        const lexicalDiversity = uniqueWords / words.filter(w => w.length > 3).length;
+        const lexicalScore = lexicalDiversity < 0.25 ? 40 : lexicalDiversity < 0.4 ? 20 : 0; // Más alto si es baja
+        aiScore += lexicalScore;
+        totalMetrics += 40;
+
+        // 3. Uso de Conectores (detectar uso excesivo de conectores de IA)
+        let aiConnectorCount = 0;
+        const connectorUse = sentences.flatMap(s => s.toLowerCase().split(/[\s,.!?;:]+/).filter(w => w.length > 0));
+        aiConnectorCount = connectorUse.filter(w => aiConectors.includes(w)).length;
+        // Penalizar si hay más de X conectores de IA por párrafo o por texto
+        const connectorPenalty = (aiConnectorCount / sentenceCount) * 100; // % de oraciones con conector IA
+        const connectorScore = connectorPenalty > 15 ? 50 : connectorPenalty > 5 ? 25 : 0; // Más alto si hay muchos
+        aiScore += connectorScore;
+        totalMetrics += 50;
         
-        const scores = Object.values(factors).map(f => f());
-        const weights = [0.3, 0.3, 0.4];
-        const weightedScore = scores.reduce((acc, score, i) => acc + score * weights[i], 0);
+        // 4. Patrones de estructura (simplificado: repetición de inicios de frase)
+        const sentenceStarts = sentences.map(s => s.trim().split(/\s+/)[0]?.toLowerCase());
+        const startCounts = {};
+        sentenceStarts.forEach(start => {
+            if (start) startCounts[start] = (startCounts[start] || 0) + 1;
+        });
+        const mostFrequentStartCount = Object.values(startCounts).reduce((max, count) => Math.max(max, count), 0);
+        const repetitionScore = (mostFrequentStartCount / sentenceCount) * 100;
+        const repetitionPenalty = repetitionScore > 30 ? 30 : repetitionScore > 20 ? 15 : 0;
+        aiScore += repetitionPenalty;
+        totalMetrics += 30;
+
+        // Puntuación final de "probabilidad de IA" (0 = humano, 100 = IA)
+        const finalAIProbability = Math.min(100, aiScore);
         
-        // Cuanto más alto, mejor "estilo natural"
-        return Math.max(5, Math.min(95, 100 - weightedScore));
+        // Queremos un score de "calidad humana" o "evasión de IA"
+        // Un score bajo de AI es bueno para nosotros. Vamos a invertirlo.
+        const humanQualityScore = Math.max(0, 100 - finalAIProbability);
+
+        // Ajustar para que el feedback sea más útil
+        setAnalysisScore(humanQualityScore); // 0-100, donde 100 es más humano
+        
+        return humanQualityScore;
       };
 
       // === PROCESO PRINCIPAL ===
@@ -325,21 +486,24 @@
         setIsProcessing(true);
         setActiveTab('analyze');
         
-        await new Promise(resolve => setTimeout(resolve, 400));
+        // Simular un retraso para que el usuario vea el estado de procesamiento
+        await new Promise(resolve => setTimeout(resolve, 400)); 
         
         let result = cleanText(inputText);
+        // Aplicar transformaciones en un orden lógico para maximizar el efecto
         result = deepSemanticRewrite(result);
-        result = translationSimulation(result);
-        result = addNaturalFlow(result);
-        result = adjustToneAndReadability(result);
-        
+        result = translationSimulation(result); // Incluye riqueza léxica
+        result = addNaturalFlow(result);       // Incluye conectores y modismos
+        result = adjustToneAndReadability(result); // Incluye variación de longitud y tono
+
         setOutputText(result);
-        setAnalysisScore(simulateStyleAnalysis(result));
+        simulateStyleAnalysis(result); // Calcular y setear el score de calidad humana
         setIsProcessing(false);
         setActiveTab('review');
       };
 
       const copyToClipboard = () => {
+        if (!outputText) return;
         navigator.clipboard.writeText(outputText).then(() => {
           setCopyFeedback(true);
           setTimeout(() => setCopyFeedback(false), 2000);
@@ -347,6 +511,7 @@
       };
 
       const downloadText = () => {
+        if (!outputText) return;
         const blob = new Blob([outputText], { type: 'text/plain;charset=utf-8' });
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
@@ -361,9 +526,17 @@
       const clearAll = () => {
         setInputText('');
         setOutputText('');
-        setAnalysisScore(100);
+        setAnalysisScore(0); // Resetear score
         setActiveTab('write');
       };
+
+      // Efecto para mostrar el feedback de copia
+      useEffect(() => {
+        if (copyFeedback) {
+          const timer = setTimeout(() => setCopyFeedback(false), 2000);
+          return () => clearTimeout(timer);
+        }
+      }, [copyFeedback]);
 
       return (
         <div className="min-h-screen bg-gradient-to-br from-slate-50 via-emerald-50 to-teal-50">
@@ -375,28 +548,28 @@
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                 </svg>
                 <h1 className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
-                  RedactaPro
+                  RedactaPro - Anti-Detector
                 </h1>
               </div>
               <p className="text-slate-600 max-w-3xl mx-auto text-lg">
-                Editor profesional para mejorar el estilo, fluidez y naturalidad de tus textos académicos y técnicos.
+                Mejora tu escritura para sonar más humano y evadir la detección automática de IA.
               </p>
             </div>
 
             <div className="grid lg:grid-cols-5 gap-8">
-              {/* Editor */}
+              {/* Editor y Configuración */}
               <div className="lg:col-span-2 space-y-6">
                 <div className="bg-white rounded-2xl shadow-xl p-6 border border-slate-200">
                   <div className="flex items-center gap-2 mb-4">
                     <svg className="w-5 h-5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                     </svg>
-                    <h2 className="text-lg font-semibold text-slate-800">Escribe tu texto</h2>
+                    <h2 className="text-lg font-semibold text-slate-800">Escribe o Pega tu Texto</h2>
                   </div>
                   <textarea
                     value={inputText}
                     onChange={(e) => setInputText(e.target.value)}
-                    placeholder="Escribe o pega tu texto aquí..."
+                    placeholder="Introduce tu texto aquí para analizarlo y mejorar su naturalidad..."
                     className="w-full h-64 p-4 border border-slate-300 rounded-xl resize-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent text-slate-700"
                   />
                   <div className="flex flex-wrap gap-3 mt-4">
@@ -417,63 +590,71 @@
                           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
                           </svg>
-                          Mejorar Estilo
+                          Mejorar Naturalidad
                         </>
                       )}
                     </button>
                     <button onClick={clearAll} className="btn-secondary">
-                      Limpiar
+                      Limpiar Todo
                     </button>
                   </div>
                 </div>
 
-                {/* Configuración disfrazada */}
+                {/* Configuración de Humanización */}
                 <div className="bg-white rounded-2xl shadow-xl p-6 border border-slate-200">
                   <div className="flex items-center gap-2 mb-6">
                     <svg className="w-5 h-5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.99.608 2.296.07 2.572-1.065z" />
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                     </svg>
-                    <h3 className="text-lg font-semibold text-slate-800">Ajustes</h3>
+                    <h3 className="text-lg font-semibold text-slate-800">Ajustes de Humanización</h3>
                   </div>
                   
                   <div className="space-y-4">
+                    {/* Profundidad */}
                     <div>
                       <label className="block text-sm font-medium text-slate-700 mb-2">
-                        Profundidad
+                        Profundidad de Modificación
                       </label>
                       <div className="grid grid-cols-3 gap-2">
-                        {['básico', 'medio', 'profundo'].map(level => (
+                        {['suave', 'normal', 'fuerte'].map(level => (
                           <button
                             key={level}
                             onClick={() => setSettings({...settings, depth: level})}
-                            className={`py-2 px-3 rounded-lg text-sm font-medium ${
+                            className={`py-2 px-3 rounded-lg text-sm font-medium transition-all duration-300 ${
                               settings.depth === level
-                                ? "bg-emerald-100 text-emerald-800 border-2 border-emerald-300"
-                                : "bg-slate-100 text-slate-600"
+                                ? "bg-emerald-100 text-emerald-800 border-2 border-emerald-300 shadow-sm"
+                                : "bg-slate-100 text-slate-600 hover:bg-slate-200"
                             }`}
                           >
-                            {level === 'básico' ? 'Suave' : level === 'medio' ? 'Normal' : 'Fuerte'}
+                            {level === 'suave' ? 'Ligera' : level === 'normal' ? 'Media' : 'Profunda'}
                           </button>
                         ))}
                       </div>
                     </div>
 
-                    <div className="space-y-2 pt-2 border-t border-slate-200">
+                    {/* Opciones de Humanización */}
+                    <div className="space-y-3 pt-4 border-t border-slate-200">
+                      <h4 className="text-md font-semibold text-slate-700">Enfoque</h4>
                       {[
-                        { key: 'styleVariation', label: 'Variación de estilo' },
-                        { key: 'naturalFlow', label: 'Fluidez natural' },
-                        { key: 'toneAdjustment', label: 'Ajuste de tono' },
-                        { key: 'readabilityFocus', label: 'Legibilidad' }
-                      ].map(({ key, label }) => (
-                        <label key={key} className="flex items-center gap-3 cursor-pointer">
+                        { key: 'styleVariation', label: 'Variación Estructural/Sintáctica', tooltip: 'Altera el orden de las frases y la construcción gramatical.' },
+                        { key: 'naturalFlow', label: 'Fluidez Natural (Modismos)', tooltip: 'Introduce expresiones coloquiales y ejemplos personales.' },
+                        { key: 'toneAdjustment', label: 'Ajuste de Tono y Ritmo', tooltip: 'Varía la longitud y el inicio de las oraciones para un mejor flujo.' },
+                        { key: 'readabilityFocus', label: 'Claridad y Legibilidad', tooltip: 'Simplifica jerga y asegura que las ideas sean fáciles de seguir.' },
+                        { key: 'sentenceLengthVariation', label: 'Variación de Longitud de Oración', tooltip: 'Asegura una mezcla de oraciones cortas y largas.' },
+                        { key: 'connectorVariety', label: 'Variedad de Conectores', tooltip: 'Evita conectores repetitivos o muy asociados a IA.' },
+                        { key: 'lexicalRichness', label: 'Riqueza Léxica', tooltip: 'Utiliza sinónimos menos comunes pero naturales.' },
+                        { key: 'avoidRepetition', label: 'Evitar Repeticiones', tooltip: 'Minimiza la repetición de palabras clave y estructuras.' }
+                      ].map(({ key, label, tooltip }) => (
+                        <label key={key} className="flex items-center gap-3 cursor-pointer group">
                           <input
                             type="checkbox"
                             checked={settings[key]}
                             onChange={(e) => setSettings({...settings, [key]: e.target.checked})}
-                            className="w-4 h-4 text-emerald-600 rounded focus:ring-emerald-500"
+                            className="w-4 h-4 text-emerald-600 rounded focus:ring-emerald-500 border-slate-300 shadow-sm"
                           />
                           <span className="text-sm text-slate-700">{label}</span>
+                          <span className="text-xs text-slate-400 invisible group-hover:visible cursor-help" title={tooltip}>ⓘ</span>
                         </label>
                       ))}
                     </div>
@@ -481,7 +662,7 @@
                 </div>
               </div>
 
-              {/* Resultados disfrazados */}
+              {/* Resultados y Análisis */}
               <div className="lg:col-span-3 space-y-6">
                 <div className="bg-white rounded-2xl shadow-xl p-6 border border-slate-200">
                   <div className="flex items-center justify-between mb-4">
@@ -489,13 +670,13 @@
                       <svg className="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                       </svg>
-                      <h2 className="text-lg font-semibold text-slate-800">Texto Mejorado</h2>
+                      <h2 className="text-lg font-semibold text-slate-800">Texto Humanizado</h2>
                     </div>
                     {outputText && (
                       <div className="flex gap-2">
                         <button
                           onClick={copyToClipboard}
-                          className="flex items-center gap-2 px-3 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm"
+                          className="flex items-center gap-2 px-3 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors text-sm"
                         >
                           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
@@ -507,7 +688,7 @@
                           className="flex items-center gap-2 px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm"
                         >
                           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.707.707V19a2 2 0 01-2 2z" />
                           </svg>
                           Descargar
                         </button>
@@ -517,41 +698,43 @@
                   
                   <div 
                     ref={outputRef}
-                    className="w-full min-h-64 p-4 border border-slate-300 rounded-xl bg-white text-slate-800 leading-relaxed whitespace-pre-wrap font-sans"
+                    className="w-full min-h-64 p-4 border border-slate-300 rounded-xl bg-slate-50 text-slate-800 leading-relaxed whitespace-pre-wrap font-sans"
                   >
                     {outputText || "El texto mejorado aparecerá aquí..."}
                   </div>
                 </div>
 
-                {/* Análisis disfrazado */}
+                {/* Análisis de "Humanidad" */}
                 {outputText && (
                   <div className="bg-white rounded-2xl shadow-xl p-6 border border-slate-200">
                     <div className="flex items-center gap-2 mb-6">
-                      <svg className="w-5 h-5 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <svg className="w-5 h-5 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
                       </svg>
-                      <h3 className="text-lg font-semibold text-slate-800">Análisis de Estilo</h3>
+                      <h3 className="text-lg font-semibold text-slate-800">Análisis de "Calidad Humana"</h3>
                     </div>
                     
                     <div className="space-y-4">
-                      <div className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-lg p-4 border border-green-200">
+                      <div className="bg-gradient-to-r from-yellow-50 to-orange-50 rounded-lg p-4 border border-orange-200">
                         <div className="flex justify-between text-sm text-slate-600 mb-2">
-                          <span>Calidad de estilo natural</span>
-                          <span className="font-bold">{Math.round(analysisScore)}%</span>
+                          <span>Probabilidad de ser Humano (vs IA)</span>
+                          <span className="font-bold">{analysisScore.toFixed(1)}%</span>
                         </div>
-                        <div className="w-full bg-green-200 rounded-full h-3">
+                        <div className="w-full h-3 rounded-full analysis-meter-bg overflow-hidden">
                           <div 
-                            className="h-3 rounded-full bg-emerald-500 transition-all duration-500"
+                            className="h-3 rounded-full analysis-meter-fill transition-all duration-700"
                             style={{ width: `${analysisScore}%` }}
                           ></div>
                         </div>
-                        <p className="mt-2 text-sm text-green-700">
-                          {analysisScore > 70 ? (
-                            <>Este texto tiene un estilo natural y fluido, con buena variación y coherencia.</>
-                          ) : analysisScore > 40 ? (
-                            <>El estilo es aceptable, pero podría mejorar en variedad y fluidez.</>
+                        <p className="mt-2 text-sm text-orange-700">
+                          {analysisScore > 75 ? (
+                            <>Tu texto muestra una alta probabilidad de ser humano, con buena variedad y naturalidad.</>
+                          ) : analysisScore > 50 ? (
+                            <>El texto tiene indicios de naturalidad, pero podría mejorar en ciertos aspectos como la variación.</>
+                          ) : analysisScore > 25 ? (
+                            <>Hay bastantes patrones que podrían ser detectados como IA. Revisa los ajustes y aplica de nuevo.</>
                           ) : (
-                            <>El texto es demasiado uniforme y podría beneficiarse de más variación.</>
+                            <>El texto es muy predecible y similar a la escritura generada por IA. Considera ajustes más profundos.</>
                           )}
                         </p>
                       </div>
@@ -562,8 +745,7 @@
             </div>
 
             <div className="text-center mt-12 text-slate-500 text-sm">
-              <p>RedactaPro ayuda a mejorar la calidad de escritura. 
-              Todas las operaciones se realizan en tu navegador, sin almacenamiento de datos.</p>
+              <p>RedactaPro te ayuda a mejorar la naturalidad de tu escritura. Todas las operaciones se realizan en tu navegador.</p>
             </div>
           </div>
         </div>
