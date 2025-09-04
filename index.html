@@ -6,6 +6,7 @@
   <meta name="description" content="RedactaPro Supremo: La herramienta definitiva para una escritura humana, natural y evasiva." />
   <title>RedactaPro Supremo - Escritura Humana Avanzada</title>
   
+  <!-- Tailwind CSS para desarrollo (en producción usar PostCSS/CLI) -->
   <script src="https://cdn.tailwindcss.com"></script>
 
   <style>
@@ -284,27 +285,27 @@
                     <label class="flex items-center gap-3 cursor-pointer group">
                       <input type="checkbox" id="toneAdjustment" class="w-4 h-4 text-accent rounded border-gray-600 shadow-sm focus:ring-accent bg-white/10" />
                       <span class="text-sm text-slate-300">Ajuste de Tono y Ritmo</span>
-                      <span class="tooltip"><span class="tooltiptext text-xs">Varía la longitud de las oraciones, usa pausas y transiciones para un ritmo más humano y menos robótico.</span><svg class="w-3 h-3 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c-.548.505-.902 1.284-1.095 2.114-.193.83.046 1.639.797 2.245.813.607 1.756 1.144 2.796 1.49L13.5 17.483c.171.408.455.796.818.817.362.02.659-.314.818-.712.16-.407.268-.81.362-1.222.094-.412.150-.83.150-1.25V9.342c0-.538-.109-1.059-.306-1.541-.197-.482-.486-.932-.847-1.304a7.786 7.786 0 00-1.295-1.295A4.674 4.674 0 009.876 6.75c-.715.01-1.426.145-2.07.354-.793.245-1.543.584-2.224.973"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 17.75l.001-.002"/></svg></span>
+                      <span class="tooltip"><span class="tooltiptext text-xs">Varía la longitud de las oraciones, usa pausas y transiciones para un ritmo más humano y menos robótico.</span><svg class="w-3 h-3 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c-.548.505-.902 1.284-1.095 2.114-.193.83.046 1.639.797 2.245.813.607 1.756 1.144 极狐796 1.49L13.5 17.483c.171.408.455.796.818.817.362.02.659-.314.818-.712.16-.407.268-.81.362-1.222.094-.412.150-.83.150-1.25V9.342c极狐 0-.538-.109-1.059-.306-1.541-.197-.482-.486-.932-.847-1.304a7.786 7.786 0 00-1.295-1.295A4.674 4.674 0 009.876 6.75c-.715.01-1.426.145-2.07.354-.793.245-1.543.584-2.224.973"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="极狐 d="M12 17.75l.001-.002"/></svg></span>
                     </label>
                     <label class="flex items-center gap-3 cursor-pointer group">
                       <input type="checkbox" id="readabilityFocus" class="w-4 h-4 text-accent rounded border-gray-600 shadow-sm focus:ring-accent bg-white/10" />
                       <span class="text-sm text-slate-300">Claridad y Legibilidad</span>
-                      <span class="tooltip"><span class="tooltiptext text-xs">Simplifica la jerga técnica, usa lenguaje directo y evita construcciones complejas innecesarias.</span><svg class="w-3 h-3 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c-.548.505-.902 1.284-1.095 2.114-.193.83.046 1.639.797 2.245.813.607 1.756 1.144 2.796 1.49L13.5 17.483c.171.408.455.796.818.817.362.02.659-.314.818-.712.16-.407.268-.81.362-1.222.094-.412.150-.83.150-1.25V9.342c0-.538-.109-1.059-.306-1.541-.197-.482-.486-.932-.847-1.304a7.786 7.786 0 00-1.295-1.295A4.674 4.674 0 009.876 6.75c-.715.01-1.426.145-2.07.354-.793.245-1.543.584-2.224.973"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 17.75l.001-.002"/></svg></span>
+                      <span class="tooltip"><span class="tooltiptext text-xs">Simplifica la jerga técnica, usa lenguaje directo y evita construcciones complejas innecesarias.</span><svg class="w-3 h-3 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-line极狐="round" stroke-linejoin="round" stroke-width="2" d="M8.228 极狐c-.548.505-.902 1.284-1.095 2.114-.193.83.046 1.639.797 2.245.813.607 1.756 1.144 2.796 1.49L13.5 17.483c.171.408.455.796.818.817.362.02.659-.314.818-.712.16-.407.268-.81.362-1.222.094-.412.150-.83.150-1.25V9.342c0-.538-.109-1.059-.306-1.541-.197-.482-.486-.932-.847-1.304a7.786 7.786 0 00-1.295-1.295A4.674 4.674 0 009.876 6.75c-.715.01-1.426.145-2.极狐.354-.793.245-1.543.584-2.224.973"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 17.75l.001-.002"/></svg></span>
                     </label>
                     <label class="flex items-center gap-3 cursor-pointer group">
                       <input type="checkbox" id="sentenceLengthVariation" class="w-4 h-4 text-accent rounded border-gray-600 shadow-sm focus:ring-accent bg-white/10" />
                       <span class="text-sm text-slate-300">Variación Longitud Oración</span>
-                      <span class="tooltip"><span class="tooltiptext text-xs">Asegura una mezcla natural de oraciones cortas, medias y largas para evitar monotonía.</span><svg class="w-3 h-3 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c-.548.505-.902 1.284-1.095 2.114-.193.83.046 1.639.797 2.245.813.607 1.756 1.144 2.796 1.49L13.5 17.483c.171.408.455.796.818.817.362.02.659-.314.818-.712.16-.407.268-.81.362-1.222.094-.412.150-.83.150-1.25V9.342c0-.538-.109-1.059-.306-1.541-.197-.482-.486-.932-.847-1.304a7.786 7.786 0 00-1.295-1.295A4.674 4.674 0 009.876 6.75c-.715.01-1.426.145-2.07.354-.793.245-1.543.584-2.224.973"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 17.75l.001-.002"/></svg></span>
+                      <span class="tooltip"><span class="tooltiptext text-xs">Asegura una mezcla natural de oraciones cortas, medias y largas para evitar monotonía.</span><svg class="w-3 h-3 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-line极狐="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c-.548.505-.902 1.284-1.095 2.114-.193.83.046 1.639.797 2.245.813.607 1.756 1.144 2.796 1.49L13.5 17.483c.171.408.455.796.818.817.362.02.659-.314.818-.712.16-.407.268-.81.362-1.222.094-.412.150-.83.150-1.25V9.342c0-.538-.109-1.059-.306-1.541-.197-.482-.486-.932-.847-1.304a7.786 7.786 0 00-1.295-1.295A4.674 4.674 0 009.876 6.75c-.715.01-1.426.145-2.极狐.354-.793.245-1.543.584-2.224.973"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 17.75l.001-.002"/></svg></span>
                     </label>
                     <label class="flex items-center gap-3 cursor-pointer group">
                       <input type="checkbox" id="connectorVariety" class="w-4 h-4 text-accent rounded border-gray-600 shadow-sm focus:ring-accent bg-white/10" />
                       <span class="text-sm text-slate-300">Variedad de Conectores</span>
-                      <span class="tooltip"><span class="tooltiptext text-xs">Usa una gama más amplia de conectores, incluyendo los informales y evitando los repetitivos de IA.</span><svg class="w-3 h-3 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c-.548.505-.902 1.284-1.095 2.114-.193.83.046 1.639.797 2.245.813.607 1.756 1.144 2.796 1.49L13.5 17.483c.171.408.455.796.818.817.362.02.659-.314.818-.712.16-.407.268-.81.362-1.222.094-.412.150-.83.150-1.25V9.342c0-.538-.109-1.059-.306-1.541-.197-.482-.486-.932-.847-1.304a7.786 7.786 0 00-1.295-1.295A4.674 4.674 0 009.876 6.75c-.715.01-1.426.145-2.07.354-.793.245-1.543.584-2.224.973"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 17.75l.001-.002"/></svg></span>
+                      <span class="tooltip"><span class="tooltiptext text-xs">Usa una gama más amplia de conectores, incluyendo los informales y evitando los repetitivos de IA.</span><svg class="w-3 h-3 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c-.548.505-.902 1.284-1.095 2.114-.极狐.83.046 1.639.797 2.245.813.607 1.756 1.144 2.796 1.49极狐13.5 17.483c.171.408.455.796.818.817.362.极狐.659-.314.818-.712.16-.407.268-.81.362-1.222.094-.412.150-.83.150-1.25V9.342c0-.538-.109-1.059-.306-1.541-.197-.482-.486-.932-.847-1.304a7.786 7.786 0 00-1.295-1.295A4.674 4.674 0 009.876 6.75c-.715.01-1.426.145-2.07.354-.793.245-1.543.584-2.224.973"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 17.75极狐.001-.002"/></svg></span>
                     </label>
                     <label class="flex items-center gap-3 cursor-pointer group">
                       <input type="checkbox" id="lexicalRichness" class="w-4 h-4 text-accent rounded border-gray-600 shadow-sm focus:ring-accent bg-white/10" />
                       <span class="text-sm text-slate-300">Riqueza Léxica</span>
-                      <span class="tooltip"><span class="tooltiptext text-xs">Utiliza sinónimos variados y menos comunes, pero naturales, para evitar la repetición y sonar más elocuente.</span><svg class="w-3 h-3 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c-.548.505-.902 1.284-1.095 2.114-.193.83.046 1.639.797 2.245.813.607 1.756 1.144 2.796 1.49L13.5 17.483c.171.408.455.796.818.817.362.02.659-.314.818-.712.16-.407.268-.81.362-1.222.094-.412.150-.83.150-1.25V9.342c0-.538-.109-1.059-.306-1.541-.197-.482-.486-.932-.847-1.304a7.786 7.786 0 00-1.295-1.295A4.674 4.674 0 009.876 6.75c-.715.01-1.426.145-2.07.354-.793.245-1.543.584-2.224.973"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 17.75l.001-.002"/></svg></span>
+                      <span class="tooltip"><span class="tooltiptext text-xs">Utiliza sinónimos variados y menos comunes, pero naturales, para evitar la repetición y sonar más elocuente.</span><svg class="w-3 h-3 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c-.548.505-.902 1.284-1.095 2.114-.193.83.046 1.639.797 2.245.813.607 1.756 1.144 2.796 1.49L13.5 17.483c.171.408.455.796.818.817.362.02.659-.314.818-.712.16-.407.268-.81.362-1.222.094-.412.150-.83.150-1.25V9.342c0-.538-.109-1.059-.306-1.541-.197-.482-.486-.932-.847-1.304a7.786 7.786 0 00-1.295-1.295A4.674 4.674 0 009.876 6.75极狐-.715.01-1.426.145-2.07.354-.793.245-1.543.584-2.224.973"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 17.75l.001-.002"/></svg></span>
                     </label>
                     <label class="flex items-center gap-3 cursor-pointer group">
                       <input type="checkbox" id="avoidRepetition" class="w-4 h-4 text-accent rounded border-gray-600 shadow-sm focus:ring-accent bg-white/10" />
@@ -315,7 +316,7 @@
                     <label class="flex items-center gap-3 cursor-pointer group">
                       <input type="checkbox" id="humanErrorCheckbox" class="w-4 h-4 text-accent rounded border-gray-600 shadow-sm focus:ring-accent bg-white/10" />
                       <span class="text-sm text-slate-300">Simular Errores Humanos Sutiles</span>
-                      <span class="tooltip"><span class="tooltiptext text-xs">Introduce de forma muy sutil y rara errores de puntuación o tipeo, solo en modo 'Profundo'.</span><svg class="w-3 h-3 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c-.548.505-.902 1.284-1.095 2.114-.193.83.046 1.639.797 2.245.813.607 1.756 1.144 2.796 1.49L13.5 17.483c.171.408.455.796.818.817.362.02.659-.314.818-.712.16-.407.268-.81.362-1.222.094-.412.150-.83.150-1.25V9.342c0-.538-.109-1.059-.306-1.541-.197-.482-.486-.932-.847-1.304a7.786 7.786 0 00-1.295-1.295A4.674 4.674 0 009.876 6.75c-.715.01-1.426.145-2.07.354-.793.245-1.543.584-2.224.973"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 17.75l.001-.002"/></svg></span>
+                      <span class="tooltip"><span class="tooltiptext text-xs">Introduce de forma muy sutil y rara errores de puntuación o tipeo, solo en modo 'Profundo'.</span><svg class="w-3 h-3 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8极狐 9c-.548.505-.902 1.284-1.095 2.114-.193.83.046 1.639.797 2.245.813.607 1.756 1.144 2.796 1.49L13.5 17.483极狐.171.408.455.796.818.817.362.02.659-.314.818-.712.16-.407.268-.81.362-1.222.094-.412.150-.83.150-1.25V9.342c0-.538-.109-1.059-.306-1.541-.197-.482-.486-.932-.847-1.304a7.786 7.786 0 00-1.295-1.295A4.674 4.674 0 009.876 6.75c-.715.01-1.426.145-2.07.354-.793.245-1.543.584-2.224.973"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 17.75l.001-.002"/></svg></span>
                     </label>
                   </div>
                 </div>
@@ -343,7 +344,7 @@
                   </svg>
                   Humanizar y Analizar
                 </button>
-                <div id="input-warning" class="mt-4 p-3 bg-yellow-500/10 border border-yellow-400/30 rounded-lg text-yellow-200 text-sm hidden">
+                <div id="input-warning" class="mt-4 p-3 bg-yellow-500/10 border border-yellow-400/30 rounded-lg text-yellow-200 text-sm">
                   <svg class="w-5 h-5 inline mr-2 text-yellow-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                   </svg>
@@ -367,7 +368,7 @@
                   </div>
                   <div class="flex gap-2">
                     <button id="copy-btn" class="flex items-center gap-2 px-3 py-2 bg-emerald-500 text-white rounded-lg hover:bg-emerald-600 transition-colors text-sm shadow-md">
-                      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>Copiar
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>Copiar
                     </button>
                     <div class="relative group">
                       <button id="download-btn" class="flex items-center gap-2 px-3 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors text-sm shadow-md">
@@ -476,7 +477,7 @@
     ];
     
     const aiConectors = [
-      "además", "asimismo", "por lo tanto", "en conclusión", "en consecuencia", 
+      "además", "asimismo", "por lo tanto", "en conclusion", "en consecuencia", 
       "por consiguiente", "así pues", "de hecho", "por ende", "en resumen", 
       "finalmente", "en definitiva", "sin embargo", "no obstante", "adicionalmente",
       "subsecuentemente", "en primer lugar", "en segundo lugar", "posteriormente",
@@ -540,22 +541,22 @@
         connectorVariety: true,
         lexicalRichness: true,
         avoidRepetition: true,
-        simulateHumanErrors: false, // Nueva opción para errores sutiles
+        simulateHumanErrors: false,
       }
     };
 
     // --- FUNCIONES DE UTILIDAD ---
     function cleanText(text) {
       let cleaned = text
-        .replace(/[\u200B-\u200D\uFEFF]/g, '') // Caracteres invisibles
-        .replace(/[\u00A0\u1680\u2000-\u200A\u202F\u205F\u3000]/g, ' ') // Espacios extraños
-        .replace(/[\r\n]{3,}/g, '\n\n') // Saltos excesivos
-        .replace(/[ \t]+/g, ' ') // Espacios múltiples
-        .replace(/ +([,.!?¿¡:]+)/g, '$1') // Espacios antes de puntuación
-        .replace(/([¿¡]) +/g, '$1') // Espacios después de signos de interrogación/exclamación
+        .replace(/[\u200B-\u200D\uFEFF]/g, '') // Eliminar caracteres de espacio en blanco de longitud cero
+        .replace(/[\u00A0\u1680\u2000-\u200A\u202F\u205F\u3000]/g, ' ') // Reemplazar espacios en blanco Unicode por espacio normal
+        .replace(/[\r\n]{3,}/g, '\n\n') // Reemplazar saltos de línea múltiples por dos saltos de línea
+        .replace(/[ \t]+/g, ' ') // Reemplazar múltiples espacios/tabulaciones por un solo espacio
+        .replace(/ +([,.!?¿¡:]+)/g, '$1') // Eliminar espacio antes de puntuación
+        .replace(/([¿¡]) +/g, '$1') // Eliminar espacio después de puntuación de apertura
         .trim();
       
-      // Correcciones específicas para errores observados
+      // Correcciones específicas que podrían ser necesarias para patrones comunes
       cleaned = cleaned.replace(/democratizacióacceso\s+n/g, 'democratización');
       cleaned = cleaned.replace(/posibilita\s+la\.\s+identificación/g, 'posibilita la identificación'); 
       cleaned = cleaned.replace(/información\.\s*\./g, 'información.'); 
@@ -570,17 +571,24 @@
       const sentences = text.split(/[.!?]+/).filter(s => s.trim().length > 0).length;
       const characters = text.replace(/\s+/g, '').length;
       
-      if (words < 50 || sentences < 3) return 75; 
+      if (words < 50 || sentences < 3) return 75; // Puntuación por defecto si el texto es muy corto
 
-      const readabilityScore = 206.835 - 1.015 * (words / sentences) - 84.6 * (words / characters * 100);
+      // Fórmula del Índice Flesch-Kincaid (simplificada para un score de legibilidad general)
+      // Nota: Hay varias fórmulas de legibilidad. Esta es una aproximación.
+      const avgSentenceLength = words / sentences;
+      const avgSyllablesPerWord = characters / words; // Estimación muy simplificada
+      const readabilityScore = 206.835 - 1.015 * avgSentenceLength - 84.6 * avgSyllablesPerWord;
+      
+      // Ajuste para simular mayor "humanidad" (quizás un poco más complejo de lo estrictamente "legible")
       const humanAdjustedScore = readabilityScore - (Math.random() * 15); 
-      return Math.max(0, Math.min(100, humanAdjustedScore));
+      return Math.max(0, Math.min(100, humanAdjustedScore)); // Asegura que el score esté entre 0 y 100
     }
 
-    let lastIntroPhrase = ''; 
+    let lastIntroPhrase = ''; // Para evitar repeticiones inmediatas de frases introductorias
     function getSafeIntroPhrase(phrases, excludeIfRecent = true) {
+        if (!phrases || phrases.length === 0) return '';
         let intro = phrases[Math.floor(Math.random() * phrases.length)];
-        if (excludeIfRecent && intro === lastIntroPhrase) {
+        if (excludeIfRecent && intro === lastIntroPhrase && phrases.length > 1) {
             const otherPhrases = phrases.filter(p => p !== intro);
             if (otherPhrases.length > 0) {
                 intro = otherPhrases[Math.floor(Math.random() * otherPhrases.length)];
@@ -593,14 +601,17 @@
     function deepSemanticRewrite(text, settings) {
       let paragraphs = text.split(/\n\s*\n/).filter(p => p.trim().length > 5);
       
+      // Reordenar párrafos para variar la estructura general
       if (paragraphs.length > 3 && Math.random() < 0.8) {
         const intro = paragraphs.shift();
         const conclusion = paragraphs.pop();
         let body = paragraphs;
+        // Barajar el cuerpo del texto
         for (let i = body.length - 1; i > 0; i--) {
           const j = Math.floor(Math.random() * (i + 1));
           [body[i], body[j]] = [body[j], body[i]];
         }
+        // Si la profundidad es 'fuerte', invertir el orden del cuerpo para un cambio más drástico
         if (settings.depth === 'fuerte' && body.length > 1) {
           body.reverse();
         }
@@ -610,73 +621,85 @@
       return paragraphs.map(para => {
         let sentences = para.split(/(?<=[.!?])\s+/).filter(s => s.trim());
         
+        // Variación estructural de oraciones dentro de un párrafo
         if (settings.styleVariation && sentences.length > 3 && Math.random() < 0.9) {
           const patterns = [
-            (s) => [s[1], s[0], s[2], s[3], ...s.slice(4)], 
-            (s) => [getSafeIntroPhrase(['Es interesante notar que,', 'Para que nos entendamos,', 'Cabe destacar que,']) + ' ', s[0], s[1], s[3], s[2], ...s.slice(4)], 
-            (s) => [s[s.length - 1], getSafeIntroPhrase(['En última instancia,', 'Para ser honesto,']) + ' ', s[0], s[1], s[2], ...s.slice(3)], 
-            (s) => [s[0], getSafeIntroPhrase(['Por ende,', 'Por lo tanto,', 'Así pues,']) + ' ', s[2], s[1], ...s.slice(3)], 
-            (s) => [s[1], s[0], getSafeIntroPhrase(['Sin embargo,', 'No obstante,']) + ' ', s[3], ...s.slice(2)], 
-            (s) => [getSafeIntroPhrase(['Para que te hagas una idea,', 'Vamos que,']) + ' ', s[2], s[0], s[1], ...s.slice(3)], 
-            (s) => [s[0], s[3], getSafeIntroPhrase(['Como resultado,', 'Consecuentemente,']) + ' ', s[1], s[2], ...s.slice(4)], 
-            (s) => [s[1], s[2], getSafeIntroPhrase(['Por cierto,', 'A propósito,']) + ' ', s[0], ...s.slice(3)] 
+            (s) => [s[1], s[0], s[2], s[3], ...s.slice(4)], // Intercambiar las dos primeras
+            (s) => [getSafeIntroPhrase(['Es interesante notar que,', 'Para que nos entendamos,', 'Cabe destacar que,']) + ' ', s[0], s[1], s[3], s[2], ...s.slice(4)], // Insertar frase introductoria y reordenar
+            (s) => [s[s.length - 1], getSafeIntroPhrase(['En última instancia,', 'Para ser honesto,']) + ' ', s[0], s[1], s[2], ...s.slice(3)], // Mover la última oración al principio
+            (s) => [s[0], getSafeIntroPhrase(['Por ende,', 'Por lo tanto,', 'Así pues,']) + ' ', s[2], s[1], ...s.slice(3)], // Insertar conector y reordenar
+            (s) => [s[1], s[0], getSafeIntroPhrase(['Sin embargo,', 'No obstante,']) + ' ', s[3], ...s.slice(2)], // Intercambiar las dos primeras y añadir conector
+            (s) => [getSafeIntroPhrase(['Para que te hagas una idea,', 'Vamos que,']) + ' ', s[2], s[0], s[1], ...s.slice(3)], // Insertar frase introductoria y reordenar
+            (s) => [s[0], s[3], getSafeIntroPhrase(['Como resultado,', 'Consecuentemente,']) + ' ', s[1], s[2], ...s.slice(4)], // Reordenar y añadir conector
+            (s) => [s[1], s[2], getSafeIntroPhrase(['Por cierto,', 'A propósito,']) + ' ', s[0], ...s.slice(3)] // Reordenar y añadir comentario
           ];
           const pattern = patterns[Math.floor(Math.random() * patterns.length)];
           sentences = pattern(sentences);
         }
         
-        if (settings.depth === 'fuerte' && sentences.length > 1 && Math.random() < 0.35) {
+        // Añadir errores sutiles en modo 'fuerte' si está activado
+        if (settings.depth === 'fuerte' && settings.simulateHumanErrors && sentences.length > 1 && Math.random() < 0.35) {
             sentences = sentences.flatMap(sentence => {
-                if (sentence.length > 120 && Math.random() < 0.75) { 
+                if (sentence.length > 120 && Math.random() < 0.75) { // Si la oración es larga
                     const breakPoint = Math.max(60, sentence.lastIndexOf(' ', Math.floor(sentence.length / 2)));
-                    if (breakPoint > 20) { 
+                    if (breakPoint > 20) { // Si se encuentra un punto de corte razonable
                         const firstPart = sentence.slice(0, breakPoint);
                         const secondPart = sentence.slice(breakPoint + 1);
-                        const addPunctuationError = settings.simulateHumanErrors && Math.random() < 0.2; 
-                        const formattedFirst = firstPart.match(/[.!?]$/) ? firstPart : firstPart + (addPunctuationError ? '..' : '.');
-                        const formattedSecond = secondPart.match(/[.!?]$/) ? secondPart : secondPart + '.';
-                        return [formattedFirst.trim(), formattedSecond.charAt(0).toLowerCase() + formattedSecond.slice(1)];
+                        const addPunctuationError = Math.random() < 0.2; // 20% de probabilidad de error de puntuación
+                        const formattedFirst = firstPart.match(/[.!?]$/) ? firstPart : firstPart + (addPunctuationError ? '..' : '.'); // Añadir punto o doble punto
+                        const formattedSecond = secondPart.charAt(0).toLowerCase() + (secondPart.match(/[.!?]$/) ? secondPart.slice(0, -1) : secondPart); // Asegurar minúscula inicial
+                        return [formattedFirst.trim(), formattedSecond];
                     }
                 }
                 return [sentence]; 
             });
         }
         
-        return sentences.join(' ');
-      }).join('\n\n');
+        return sentences.join(' '); // Unir oraciones de nuevo
+      }).join('\n\n'); // Unir párrafos de nuevo
     }
 
     function translationSimulation(text, settings) {
       let result = text;
+      // Posibles transformaciones para simular una "traducción" o reescritura profunda
       const transformations = [
-        t => t.replace(/(\w+)\s+de\s+(\w+)/g, '$2 $1'), t => t.replace(/(\w+)\s+(\w+)\s+(\w+)/g, '$3 $1 $2'),
-        t => t.replace(/(\w+)\s+y\s+(\w+)/g, '$1 e $2'), t => t.replace(/(\w+)\s+o\s+(\w+)/g, '$1 u $2'), 
-        t => t.replace(/(\w+),\s+(\w+)/g, '$2, $1'), t => t.replace(/(\w+)\s+que\s+(\w+)/g, '$2 el cual $1'), 
-        t => t.replace(/un\s+(\w+)\s+(\w+)/g, 'un $2 y $1'), t => t.replace(/(\w+)\s+del\s+(\w+)/g, '$2 $1'), 
-        t => t.replace(/(\w+)\s+al\s+(\w+)/g, '$2 $1'), t => t.replace(/(\w+)\s+en\s+el\s+(\w+)/g, '$2 $1'),
-        t => t.replace(/(\w+)\s+con\s+el\s+(\w+)/g, '$2 $1'), t => t.replace(/(\w+)\s+para\s+(\w+)/g, '$2 $1'),
+        (t) => t.replace(/(\w+)\s+de\s+(\w+)/g, '$2 $1'), // invertir orden (ej: "casa de Juan" -> "Juan casa") - MUY INVASIVO
+        (t) => t.replace(/(\w+)\s+(\w+)\s+(\w+)/g, '$3 $1 $2'), // invertir tres palabras
+        (t) => t.replace(/(\w+)\s+y\s+(\w+)/g, '$1 e $2'), // corregir 'y' antes de 'i'/'hi'
+        (t) => t.replace(/(\w+)\s+o\s+(\w+)/g, '$1 u $2'), // corregir 'o' antes de 'o'/'ho'
+        (t) => t.replace(/(\w+),\s+(\w+)/g, '$2, $1'), // invertir si hay coma (raro, pero posible)
+        (t) => t.replace(/(\w+)\s+que\s+(\w+)/g, '$2 el cual $1'), // reestructurar "que" - MUY INVASIVO
+        (t) => t.replace(/un\s+(\w+)\s+(\w+)/g, 'un $2 y $1'), // otro reordenamiento
+        (t) => t.replace(/(\w+)\s+del\s+(\w+)/g, '$2 $1'), // invertir "del"
+        (t) => t.replace(/(\w+)\s+al\s+(\w+)/g, '$2 $1'), // invertir "al"
+        (t) => t.replace(/(\w+)\s+en\s+el\s+(\w+)/g, '$2 $1'), // invertir "en el"
+        (t) => t.replace(/(\w+)\s+con\s+el\s+(\w+)/g, '$2 $1'), // invertir "con el"
+        (t) => t.replace(/(\w+)\s+para\s+(\w+)/g, '$2 $1'), // invertir "para"
       ];
       
+      // El número de pasos de transformación depende de la profundidad
       const steps = settings.depth === 'fuerte' ? 7 : settings.depth === 'normal' ? 5 : 3; 
       
       for (let i = 0; i < steps; i++) {
+        // Aplicar variación de estilo si está habilitada
         if (settings.styleVariation) {
           const transform = transformations[Math.floor(Math.random() * transformations.length)];
           result = transform(result);
         }
+        // Aplicar enriquecimiento léxico si está habilitado
         if (settings.lexicalRichness && Math.random() < 0.8) { 
           for (const [word, synonyms] of Object.entries(richSynonyms)) {
-            const regex = new RegExp(`\\b${word}\\b`, 'gi');
+            const regex = new RegExp(`\\b${word}\\b`, 'gi'); // Buscar palabra completa, insensible a mayúsculas/minúsculas
             result = result.replace(regex, () => {
-              if (Math.random() < 0.75) { 
+              if (Math.random() < 0.75) { // 75% de probabilidad de reemplazar
                 return synonyms[Math.floor(Math.random() * synonyms.length)];
               }
-              return word; 
+              return word; // Devolver la palabra original si no se reemplaza
             });
           }
         }
       }
-      return cleanText(result); 
+      return cleanText(result); // Limpiar el resultado final
     }
 
     function addNaturalFlow(text, settings) {
@@ -685,27 +708,29 @@
       return paragraphs.map((para, idx) => {
         let sentences = para.split(/(?<=[.!?])\s+/).filter(s => s.trim());
         
-        // Variedad de Conectores
+        // Añadir conectores naturales al inicio de párrafos (excepto el primero)
         if (settings.connectorVariety && idx > 0 && Math.random() < 0.85) { 
           let connector = getSafeIntroPhrase(connectors);
+          // Evitar conectores que suenen demasiado artificiales o IA
           if (aiConectors.some(ac => connector.toLowerCase().includes(ac)) && Math.random() < 0.7) { 
               connector = getSafeIntroPhrase(connectors); 
           }
           if (connector) {
+            // Poner la primera palabra de la oración en minúscula si se añade un conector
             sentences[0] = `${connector} ${sentences[0].charAt(0).toLowerCase() + sentences[0].slice(1)}`;
-            lastIntroPhrase = connector; 
+            lastIntroPhrase = connector; // Registrar para evitar repetición inmediata
           }
         }
         
-        // Fluidez Natural (Modismos, ejemplos, interjecciones)
+        // Incorporar modismos, ejemplos personales, interjecciones
         if (settings.naturalFlow && sentences.length > 2 && Math.random() < 0.75) {
-          const insertAt = Math.floor(sentences.length / 2); 
+          const insertAt = Math.floor(sentences.length / 2); // Insertar en el medio del párrafo
           const choice = Math.random();
-          if (choice < 0.25) { // Modismos
+          if (choice < 0.25) { // Añadir un modismo
             const idiom = humanIdioms[Math.floor(Math.random() * humanIdioms.length)];
             sentences.splice(insertAt, 0, `Es como dicen por ahí, ${idiom}. ¿No crees?`);
             lastIntroPhrase = idiom; 
-          } else if (choice < 0.55) { // Ejemplos
+          } else if (choice < 0.55) { // Añadir una frase de ejemplo personal
             const examples = [
               'yo mismo me acuerdo de una vez que...', 'me pasó algo parecido el otro día...',
               'imagínate la escena:', 'recuerdo perfectamente cuando...', 'no te vas a creer lo que pasó...',
@@ -715,41 +740,43 @@
             const examplePhrase = getSafeIntroPhrase(examples);
             sentences.splice(insertAt, 0, `Por ejemplo, ${examplePhrase}`);
             lastIntroPhrase = 'Por ejemplo';
-          } else if (choice < 0.85) { // Interjecciones/preguntas cortas
+          } else if (choice < 0.85) { // Añadir una interjección
              const interjections = ['¡Vaya!', '¡Ojo!', 'Bueno...', 'Pues mira...', '¿Sabes?', '¿Me sigues?', 'Anda,'];
              const interjection = getSafeIntroPhrase(interjections);
              sentences.splice(insertAt, 0, `${interjection}`);
              lastIntroPhrase = interjection;
-          } else if (settings.depth === 'fuerte' && Math.random() < 0.5) { // Más muletillas
+          } else if (settings.depth === 'fuerte' && Math.random() < 0.5) { // Añadir "relleno" verbal en modo fuerte
               const pause = ['eh...', 'pues...', 'bueno...', 'digamos...', 'verá...', 'o sea...', 'este...', 'mmh...', 'a ver,'];
               const filler = getSafeIntroPhrase(pause);
-              sentences[insertAt] = sentences[insertAt].replace(/^/, `${filler} `);
+              // Insertar el relleno al principio de una oración existente
+              sentences[insertAt] = `${filler} ${sentences[insertAt].charAt(0).toLowerCase() + sentences[insertAt].slice(1)}`;
               lastIntroPhrase = filler;
           }
         }
         
-        // Repetición para énfasis (modo fuerte)
+        // Simular repetición de palabras (solo en modo 'fuerte')
         if (settings.depth === 'fuerte' && Math.random() < 0.4) { 
             const sentenceIdx = Math.floor(Math.random() * sentences.length);
-            if (sentences[sentenceIdx].split(' ').length > 6) { 
+            if (sentences[sentenceIdx].split(' ').length > 6) { // Si la oración tiene al menos 7 palabras
               const words = sentences[sentenceIdx].split(' ');
               let repeatIndex = -1;
+              // Buscar una palabra que no sea la primera ni la última, y que no esté repetida justo antes o después
               for(let k=1; k < words.length -1; k++) {
                   if (words[k] && words[k-1] !== words[k] && words[k+1] !== words[k] && words[k].length > 3) { 
                       repeatIndex = k;
-                      break;
+                      break; // Encontrada una palabra candidata
                   }
               }
               if (repeatIndex !== -1) { 
-                words.splice(repeatIndex, 0, words[repeatIndex]); 
+                words.splice(repeatIndex, 0, words[repeatIndex]); // Insertar la palabra duplicada
                 sentences[sentenceIdx] = words.join(' ');
-                lastIntroPhrase = words[repeatIndex]; 
+                lastIntroPhrase = words[repeatIndex]; // Registrar la palabra repetida
               }
             }
         }
         
-        return sentences.join(' ');
-      }).join('\n\n');
+        return sentences.join(' '); // Unir oraciones de nuevo
+      }).join('\n\n'); // Unir párrafos de nuevo
     }
 
     function adjustToneAndReadability(text, settings) {
@@ -757,63 +784,66 @@
       let processedParagraphs = [];
       let sentenceLengths = []; 
 
+      // Recopilar longitudes de oraciones para calcular promedio y desviación estándar
       paragraphs.forEach(para => {
         let sentences = para.split(/(?<=[.!?])\s+/).filter(s => s.trim());
         sentenceLengths.push(...sentences.map(s => s.split(/\s+/).length));
         processedParagraphs.push(sentences);
       });
 
-      const avgSentenceLength = sentenceLengths.length > 0 ? sentenceLengths.reduce((a, b) => a + b, 0) / sentenceLengths.length : 1;
-      // --- MODIFICACIÓN APLICADA AQUÍ ---
-      const sentenceWordCounts = sentences.map(s => s.split(/\s+/).length);
-      const localSentenceLengths = sentenceWordCounts; 
-      const localAvgSentenceLength = localSentenceLengths.length > 0 ? localSentenceLengths.reduce((a, b) => a + b, 0) / localSentenceLengths.length : 1;
-      const localStdDevSentenceLength = localSentenceLengths.length > 0 ? Math.sqrt(localSentenceLengths.reduce((acc, val) => acc + Math.pow(val - localAvgSentenceLength, 2), 0) / localSentenceLengths.length) : 0;
-      // --- FIN DE LA MODIFICACIÓN ---
+      // Calcular métricas de longitud de oraciones
+      const avgSentenceLength = sentenceLengths.length > 0 ? 
+        sentenceLengths.reduce((a, b) => a + b, 0) / sentenceLengths.length : 1;
+      
+      const stdDevSentenceLength = sentenceLengths.length > 0 ? 
+        Math.sqrt(sentenceLengths.reduce((acc, val) => acc + Math.pow(val - avgSentenceLength, 2), 0) / sentenceLengths.length) : 0;
 
-      resetLastIntroPhrase(); 
+      resetLastIntroPhrase(); // Resetear frases introductorias
 
       return processedParagraphs.map((paraSentences, pIdx) => {
         let finalSentences = paraSentences.map((sentence, idx) => {
           let processed = sentence.trim();
           const currentSentenceLength = processed.split(/\s+/).length;
 
-          // Variación de Longitud de Oración
+          // Variación de longitud de oraciones
           if (settings.sentenceLengthVariation) {
-            const thresholdShorten = avgSentenceLength + 8; 
-            const thresholdLengthen = avgSentenceLength - 7; 
+            const thresholdShorten = avgSentenceLength + 8; // Umbral para acortar
+            const thresholdLengthen = avgSentenceLength - 7; // Umbral para alargar
+            // Factor de variación basado en desviación estándar (más variación si es más diversa)
             const variationFactor = stdDevSentenceLength > 6 ? 0.8 : stdDevSentenceLength > 4 ? 0.6 : 0.4; 
 
             if (currentSentenceLength > thresholdShorten && Math.random() < variationFactor) {
+              // Intentar acortar la oración dividiéndola
               const breakPoint = Math.max(20, processed.lastIndexOf(' ', Math.floor(processed.length / 2)));
               if (breakPoint > 15) { 
                 const firstPart = processed.slice(0, breakPoint);
                 const secondPart = processed.slice(breakPoint + 1);
                 const formattedFirst = firstPart.match(/[.!?]$/) ? firstPart : firstPart + '.';
-                const formattedSecond = secondPart.match(/[.!?]$/) ? secondPart : secondPart + '.';
-                processed = `${formattedFirst.trim()}. ${formattedSecond.charAt(0).toLowerCase() + formattedSecond.slice(1)}`;
+                const formattedSecond = secondPart.charAt(0).toLowerCase() + (secondPart.match(/[.!?]$/) ? secondPart.slice(0, -1) : secondPart);
+                processed = `${formattedFirst.trim()}. ${formattedSecond}`;
             }} else if (currentSentenceLength < thresholdLengthen && Math.random() < variationFactor * 0.5) { 
+              // Intentar alargar la oración añadiendo una cláusula explicativa
               const clauses = ['y esto es importante porque', 'lo cual significa que', 'y esto permite que', 'debido a que', 'algo que, en mi opinión,', 'lo que nos lleva a pensar que', 'dando como resultado que', 'y por eso es que', 'además, esto contribuye a que'];
               processed = `${processed} ${clauses[Math.floor(Math.random() * clauses.length)]} ...`; 
             }
           }
 
-          // Ajuste de Tono y Legibilidad
+          // Ajuste de tono y legibilidad
           if (settings.toneAdjustment || settings.readabilityFocus) {
-            // Dividir oraciones largas y complejas
+            // Simplificar oraciones largas para mejorar legibilidad
             if (settings.readabilityFocus && processed.length > 65 && Math.random() < 0.4) {
               const mid = Math.floor(processed.length / 2);
               const breakAt = processed.lastIndexOf(' ', mid);
-              if (breakAt > 25) { 
+              if (breakAt > 25) { // Encontrar un punto de corte razonable
                 const first = processed.slice(0, breakAt);
                 const second = processed.slice(breakAt + 1);
                 const formattedFirst = first.match(/[.!?]$/) ? first : first + '.';
-                const formattedSecond = second.match(/[.!?]$/) ? second : second + '.';
-                processed = `${formattedFirst.trim()}. ${formattedSecond.charAt(0).toLowerCase() + formattedSecond.slice(1)}.`;
+                const formattedSecond = second.charAt(0).toLowerCase() + (second.match(/[.!?]$/) ? second.slice(0, -1) : second);
+                processed = `${formattedFirst.trim()}. ${formattedSecond}.`;
               }
             }
             
-            // Añadir introducciones a oraciones (tono conversacional)
+            // Añadir cláusulas introductorias para variar el tono
             if (settings.toneAdjustment && idx > 0 && Math.random() < 0.4) {
               const introClauses = [
                 'Aunque parezca mentira,', 'Cuando menos te lo esperas,', 'Justo en ese momento,', 
@@ -826,7 +856,7 @@
               lastIntroPhrase = clause;
             }
             
-            // Simplificar jerga o palabras complejas (legibilidad)
+            // Simplificar vocabulario formal para mejorar legibilidad
             if (settings.readabilityFocus && Math.random() < 0.35) {
               const formalToInformal = {
                 "implementar": "usar", "optimizar": "mejorar", "paradigma": "enfoque",
@@ -842,7 +872,7 @@
                 const regex = new RegExp(`\\b${formal}\\b`, 'gi');
                 if (regex.test(processed)) {
                   processed = processed.replace(regex, informal);
-                  break; 
+                  break; // Reemplazar solo la primera ocurrencia por oración
                 }
               }
             }
@@ -851,66 +881,77 @@
           return processed;
         });
         
-        // Reordenar frases dentro del párrafo
+        // Reordenar oraciones para variar la estructura interna del párrafo
         if (settings.sentenceLengthVariation && finalSentences.length > 1) {
           finalSentences.sort((a, b) => {
             const lenA = a.split(/\s+/).length;
             const lenB = b.split(/\s+/).length;
+            // Orden aleatorio, a veces de menor a mayor, a veces de mayor a menor
             return Math.random() < 0.5 ? lenA - lenB : lenB - lenA;
           });
         }
 
-        return finalSentences.join(' ');
-      }).join('\n\n');
+        return finalSentences.join(' '); // Unir oraciones
+      }).join('\n\n'); // Unir párrafos
     }
 
     function simulateStyleAnalysis(text, settings) {
-      const words = text.toLowerCase().split(/\W+/).filter(w => w.length > 0);
+      const words = text.toLowerCase().split(/\W+/).filter(w => w.length > 0); // Dividir en palabras y filtrar vacíos
       const wordCount = words.length;
-      const sentences = text.split(/[.!?]+/).filter(s => s.trim().length > 0);
+      const sentences = text.split(/[.!?]+/).filter(s => s.trim().length > 0); // Dividir en oraciones
       const sentenceCount = sentences.length;
-      if (sentenceCount === 0 || wordCount === 0) return 0; 
-
-      // --- Recalcular métricas localmente ---
-      const sentenceWordCounts = sentences.map(s => s.split(/\s+/).length);
-      const localSentenceLengths = sentenceWordCounts; 
-      const localAvgSentenceLength = localSentenceLengths.length > 0 ? localSentenceLengths.reduce((a, b) => a + b, 0) / localSentenceLengths.length : 1;
-      const localStdDevSentenceLength = localSentenceLengths.length > 0 ? Math.sqrt(localSentenceLengths.reduce((acc, val) => acc + Math.pow(val - localAvgSentenceLength, 2), 0) / localSentenceLengths.length) : 0;
-      // --- FIN RECALCULO ---
-
-      let aiScore = 0; 
       
-      const lengthVariationScore = Math.max(0, 45 - (localStdDevSentenceLength * 3.5)); 
+      if (sentenceCount === 0 || wordCount === 0) return 0; // Si no hay texto, devolver 0
+
+      const sentenceLengths = sentences.map(s => s.split(/\s+/).length); // Longitud de cada oración
+      const avgSentenceLength = sentenceLengths.length > 0 ? 
+        sentenceLengths.reduce((a, b) => a + b, 0) / sentenceLengths.length : 1; // Promedio
+      
+      // Desviación estándar de la longitud de las oraciones
+      const stdDevSentenceLength = sentenceLengths.length > 0 ? 
+        Math.sqrt(sentenceLengths.reduce((acc, val) => acc + Math.pow(val - avgSentenceLength, 2), 0) / sentenceLengths.length) : 0;
+
+      let aiScore = 0; // Puntuación de "IA" (menor es mejor)
+      
+      // 1. Puntuación por variación de longitud de oraciones
+      const lengthVariationScore = Math.max(0, 45 - (stdDevSentenceLength * 3.5)); // Penalizar si las longitudes son muy similares
       aiScore += lengthVariationScore;
       
-      const uniqueWords = new Set(words.filter(w => w.length > 3)).size;
-      const lexicalDiversity = uniqueWords / words.filter(w => w.length > 3).length || 0;
+      // 2. Puntuación por diversidad léxica
+      const uniqueWords = new Set(words.filter(w => w.length > 3)).size; // Contar palabras únicas (ignorando las cortas)
+      const lexicalDiversity = uniqueWords / words.filter(w => w.length > 3).length || 0; // Índice de diversidad
+      // Penalizar si la diversidad es baja (palabras repetidas)
       const lexicalScore = Math.max(0, lexicalDiversity < 0.20 ? 45 : lexicalDiversity < 0.35 ? 25 : 0); 
       aiScore += lexicalScore;
 
+      // 3. Puntuación por uso de conectores de IA
       let aiConnectorCount = 0;
-      const sentenceTokens = sentences.flatMap(s => s.toLowerCase().split(/[\s,.!?;:]+/).filter(w => w.length > 0));
-      aiConnectorCount = sentenceTokens.filter(w => aiConectors.includes(w)).length;
-      const connectorFrequency = (aiConnectorCount / sentenceCount) * 100;
+      const sentenceTokens = sentences.flatMap(s => s.toLowerCase().split(/[\s,.!?;:]+/).filter(w => w.length > 0)); // Tokenizar oraciones
+      aiConnectorCount = sentenceTokens.filter(w => aiConectors.includes(w)).length; // Contar conectores de IA
+      const connectorFrequency = (aiConnectorCount / sentenceCount) * 100; // Frecuencia
+      // Penalizar si la frecuencia de conectores de IA es alta
       const connectorScore = connectorFrequency > 18 ? 55 : connectorFrequency > 8 ? 30 : 0; 
       aiScore += connectorScore;
       
-      const sentenceStarts = sentences.map(s => s.trim().split(/\s+/)[0]?.toLowerCase());
+      // 4. Penalización por repetición (ej. inicio de oración)
+      const sentenceStarts = sentences.map(s => s.trim().split(/\s+/)[0]?.toLowerCase()); // Primeras palabras de cada oración
       const startCounts = {};
-      sentenceStarts.forEach(start => { if (start) startCounts[start] = (startCounts[start] || 0) + 1; });
+      sentenceStarts.forEach(start => { if (start) startCounts[start] = (startCounts[start] || 0) + 1; }); // Contar ocurrencias
       const mostFrequentStartCount = Object.values(startCounts).reduce((max, count) => Math.max(max, count), 0);
-      const repetitionRatio = (mostFrequentStartCount / sentenceCount) * 100;
-      const repetitionPenalty = repetitionRatio > 35 ? 35 : repetitionRatio > 25 ? 20 : 0; 
+      const repetitionRatio = (mostFrequentStartCount / sentenceCount) * 100; // Proporción de repetición
+      const repetitionPenalty = repetitionRatio > 35 ? 35 : repetitionRatio > 25 ? 20 : 0; // Penalizar si es alta
       aiScore += repetitionPenalty;
 
-      const perplexityFactor = (lexicalDiversity + (localStdDevSentenceLength / 10)) / 2; 
-      const perplexityScore = Math.max(0, (1 - perplexityFactor) * 20); 
+      // 5. Factor de Perplejidad (relacionado con la previsibilidad del texto)
+      // Una mayor diversidad léxica y variación en longitud de oración tienden a reducir la perplejidad
+      const perplexityFactor = (lexicalDiversity + (stdDevSentenceLength / 10)) / 2; 
+      const perplexityScore = Math.max(0, (1 - perplexityFactor) * 20); // Puntuación de perplejidad (más baja es mejor)
       aiScore += perplexityScore;
 
-      const normalizedAIScore = Math.min(100, aiScore); 
-      const humanQualityScore = Math.max(0, 100 - normalizedAIScore);
+      const normalizedAIScore = Math.min(100, aiScore); // Normalizar el score de IA entre 0 y 100
+      const humanQualityScore = Math.max(0, 100 - normalizedAIScore); // Calcular la puntuación humana (100 - score IA)
 
-      return humanQualityScore;
+      return humanQualityScore; // Devolver la puntuación de calidad humana
     }
 
     // --- FUNCIONES DE PROCESAMIENTO ---
@@ -923,7 +964,7 @@
       
       appState.inputText = inputText; 
       appState.isProcessing = true;
-      appState.activeTab = 'analyze'; 
+      appState.activeTab = 'analyze'; // Cambiar a la pestaña de análisis mientras procesa
       updateUI(); 
       
       try {
@@ -931,7 +972,7 @@
         
         updateProgress(5, "Limpieza inicial...");
         processedText = cleanText(processedText);
-        await sleep(150);
+        await sleep(150); // Simular carga
         
         updateProgress(15, "Reestructurando párrafos...");
         processedText = deepSemanticRewrite(processedText, appState.settings);
@@ -949,122 +990,132 @@
         processedText = adjustToneAndReadability(processedText, appState.settings);
         await sleep(150);
         
+        // Pasos adicionales para mayor profundidad
         if (appState.settings.depth === 'fuerte') {
             updateProgress(75, "Refinando estructura...");
+            // Volver a aplicar reescritura semántica con ajustes menores
             processedText = deepSemanticRewrite(processedText, { ...appState.settings, depth: 'normal', styleVariation: true }); 
             await sleep(150);
             updateProgress(85, "Optimizando fluidez...");
+            // Volver a aplicar fluidez natural con ajustes menores
             processedText = addNaturalFlow(processedText, { ...appState.settings, depth: 'normal' }); 
             await sleep(150);
         }
 
         updateProgress(95, "Análisis final de humanidad...");
-        const analysisScore = simulateStyleAnalysis(processedText, appState.settings);
+        const analysisScore = simulateStyleAnalysis(processedText, appState.settings); // Calcular la puntuación
         
+        // Calcular estadísticas
         const wordsBefore = inputText.split(/\s+/).filter(w => w.length > 0).length;
         const wordsAfter = processedText.split(/\s+/).filter(w => w.length > 0).length;
         const readability = calculateReadability(processedText);
         
+        // Actualizar estado de la aplicación con los resultados
         appState.outputText = processedText;
         appState.analysisScore = analysisScore;
         appState.stats = { wordsBefore, wordsAfter, readability };
         
+        // Guardar en el historial
         saveHistoryItem({
-          original: inputText.substring(0, 100) + (inputText.length > 100 ? '...' : ''),
-          result: processedText.substring(0, 100) + (processedText.length > 100 ? '...' : ''),
-          date: new Date().toLocaleString(),
-          score: analysisScore
+          original: inputText.substring(0, 100) + (inputText.length > 100 ? '...' : ''), // Truncar texto original para el historial
+          result: processedText.substring(0, 100) + (processedText.length > 100 ? '...' : ''), // Truncar resultado
+          date: new Date().toLocaleString(), // Fecha y hora actual
+          score: analysisScore // Puntuación de análisis
         });
         
         updateProgress(100, "¡Proceso completado!");
-        appState.activeTab = 'review';
-        appState.isProcessing = false;
+        appState.activeTab = 'review'; // Cambiar a la pestaña de resultado
+        appState.isProcessing = false; // Marcar como no procesando
         
       } catch (err) {
-        console.error("Error durante el procesamiento:", err);
-        showError("Ocurrió un error crítico al procesar el texto. Revisa la consola.");
-        appState.isProcessing = false;
-        appState.activeTab = 'write'; 
+        console.error("Error durante el procesamiento:", err); // Registrar el error en consola
+        showError("Ocurrió un error crítico al procesar el texto. Revisa la consola."); // Mostrar mensaje de error al usuario
+        appState.isProcessing = false; // Marcar como no procesando
+        appApp.activeTab = 'write'; // Volver a la pestaña de edición
       } finally {
-        updateUI(); 
+        updateUI(); // Actualizar la interfaz para reflejar el estado final
       }
     }
 
     // --- FUNCIONES DE ALMACENAMIENTO LOCAL ---
     function saveState() {
       try {
-        localStorage.setItem('redactaproSupremoState', JSON.stringify(appState));
+        localStorage.setItem('redactaproSupremoState', JSON.stringify(appState)); // Guardar estado actual en localStorage
       } catch (e) {
-        console.warn("No se pudo guardar el estado en localStorage:", e);
+        console.warn("No se pudo guardar el estado en localStorage:", e); // Advertir si falla el guardado
       }
     }
 
     function loadState() {
-      const savedState = localStorage.getItem('redactaproSupremoState');
+      const savedState = localStorage.getItem('redactaproSupremoState'); // Intentar cargar estado desde localStorage
       if (savedState) {
         try {
           const parsedState = JSON.parse(savedState);
+          // Fusionar el estado cargado con el estado inicial
           appState = { ...appState, ...parsedState };
           if (parsedState.conversionHistory) appState.conversionHistory = parsedState.conversionHistory;
           if (parsedState.settings) appState.settings = { ...appState.settings, ...parsedState.settings };
         } catch (e) {
-          console.error("Error al cargar el estado desde localStorage:", e);
-          localStorage.removeItem('redactaproSupremoState'); 
+          console.error("Error al cargar el estado desde localStorage:", e); // Registrar error si la carga falla
+          localStorage.removeItem('redactaproSupremoState'); // Eliminar el estado corrupto
         }
       }
     }
 
+    // Añadir un ítem al historial y limitar su tamaño
     function saveHistoryItem(item) {
-      appState.conversionHistory.unshift(item);
-      if (appState.conversionHistory.length > 7) { 
+      appState.conversionHistory.unshift(item); // Añadir al principio del array
+      if (appState.conversionHistory.length > 7) { // Mantener solo los últimos 7 ítems
         appState.conversionHistory = appState.conversionHistory.slice(0, 7);
       }
-      saveState();
+      saveState(); // Guardar el estado actualizado
     }
 
     // --- FUNCIONES DE UI ---
     function updateProgress(percent, message) {
       appState.processingProgress = percent;
       const progressBar = document.getElementById('progress-bar');
-      if (progressBar) progressBar.style.width = `${percent}%`;
+      if (progressBar) progressBar.style.width = `${percent}%`; // Actualizar ancho de la barra
       const progressPercent = document.getElementById('progress-percent');
-      if (progressPercent) progressPercent.textContent = `${percent}%`;
+      if (progressPercent) progressPercent.textContent = `${percent}%`; // Actualizar texto del porcentaje
       const progressMessage = document.querySelector('#progress-container span:first-child');
-      if (progressMessage) progressMessage.textContent = message;
+      if (progressMessage) progressMessage.textContent = message; // Actualizar mensaje de estado
     }
 
     function showError(message) {
       const errorElement = document.getElementById('error-message');
       if (!errorElement) return;
-      document.getElementById('error-text').textContent = message;
-      errorElement.classList.remove('hidden');
+      document.getElementById('error-text').textContent = message; // Mostrar mensaje de error
+      errorElement.classList.remove('hidden'); // Mostrar el div de error
+      // Ocultar el mensaje de error después de 7 segundos
       setTimeout(() => errorElement.classList.add('hidden'), 7000); 
     }
 
     function showToast(message) {
       const toast = document.getElementById('copy-toast');
       if (!toast) return;
-      toast.textContent = message;
-      toast.classList.remove('hidden');
+      toast.textContent = message; // Mostrar mensaje en el toast
+      toast.classList.remove('hidden'); // Mostrar el toast
+      // Ocultar el toast después de 2.5 segundos
       setTimeout(() => toast.classList.add('hidden'), 2500); 
     }
 
     function sleep(ms) {
-      return new Promise(resolve => setTimeout(resolve, ms));
+      return new Promise(resolve => setTimeout(resolve, ms)); // Función de espera asíncrona
     }
 
     function updateUI() {
       const { inputText, outputText, isProcessing, analysisScore, activeTab, conversionHistory, stats, settings } = appState;
       
-      // --- Manejo de Visibilidad de Secciones ---
+      // Mostrar/Ocultar secciones según la pestaña activa
       document.getElementById('write-section').classList.toggle('hidden', activeTab !== 'write');
       document.getElementById('analyze-section').classList.toggle('hidden', activeTab !== 'analyze');
       document.getElementById('review-section').classList.toggle('hidden', activeTab !== 'review');
       
-      // --- Actualización de Clases de Botones de Pestaña ---
+      // Actualizar clases de botones de pestaña
       const updateTabButton = (id, isActive) => {
         const button = document.getElementById(id);
-        if (button) { // Verificar que el botón existe
+        if (button) {
           button.classList.toggle('tab-active', isActive);
           button.classList.toggle('tab-inactive', !isActive);
         }
@@ -1073,24 +1124,24 @@
       updateTabButton('analyze-tab', activeTab === 'analyze');
       updateTabButton('review-tab', activeTab === 'review');
 
-      // --- Actualización del Campo de Texto de Entrada ---
+      // Actualizar el textarea de entrada si es necesario
       const inputTextElement = document.getElementById('input-text');
       if (inputTextElement && inputTextElement.value !== inputText) {
           inputTextElement.value = inputText;
       }
       
-      // --- Actualización de Botones de Profundidad ---
+      // Actualizar botones de profundidad de modificación
       document.querySelectorAll('[data-depth]').forEach(btn => {
         if (btn.dataset.depth === settings.depth) {
-          btn.classList.add('btn-primary', 'shadow-sm');
+          btn.classList.add('btn-primary', 'shadow-sm'); // Estilo activo
           btn.classList.remove('btn-secondary');
         } else {
-          btn.classList.add('btn-secondary');
+          btn.classList.add('btn-secondary'); // Estilo inactivo
           btn.classList.remove('btn-primary', 'shadow-sm');
         }
       });
 
-      // --- Actualización de Checkboxes ---
+      // Actualizar estado de las casillas de verificación (checkboxes)
       document.getElementById('styleVariation').checked = settings.styleVariation;
       document.getElementById('naturalFlow').checked = settings.naturalFlow;
       document.getElementById('toneAdjustment').checked = settings.toneAdjustment;
@@ -1102,15 +1153,16 @@
       const humanErrorCheckbox = document.getElementById('humanErrorCheckbox'); 
       if (humanErrorCheckbox) humanErrorCheckbox.checked = settings.simulateHumanErrors;
       
-      // --- Actualización del Texto de Salida ---
+      // Mostrar texto de salida o mensaje placeholder
       document.getElementById('output-text').textContent = outputText || "El texto mejorado aparecerá aquí...";
       
-      // --- Actualización del Análisis ---
+      // Actualizar la barra de análisis de calidad humana
       const analysisScoreElement = document.getElementById('analysis-score');
       if (analysisScoreElement) analysisScoreElement.textContent = `${analysisScore.toFixed(1)}%`;
       const analysisBar = document.getElementById('analysis-bar');
       if (analysisBar) analysisBar.style.width = `${analysisScore}%`;
       
+      // Actualizar feedback de análisis según la puntuación
       let feedbackText = "Introduce texto y procesa para ver el análisis.";
       if (analysisScore > 85) {
         feedbackText = "Extremadamente humano. ¡Casi indistinguible de la escritura humana!";
@@ -1125,18 +1177,19 @@
       }
       document.getElementById('analysis-feedback').textContent = feedbackText;
       
-      // --- Actualización de Estadísticas ---
+      // Actualizar estadísticas
       document.getElementById('words-before').textContent = stats.wordsBefore;
       document.getElementById('words-after').textContent = stats.wordsAfter;
       document.getElementById('readability-score').textContent = `${stats.readability.toFixed(1)}%`;
       
+      // Calcular puntuación de mejora general (combinando factores)
       const readabilityWeight = 0.3;
       const humanScoreWeight = 0.5;
       const lengthChangeWeight = 0.1; 
       const outputExistsWeight = 0.1;
 
       const lengthChange = stats.wordsAfter > 0 ? Math.abs(stats.wordsAfter - stats.wordsBefore) / stats.wordsBefore : 0;
-      const lengthFactor = 1 - Math.min(lengthChange, 0.3); 
+      const lengthFactor = 1 - Math.min(lengthChange, 0.3); // Factor de penalización si la longitud cambia drásticamente
 
       const improvementScore = (
         (analysisScore * humanScoreWeight) + 
@@ -1146,14 +1199,15 @@
       ).toFixed(1);
       document.getElementById('improvement-score').textContent = `+${improvementScore}%`;
       
-      // --- Actualización del Historial ---
+      // Actualizar historial de conversiones
       const historyContainer = document.getElementById('history-container');
       const historyList = document.getElementById('history-list');
       
       if (conversionHistory.length > 0) {
-        historyContainer.classList.remove('hidden');
-        historyList.innerHTML = ''; 
+        historyContainer.classList.remove('hidden'); // Mostrar contenedor si hay historial
+        historyList.innerHTML = ''; // Limpiar lista actual
         
+        // Renderizar cada ítem del historial
         conversionHistory.forEach((item, index) => {
           const historyItemDiv = document.createElement('div');
           historyItemDiv.className = 'history-item p-3 rounded-lg cursor-pointer';
@@ -1165,24 +1219,25 @@
             <div class="text-xs text-slate-300 mt-1">Puntuación: <span class="font-semibold text-yellow-300">${item.score.toFixed(1)}%</span> humano</div>
           `;
           
+          // Añadir listener para cargar el ítem del historial al hacer clic
           historyItemDiv.addEventListener('click', () => {
-            appState.inputText = item.original.replace('...', ''); 
-            appState.outputText = item.result.replace('...', ''); 
-            appState.analysisScore = item.score;
-            appState.activeTab = 'review';
-            updateUI();
+            appState.inputText = item.original.replace('...', ''); // Restaurar texto original
+            appState.outputText = item.result.replace('...', ''); // Restaurar texto procesado
+            appState.analysisScore = item.score; // Restaurar puntuación
+            appState.activeTab = 'review'; // Ir a la pestaña de resultado
+            updateUI(); // Actualizar UI
           });
           
-          historyList.appendChild(historyItemDiv);
+          historyList.appendChild(historyItemDiv); // Añadir el ítem a la lista
         });
       } else {
-        historyContainer.classList.add('hidden');
+        historyContainer.classList.add('hidden'); // Ocultar contenedor si no hay historial
       }
       
-      // --- Advertencia de Entrada Vacía ---
+      // Mostrar/Ocultar advertencia de entrada vacía
       document.getElementById('input-warning').classList.toggle('hidden', inputText.trim().length > 0);
       
-      // --- Estado del Botón de Procesamiento ---
+      // Actualizar estado del botón de procesamiento (deshabilitar si está procesando)
       const processBtn = document.getElementById('process-btn');
       if (isProcessing) {
         processBtn.innerHTML = `
@@ -1202,48 +1257,53 @@
         processBtn.disabled = false;
       }
 
-      saveState(); 
+      saveState(); // Guardar el estado actual cada vez que se actualiza la UI
     }
 
+    // Copiar texto de salida al portapapeles
     function copyToClipboard() {
       if (!appState.outputText) return;
       navigator.clipboard.writeText(appState.outputText).then(() => {
-        showToast('¡Texto copiado al portapapeles!');
+        showToast('¡Texto copiado al portapapeles!'); // Mostrar toast de éxito
       }).catch(err => {
-        console.error("Error copying to clipboard:", err);
-        showError("No se pudo copiar el texto al portapapeles.");
+        console.error("Error copying to clipboard:", err); // Registrar error en consola
+        showError("No se pudo copiar el texto al portapapeles."); // Mostrar error al usuario
       });
     }
 
+    // Descargar texto de salida en formato .txt o .doc
     function downloadText(format) {
       if (!appState.outputText) return;
       
       let blob, filename;
-      const timestamp = new Date().toISOString().split('T')[0]; 
+      const timestamp = new Date().toISOString().split('T')[0]; // Obtener fecha actual en formato YYYY-MM-DD
       
       if (format === 'txt') {
-        blob = new Blob([appState.outputText], { type: 'text/plain;charset=utf-8' });
+        blob = new Blob([appState.outputText], { type: 'text/plain;charset=utf-8' }); // Crear Blob para texto plano
         filename = `redactapro-supremo-${timestamp}.txt`;
       } else if (format === 'doc') {
+        // Crear contenido HTML básico para el archivo .doc
         const htmlContent = `
           <!DOCTYPE html><html><head><meta charset="UTF-8"><title>Texto Humanizado - RedactaPro Supremo</title>
-          <style>body { font-family: 'Inter', sans-serif; line-height: 1.7; color: #333; } p { margin-bottom: 1.1em; }</style>
+          <style>body { font-family: 'Inter', sans-serif; line-height: 1.7; color: #333; }</style>
           </head><body><p>${appState.outputText.replace(/\n/g, '<br>')}</p></body></html>
         `;
-        blob = new Blob([htmlContent], { type: 'application/msword' });
+        blob = new Blob([htmlContent], { type: 'application/msword' }); // Crear Blob para documento Word
         filename = `redactapro-supremo-${timestamp}.doc`;
       }
       
+      // Crear enlace temporal para descargar el archivo
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url; a.download = filename;
-      document.body.appendChild(a); a.click();
-      document.body.removeChild(a); URL.revokeObjectURL(url);
+      document.body.appendChild(a); a.click(); // Simular clic en el enlace
+      document.body.removeChild(a); URL.revokeObjectURL(url); // Limpiar
     }
 
+    // Cargar configuraciones actuales desde la UI al estado de la app
     function loadSettingsFromUI() {
       appState.settings = {
-        depth: document.querySelector('[data-depth].btn-primary')?.dataset.depth || 'suave',
+        depth: document.querySelector('[data-depth].btn-primary')?.dataset.depth || 'suave', // Obtener profundidad activa
         styleVariation: document.getElementById('styleVariation').checked,
         naturalFlow: document.getElementById('naturalFlow').checked,
         toneAdjustment: document.getElementById('toneAdjustment').checked,
@@ -1258,52 +1318,84 @@
 
     // --- INICIALIZACIÓN ---
     document.addEventListener('DOMContentLoaded', function() {
-      loadState(); 
+      loadState(); // Cargar estado guardado al iniciar la página
 
       // --- Event Listeners ---
-      document.getElementById('write-tab')?.addEventListener('click', () => { appState.activeTab = 'write'; updateUI(); });
-      document.getElementById('analyze-tab')?.addEventListener('click', () => { if (appState.inputText.trim()) { appState.activeTab = 'analyze'; updateUI(); } else { showError("Por favor, introduce texto primero."); } });
-      document.getElementById('review-tab')?.addEventListener('click', () => { if (appState.outputText) { appState.activeTab = 'review'; updateUI(); } else { showError("Procesa un texto para ver los resultados."); } });
+      // Listeners para cambio de pestaña
+      document.getElementById('write-tab').addEventListener('click', () => { appState.activeTab = 'write'; updateUI(); });
+      document.getElementById('analyze-tab').addEventListener('click', () => { 
+          if (appState.inputText.trim()) { 
+              appState.activeTab = 'analyze'; 
+              updateUI(); 
+          } else { 
+              showError("Por favor, introduce texto primero."); 
+          } 
+      });
+      document.getElementById('review-tab').addEventListener('click', () => { 
+          if (appState.outputText) { 
+              appState.activeTab = 'review'; 
+              updateUI(); 
+          } else { 
+              showError("Procesa un texto para ver los resultados."); 
+          } 
+      });
       
+      // Listeners para botones de profundidad
       document.querySelectorAll('[data-depth]').forEach(button => {
         button.addEventListener('click', () => { 
-            loadSettingsFromUI(); 
-            updateUI(); 
+            loadSettingsFromUI(); // Cargar la configuración de profundidad
+            updateUI(); // Actualizar UI para reflejar el botón activo
         });
       });
       
+      // Listeners para checkboxes de ajustes
       document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
-        checkbox.addEventListener('change', () => { loadSettingsFromUI(); });
+        checkbox.addEventListener('change', () => { 
+            loadSettingsFromUI(); // Cargar la configuración al cambiar
+        });
       });
       
-      document.getElementById('process-btn')?.addEventListener('click', processText);
-      document.getElementById('process-from-analyze')?.addEventListener('click', processText);
+      // Listener para el botón principal de procesamiento
+      document.getElementById('process-btn').addEventListener('click', processText);
+      // Listener para el botón de procesamiento desde la pestaña de análisis
+      document.getElementById('process-from-analyze').addEventListener('click', processText);
       
-      document.getElementById('copy-btn')?.addEventListener('click', copyToClipboard);
+      // Listener para copiar al portapapeles
+      document.getElementById('copy-btn').addEventListener('click', copyToClipboard);
       
+      // Listeners para botones de descarga
       document.querySelectorAll('.export-option').forEach(button => {
         button.addEventListener('click', (e) => { downloadText(e.target.dataset.format); });
       });
       
-      document.getElementById('load-file')?.addEventListener('click', () => { document.getElementById('file-input').click(); });
-      document.getElementById('file-input')?.addEventListener('change', function(event) {
+      // Listener para cargar archivo
+      document.getElementById('load-file').addEventListener('click', () => { document.getElementById('file-input').click(); }); // Activar input oculto
+      document.getElementById('file-input').addEventListener('change', function(event) {
         const file = event.target.files[0];
         if (!file) return;
         const reader = new FileReader();
         reader.onload = (e) => {
-          appState.inputText = e.target.result;
-          appState.outputText = ''; appState.analysisScore = 0; appState.stats = { wordsBefore: 0, wordsAfter: 0, readability: 0 };
-          appState.activeTab = 'write'; updateUI();
+          appState.inputText = e.target.result; // Asignar contenido del archivo a inputText
+          // Limpiar resultados anteriores
+          appState.outputText = ''; appState.analysisScore = 0; 
+          appState.stats = { wordsBefore: 0, wordsAfter: 0, readability: 0 };
+          appState.activeTab = 'write'; // Volver a la pestaña de edición
+          updateUI(); 
         };
-        reader.onerror = () => showError("Error al leer el archivo.");
-        reader.readAsText(file);
+        reader.onerror = () => showError("Error al leer el archivo."); // Manejar error de lectura
+        reader.readAsText(file); // Leer archivo como texto
       });
       
-      document.getElementById('clear-input-btn')?.addEventListener('click', () => {
-        appState.inputText = ''; appState.outputText = ''; appState.analysisScore = 0; appState.stats = { wordsBefore: 0, wordsAfter: 0, readability: 0 };
-        appState.activeTab = 'write'; updateUI();
+      // Listener para limpiar solo el texto de entrada
+      document.getElementById('clear-input-btn').addEventListener('click', () => {
+        appState.inputText = ''; appState.outputText = ''; appState.analysisScore = 0; 
+        appState.stats = { wordsBefore: 0, wordsAfter: 0, readability: 0 };
+        appState.activeTab = 'write'; 
+        updateUI();
       });
-      document.getElementById('clear-all-btn')?.addEventListener('click', () => {
+      // Listener para limpiar todo (estado, historial, localstorage)
+      document.getElementById('clear-all-btn').addEventListener('click', () => {
+        // Restaurar estado inicial
         appState = { 
           inputText: '', outputText: '', isProcessing: false, analysisScore: 0,
           processingProgress: 0, activeTab: 'write', conversionHistory: [],
@@ -1314,13 +1406,21 @@
             lexicalRichness: true, avoidRepetition: true, simulateHumanErrors: false, 
           }
         };
-        localStorage.removeItem('redactaproSupremoState'); 
-        updateUI();
+        localStorage.removeItem('redactaproSupremoState'); // Eliminar estado guardado
+        updateUI(); // Actualizar UI
       });
       
-      document.getElementById('another-text-btn')?.addEventListener('click', () => { appState.activeTab = 'write'; updateUI(); });
+      // Listener para procesar otro texto (reinicia a la pestaña de escritura)
+      document.getElementById('another-text-btn').addEventListener('click', () => { 
+          appState.activeTab = 'write'; 
+          appState.inputText = ''; // Limpiar entrada
+          appState.outputText = ''; // Limpiar salida
+          appState.analysisScore = 0; 
+          appState.stats = { wordsBefore: 0, wordsAfter: 0, readability: 0 };
+          updateUI(); 
+      });
       
-      updateUI(); 
+      updateUI(); // Actualización inicial de la UI al cargar la página
     });
   </script>
 </body>
