@@ -1,4 +1,4 @@
-222<!DOCTYPE html>
+333<!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="utf-8" />
@@ -563,12 +563,18 @@
         .replace(/información\.\s*\./g, 'información.')
         .replace(/que\s*\.\.\s*garanticen/g, 'que garanticen')
         .replace(/será\s*\.\.\s*esencial/g, 'será esencial')
+        // Corregir conjunciones
         .replace(/(\s+)a(\s+[iíIÍ])|(\s+)e(\s+[iíIÍ])/g, '$1 y$2')
         .replace(/(\s+)o(\s+[oO])/g, '$1 u$2')
+        // Corregir espacios erróneos
         .replace(/([.!?¿¡])\s{2,}/g, '$1 ') 
         .replace(/(\s{2,})([a-zA-Z])/g, '$1$2') 
         .replace(/(\w),(\S)/g, '$1, $2') 
-        .replace(/,\s*([.!?¿¡])/g, '$1'); 
+        .replace(/,\s*([.!?¿¡])/g, '$1')
+        // Corregir duplicación de letras que puedan haber quedado de errores previos
+        .replace(/([a-zA-Z])\1{2,}/g, '$1') // Ej: ccc -> c, jjj -> j
+        .replace(/([a-zA-Z])\1([a-zA-Z])\1/g, '$1$2') // Ej: jjj -> j
+        .replace(/(\s)([a-zA-Z])\1/g, '$1$2'); // Eliminar espacio si está entre una letra y otra letra separada por espacio doble
         
       return cleaned;
     }
@@ -590,7 +596,7 @@
 
     let lastIntroPhrase = ''; 
     let usedIdiomsLastRound = new Set(); 
-    let recentPhrases = []; // Para rastrear todas las frases insertadas recientemente
+    let recentPhrases = []; // Historial de frases insertadas recientemente
 
     function getSafeIntroPhrase(phrases, contextSentence = null) {
         if (!phrases || phrases.length === 0) return '';
@@ -607,15 +613,15 @@
              availablePhrases = availablePhrases.filter(p => !usedIdiomsLastRound.has(p));
         }
         
-        // Evitar insertar una frase que sea muy similar a la última insertada o a la siguiente oración
+        // Evitar insertar frases muy similares a las últimas insertadas o a la oración siguiente
         if (availablePhrases.length > 0) {
              availablePhrases = availablePhrases.filter(p => 
-                 !recentPhrases.includes(p.replace(/[\s,.]/g, '')) && // No igual a frases muy recientes
-                 (contextSentence ? !contextSentence.startsWith(p.replace(/[\s,.]/g, '')) : true) // No similar al inicio de la oración
+                 !recentPhrases.includes(p.replace(/[\s,.]/g, '').toLowerCase()) && // No igual a frases muy recientes (sin espacios/puntuación)
+                 (contextSentence ? !contextSentence.toLowerCase().startsWith(p.replace(/[\s,.]/g, '').toLowerCase()) : true) // No similar al inicio de la oración
              );
         }
 
-        if (availablePhrases.length === 0) { 
+        if (availablePhrases.length === 0) { // Si no quedan opciones únicas, devolver una aleatoria
             return phrases[Math.floor(Math.random() * phrases.length)]; 
         }
 
@@ -625,8 +631,9 @@
 
     function resetIntroPhraseManagement(currentPhrases) {
         lastIntroPhrase = ''; 
-        recentPhrases.push(...recentPhrases.slice(-3)); // Mantener un historial corto de las últimas frases
-        recentPhrases = recentPhrases.slice(-5); // Limitar el historial a 5
+        // Mantener un historial corto de las últimas frases insertadas
+        recentPhrases.push(...recentPhrases.slice(-3)); 
+        recentPhrases = recentPhrases.slice(-5); // Limitar historial a 5 frases
         if (currentPhrases === humanIdioms) {
             usedIdiomsLastRound.clear(); 
         }
@@ -635,7 +642,7 @@
     function deepSemanticRewrite(text, settings) {
       let paragraphs = text.split(/\n\s*\n/).filter(p => p.trim().length > 5);
       
-      if (paragraphs.length > 3 && Math.random() < 0.8) {
+      if (paragraphs.length > 3 && Math.random() < 0.7) { // Probabilidad reducida
         const intro = paragraphs.shift();
         const conclusion = paragraphs.pop();
         let body = paragraphs;
@@ -654,40 +661,47 @@
         
         if (settings.styleVariation && sentences.length > 3 && Math.random() < 0.7) { // Probabilidad reducida
           const patterns = [
-            (s) => [s[1], s[0], s[2], s[3], ...s.slice(4)], 
-            (s) => { 
+            (s) => [s[1], s[0], s[2], s[3], ...s.slice(4)], // Intercambiar dos primeras
+            (s) => { // Insertar frase y reordenar
               const introPhrase = getSafeIntroPhrase(['Es interesante notar que,', 'Para que nos entendamos,', 'Cabe destacar que,'], s[0]);
               if (!introPhrase) return s;
+              if (s[0].toLowerCase().startsWith(introPhrase.replace(/,$/, '').toLowerCase())) return s; 
               return [introPhrase.replace(/,$/, '') + ' ' + s[0].charAt(0).toLowerCase() + s[0].slice(1), s[1], s[2], s[3], ...s.slice(4)];
             },
-            (s) => { 
+            (s) => { // Mover última oración al principio
               const introPhrase = getSafeIntroPhrase(['En última instancia,', 'Para ser honesto,']);
               if (!introPhrase) return s;
+              if (s[s.length-1].toLowerCase().startsWith(introPhrase.replace(/,$/, '').toLowerCase())) return s;
               return [introPhrase.replace(/,$/, '') + ' ' + s[s.length - 1].charAt(0).toLowerCase() + s[s.length - 1].slice(1), s[0], s[1], s[2], ...s.slice(3)];
             },
-            (s) => { 
+            (s) => { // Insertar conector y reordenar
               const connector = getSafeIntroPhrase(['Por ende,', 'Por lo tanto,', 'Así pues,']);
               if (!connector) return s;
+              if (s[2].toLowerCase().startsWith(connector.replace(/,$/, '').toLowerCase())) return s;
               return [s[0], connector.replace(/,$/, '') + ' ' + s[2].charAt(0).toLowerCase() + s[2].slice(1), s[1], ...s.slice(3)];
             },
-            (s) => { 
+            (s) => { // Intercambiar dos primeras y añadir conector
               const connector = getSafeIntroPhrase(['Sin embargo,', 'No obstante,']);
                if (!connector) return [s[1], s[0], ...s.slice(2)];
+              if (s[3].toLowerCase().startsWith(connector.replace(/,$/, '').toLowerCase())) return [s[1], s[0], ...s.slice(2)];
               return [s[1], s[0], connector.replace(/,$/, '') + ' ' + s[3].charAt(0).toLowerCase() + s[3].slice(1), ...s.slice(2)];
             },
-            (s) => { 
+            (s) => { // Insertar frase introductoria y reordenar
               const introPhrase = getSafeIntroPhrase(['Para que te hagas una idea,', 'Vamos que,']);
                if (!introPhrase) return s;
+               if (s[2].toLowerCase().startsWith(introPhrase.replace(/,$/, '').toLowerCase())) return s;
                return [introPhrase.replace(/,$/, '') + ' ' + s[2].charAt(0).toLowerCase() + s[2].slice(1), s[0], s[1], ...s.slice(3)];
             },
-             (s) => { 
+             (s) => { // Reordenar y añadir conector
               const connector = getSafeIntroPhrase(['Como resultado,', 'Consecuentemente,']);
                if (!connector) return s;
+              if (s[1].toLowerCase().startsWith(connector.replace(/,$/, '').toLowerCase())) return s;
               return [s[0], s[3], connector.replace(/,$/, '') + ' ' + s[1].charAt(0).toLowerCase() + s[1].slice(1), s[2], ...s.slice(4)];
             },
-             (s) => { 
+             (s) => { // Reordenar y añadir comentario
               const connector = getSafeIntroPhrase(['Por cierto,', 'A propósito,']);
                if (!connector) return [s[1], s[2], s[0], ...s.slice(3)];
+               if (s[0].toLowerCase().startsWith(connector.replace(/,$/, '').toLowerCase())) return [s[1], s[2], s[0], ...s.slice(3)];
                return [s[1], s[2], connector.replace(/,$/, '') + ' ' + s[0].charAt(0).toLowerCase() + s[0].slice(1), ...s.slice(3)];
             }
           ];
@@ -695,14 +709,15 @@
           sentences = pattern(sentences);
         }
         
-        if (settings.depth === 'fuerte' && settings.simulateHumanErrors && sentences.length > 1 && Math.random() < 0.30) { // Probabilidad reducida
+        // Simular errores humanos sutiles en modo 'fuerte'
+        if (settings.depth === 'fuerte' && settings.simulateHumanErrors && sentences.length > 1 && Math.random() < 0.25) { // Probabilidad reducida
             sentences = sentences.flatMap(sentence => {
                 if (sentence.length > 120 && Math.random() < 0.70) { // Probabilidad reducida
                     const breakPoint = Math.max(60, sentence.lastIndexOf(' ', Math.floor(sentence.length / 2)));
                     if (breakPoint > 20) { 
                         const firstPart = sentence.slice(0, breakPoint);
                         const secondPart = sentence.slice(breakPoint + 1);
-                        const addPunctuationError = Math.random() < 0.15; // Menos errores de puntuación
+                        const addPunctuationError = Math.random() < 0.10; // Menos errores de puntuación
                         const formattedFirst = firstPart.match(/[.!?]$/) ? firstPart : firstPart + (addPunctuationError ? '..' : '.');
                         const formattedSecond = secondPart.charAt(0).toLowerCase() + (secondPart.match(/[.!?]$/) ? secondPart.slice(0, -1) : secondPart);
                         return [formattedFirst.trim(), formattedSecond];
@@ -740,15 +755,15 @@
           const transform = transformations[Math.floor(Math.random() * transformations.length)];
           result = transform(result);
         }
-        if (settings.lexicalRichness && Math.random() < 0.8) { 
+        if (settings.lexicalRichness && Math.random() < 0.7) { // Probabilidad reducida
           for (const [word, synonyms] of Object.entries(richSynonyms)) {
             const regex = new RegExp(`\\b${word}\\b`, 'gi');
             result = result.replace(regex, () => {
-              if (Math.random() < 0.75) { 
+              if (Math.random() < 0.70) { // Probabilidad reducida de reemplazo
                 const chosenSynonym = synonyms[Math.floor(Math.random() * synonyms.length)];
-                // Evitar reemplazar si el sinónimo es igual a la palabra original o se repite inmediatamente
-                const lastWord = result.split(' ').slice(-2, -1)[0]; // Obtener la penúltima palabra
-                return chosenSynonym !== word && chosenSynonym !== lastWord ? chosenSynonym : word;
+                const lastWord = result.split(' ').slice(-2, -1)[0]; 
+                // Evitar reemplazo si el sinónimo es igual a la palabra original, se repite inmediatamente, o es similar a una frase reciente
+                return chosenSynonym !== word && chosenSynonym !== lastWord && !recentPhrases.includes(chosenSynonym.toLowerCase()) ? chosenSynonym : word;
               }
               return word; 
             });
@@ -765,9 +780,10 @@
         let sentences = para.split(/(?<=[.!?])\s+/).filter(s => s.trim());
         
         // Añadir conectores naturales al inicio de párrafos (excepto el primero)
-        if (settings.connectorVariety && idx > 0 && Math.random() < 0.6) { // Probabilidad reducida
+        if (settings.connectorVariety && idx > 0 && Math.random() < 0.5) { // Probabilidad más baja
           let connector = getSafeIntroPhrase(connectors);
-          if (aiConectors.some(ac => connector.toLowerCase().includes(ac)) && Math.random() < 0.6) { // Probabilidad reducida para evitar conectores IA
+          // Evitar conectores IA y evitar conectores si la oración empieza con uno ya
+          if (aiConectors.some(ac => connector.toLowerCase().includes(ac)) && Math.random() < 0.5) { 
               connector = getSafeIntroPhrase(connectors); 
           }
           if (connector) {
@@ -777,18 +793,18 @@
           }
         }
         
-        // Incorporar modismos, ejemplos personales, interjecciones
-        if (settings.naturalFlow && sentences.length > 2 && Math.random() < 0.5) { // Probabilidad reducida
+        // Incorporar modismos, ejemplos personales, interjecciones de forma más controlada
+        if (settings.naturalFlow && sentences.length > 2 && Math.random() < 0.5) { // Probabilidad más baja
           const insertAt = Math.floor(sentences.length / 2); 
           const choice = Math.random();
-          if (choice < 0.15) { // Modismos (probabilidad reducida)
+          if (choice < 0.10) { // Modismos (probabilidad más baja)
             const idiom = getSafeIntroPhrase(humanIdioms);
-            if (idiom && !usedIdiomsLastRound.has(idiom)) {
+            if (idiom && !usedIdiomsLastRound.has(idiom)) { 
               sentences.splice(insertAt, 0, `Como quien dice, ${idiom}. ¿No crees?`);
               lastIntroPhrase = idiom;
               usedIdiomsLastRound.add(idiom);
             }
-          } else if (choice < 0.35) { // Ejemplos personales (probabilidad reducida)
+          } else if (choice < 0.25) { // Ejemplos personales (probabilidad reducida)
             const examples = [
               'yo mismo me acuerdo de una vez que...', 'me pasó algo parecido el otro día...',
               'imagínate la escena:', 'recuerdo perfectamente cuando...', 'no te vas a creer lo que pasó...',
@@ -798,12 +814,12 @@
             const examplePhrase = getSafeIntroPhrase(examples);
             sentences.splice(insertAt, 0, `Por ejemplo, ${examplePhrase}`);
             lastIntroPhrase = 'Por ejemplo';
-          } else if (choice < 0.65) { // Interjecciones/Rellenos (probabilidad reducida)
+          } else if (choice < 0.50) { // Interjecciones/Rellenos (probabilidad reducida)
              const interjections = ['¡Vaya!', '¡Ojo!', 'Bueno...', 'Pues mira...', '¿Sabes?', '¿Me sigues?', 'Anda,', 'En fin,'];
              const interjection = getSafeIntroPhrase(interjections);
              sentences.splice(insertAt, 0, `${interjection}`);
              lastIntroPhrase = interjection;
-          } else if (settings.depth === 'fuerte' && Math.random() < 0.4) { // Rellenos verbales en modo fuerte
+          } else if (settings.depth === 'fuerte' && Math.random() < 0.3) { // Rellenos verbales en modo fuerte (probabilidad reducida)
               const pause = ['eh...', 'pues...', 'bueno...', 'digamos...', 'verá...', 'o sea...', 'este...', 'mmh...', 'a ver,'];
               const filler = getSafeIntroPhrase(pause);
               sentences[insertAt] = `${filler} ${sentences[insertAt].charAt(0).toLowerCase() + sentences[insertAt].slice(1)}`;
@@ -811,8 +827,8 @@
           }
         }
         
-        // Simular repetición de palabras (solo en modo 'fuerte' y si está activado)
-        if (settings.depth === 'fuerte' && settings.avoidRepetition && Math.random() < 0.3) { // Probabilidad reducida
+        // Simular repetición de palabras (solo en modo 'fuerte')
+        if (settings.depth === 'fuerte' && settings.avoidRepetition && Math.random() < 0.25) { // Probabilidad reducida
             const sentenceIdx = Math.floor(Math.random() * sentences.length);
             if (sentences[sentenceIdx].split(' ').length > 6) { 
               const words = sentences[sentenceIdx].split(' ');
@@ -903,7 +919,6 @@
               lastIntroPhrase = clause;
             }
             
-            // Simplificar vocabulario formal
             if (settings.readabilityFocus && Math.random() < 0.3) { // Probabilidad reducida
               const formalToInformal = {
                 "implementar": "usar", "optimizar": "mejorar", "paradigma": "enfoque",
@@ -912,8 +927,7 @@
                 "por consiguiente": "así que", "en consecuencia": "por lo tanto",
                 "utilizar": "usar", "visualizar": "ver", "finalizar": "terminar",
                 "acelerar": "agilizar", "mitigar": "reducir", "viable": "posible",
-                "demostrar": "mostrar", "evaluar": "analizar", "estrategia": "plan",
-                "inherente": "propio", "potenciar": "fortalecer", "paradigmático": "ejemplar"
+                "demostrar": "mostrar", "evaluar": "analizar", "estrategia": "plan"
               };
               for (const [formal, informal] of Object.entries(formalToInformal)) {
                 const regex = new RegExp(`\\b${formal}\\b`, 'gi');
@@ -957,17 +971,14 @@
 
       let aiScore = 0; 
       
-      // 1. Variación de longitud de oraciones: penalizar si son muy similares
       const lengthVariationScore = Math.max(0, 45 - (stdDevSentenceLength * 3.5)); 
       aiScore += lengthVariationScore;
       
-      // 2. Diversidad léxica: penalizar si se usan pocas palabras únicas
       const uniqueWords = new Set(words.filter(w => w.length > 3)).size;
       const lexicalDiversity = uniqueWords / words.filter(w => w.length > 3).length || 0; 
       const lexicalScore = Math.max(0, lexicalDiversity < 0.20 ? 45 : lexicalDiversity < 0.35 ? 25 : 0); 
       aiScore += lexicalScore;
 
-      // 3. Uso de conectores de IA: penalizar si se abusa de ellos
       let aiConnectorCount = 0;
       const sentenceTokens = sentences.flatMap(s => s.toLowerCase().split(/[\s,.!?;:]+/).filter(w => w.length > 0));
       aiConnectorCount = sentenceTokens.filter(w => aiConectors.includes(w)).length;
@@ -975,7 +986,6 @@
       const connectorScore = connectorFrequency > 18 ? 55 : connectorFrequency > 8 ? 30 : 0; 
       aiScore += connectorScore;
       
-      // 4. Penalización por repetición (ej. inicio de oración)
       const sentenceStarts = sentences.map(s => s.trim().split(/\s+/)[0]?.toLowerCase()); 
       const startCounts = {};
       sentenceStarts.forEach(start => { if (start) startCounts[start] = (startCounts[start] || 0) + 1; });
@@ -984,7 +994,6 @@
       const repetitionPenalty = repetitionRatio > 35 ? 35 : repetitionRatio > 25 ? 20 : 0; 
       aiScore += repetitionPenalty;
 
-      // 5. Factor de Perplejidad
       const perplexityFactor = (lexicalDiversity + (stdDevSentenceLength / 10)) / 2; 
       const perplexityScore = Math.max(0, (1 - perplexityFactor) * 20); 
       aiScore += perplexityScore;
