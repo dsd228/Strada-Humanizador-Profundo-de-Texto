@@ -1,0 +1,1 @@
+# Strada-Humanizador-Profundo-de-Texto
