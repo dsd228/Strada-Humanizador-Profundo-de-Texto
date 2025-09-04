@@ -557,9 +557,9 @@
       
       // Correcciones específicas para errores observados
       cleaned = cleaned.replace(/democratizacióacceso\s+n/g, 'democratización');
-      cleaned = cleaned.replace(/posibilita\s+la\.\s+identificación/g, 'posibilita la identificación'); // Eliminar punto extra
-      cleaned = cleaned.replace(/información\.\s*\./g, 'información.'); // Eliminar doble punto
-      cleaned = cleaned.replace(/que\s*\.\.\s*garanticen/g, 'que garanticen'); // Eliminar puntos suspensivos
+      cleaned = cleaned.replace(/posibilita\s+la\.\s+identificación/g, 'posibilita la identificación'); 
+      cleaned = cleaned.replace(/información\.\s*\./g, 'información.'); 
+      cleaned = cleaned.replace(/que\s*\.\.\s*garanticen/g, 'que garanticen'); 
       cleaned = cleaned.replace(/será\s*\.\.\s*esencial/g, 'será esencial');
       
       return cleaned;
@@ -577,7 +577,7 @@
       return Math.max(0, Math.min(100, humanAdjustedScore));
     }
 
-    let lastIntroPhrase = ''; // Para evitar repetición inmediata de frases introductorias
+    let lastIntroPhrase = ''; 
     function getSafeIntroPhrase(phrases, excludeIfRecent = true) {
         let intro = phrases[Math.floor(Math.random() * phrases.length)];
         if (excludeIfRecent && intro === lastIntroPhrase) {
@@ -768,7 +768,7 @@
 
       resetLastIntroPhrase(); 
 
-      return processedParagraphs.map((paraSentences, pIdx) => {
+      return paragraphs.map((paraSentences, pIdx) => {
         let finalSentences = paraSentences.map((sentence, idx) => {
           let processed = sentence.trim();
           const currentSentenceLength = processed.split(/\s+/).length;
@@ -866,13 +866,18 @@
       const sentenceCount = sentences.length;
       if (sentenceCount === 0 || wordCount === 0) return 0; 
 
-      const avgSentenceLength = wordCount / sentenceCount;
+      const avgSentenceLength = sentenceLengths.length > 0 ? sentenceLengths.reduce((a, b) => a + b, 0) / sentenceLengths.length : 1;
+      // --- MODIFICACIÓN APLICADA AQUÍ ---
+      // sentenceLengths se calcula localmente ahora, en lugar de depender de adjustToneAndReadability
       const sentenceWordCounts = sentences.map(s => s.split(/\s+/).length);
-      const stdDevSentenceLength = sentenceLengths.length > 0 ? Math.sqrt(sentenceLengths.reduce((acc, val) => acc + Math.pow(val - avgSentenceLength, 2), 0) / sentenceLengths.length) : 0;
+      const localSentenceLengths = sentenceWordCounts; // Renombramos para claridad
+      const localAvgSentenceLength = localSentenceLengths.length > 0 ? localSentenceLengths.reduce((a, b) => a + b, 0) / localSentenceLengths.length : 1;
+      const localStdDevSentenceLength = localSentenceLengths.length > 0 ? Math.sqrt(localSentenceLengths.reduce((acc, val) => acc + Math.pow(val - localAvgSentenceLength, 2), 0) / localSentenceLengths.length) : 0;
+      // --- FIN DE LA MODIFICACIÓN ---
 
       let aiScore = 0; 
       
-      const lengthVariationScore = Math.max(0, 45 - (stdDevSentenceLength * 3.5)); 
+      const lengthVariationScore = Math.max(0, 45 - (localStdDevSentenceLength * 3.5)); 
       aiScore += lengthVariationScore;
       
       const uniqueWords = new Set(words.filter(w => w.length > 3)).size;
@@ -895,7 +900,7 @@
       const repetitionPenalty = repetitionRatio > 35 ? 35 : repetitionRatio > 25 ? 20 : 0; 
       aiScore += repetitionPenalty;
 
-      const perplexityFactor = (lexicalDiversity + (stdDevSentenceLength / 10)) / 2; 
+      const perplexityFactor = (lexicalDiversity + (localStdDevSentenceLength / 10)) / 2; 
       const perplexityScore = Math.max(0, (1 - perplexityFactor) * 20); 
       aiScore += perplexityScore;
 
@@ -1086,7 +1091,6 @@
       document.getElementById('connectorVariety').checked = settings.connectorVariety;
       document.getElementById('lexicalRichness').checked = settings.lexicalRichness;
       document.getElementById('avoidRepetition').checked = settings.avoidRepetition;
-      // Actualizar el nuevo checkbox de errores humanos
       const humanErrorCheckbox = document.getElementById('humanErrorCheckbox'); 
       if (humanErrorCheckbox) humanErrorCheckbox.checked = settings.simulateHumanErrors;
       
@@ -1249,8 +1253,8 @@
       
       document.querySelectorAll('[data-depth]').forEach(button => {
         button.addEventListener('click', () => { 
-            loadSettingsFromUI(); // Actualiza el estado con la nueva profundidad
-            updateUI(); // Refleja el cambio visual en los botones
+            loadSettingsFromUI(); 
+            updateUI(); 
         });
       });
       
