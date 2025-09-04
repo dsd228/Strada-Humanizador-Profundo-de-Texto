@@ -1,11 +1,11 @@
-111<!DOCTYPE html>
+999<!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <meta name="description" content="RedactaPro Supremo: La herramienta definitiva para humanizar textos de IA y evitar detectores académicos." />
-  <title>RedactaPro Supremo - Humaniza Textos de IA</title>
-  <!-- Tailwind CSS vía CDN -->
+  <title>RedactaPro Supremo - Evita Detectores de IA</title>
+  <!-- Tailwind CSS vía CDN (válido para GitHub Pages) -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
@@ -35,9 +35,6 @@
     }
     .whitespace-pre-wrap {
       white-space: pre-wrap;
-    }
-    .toast-success {
-      background: linear-gradient(135deg, #059669, #047857);
     }
   </style>
 </head>
@@ -257,7 +254,7 @@
       progressMessage: 'Esperando...'
     };
 
-    // --- Datos de humanización avanzada ---
+    // --- Datos de humanización ---
     const Data = {
       connectors: [
         "Bueno,", "Mira,", "La verdad es que,", "O sea,", "Tipo,", "Vamos,", "Pues,",
@@ -276,17 +273,6 @@
         "no pegar ojo", "irse por las ramas", "montar un pollo",
       ],
       interjections: ["¡Vaya!", "¡Ojo!", "Bueno...", "Pues mira...", "¿Sabes?", "¿Me sigues?", "Anda,", "En fin,"],
-      examples: [
-        "yo mismo me acuerdo de una vez que...",
-        "me pasó algo parecido el otro día...",
-        "imagínate la escena:",
-        "recuerdo perfectamente cuando...",
-        "no te vas a creer lo que pasó...",
-        "fue una situación bastante curiosa...",
-        "de hecho, me recordó a cuando...",
-        "piensa en esto:",
-        "por ejemplo, si te pasa que..."
-      ],
       formalToInformal: {
         "implementar": "usar", "optimizar": "mejorar", "paradigma": "enfoque",
         "sinergia": "colaboración", "efectuar": "hacer", "procedimiento": "paso",
@@ -302,22 +288,7 @@
         "importante": ["clave", "fundamental", "esencial", "crítico"],
         "rápido": ["veloz", "ágil", "pronto", "inmediato"],
         "difícil": ["complicado", "duro", "arduo", "engorroso"],
-      },
-      aiConectors: [
-        "además", "asimismo", "por lo tanto", "en conclusión", "por consiguiente",
-        "así pues", "de hecho", "por ende", "en resumen", "finalmente",
-        "sin embargo", "no obstante", "adicionalmente", "en primer lugar",
-        "posteriormente", "con base en"
-      ],
-      camoPhrases: [
-        "según estudios recientes...",
-        "como bien señala la literatura...",
-        "esto se alinea con lo observado en...",
-        "un caso similar fue documentado en...",
-        "esto refleja una tendencia creciente...",
-        "desde una perspectiva crítica...",
-        "como se ha argumentado anteriormente..."
-      ]
+      }
     };
 
     // --- Utilidades ---
@@ -331,13 +302,6 @@
           .replace(/[ \t]+/g, ' ')
           .replace(/ +([,.!?¿¡:]+)/g, '$1')
           .replace(/([¿¡]) +/g, '$1')
-          .replace(/(\s+)a(\s+[iíIÍ])|(\s+)e(\s+[iíIÍ])/g, '$1 y$2')
-          .replace(/(\s+)o(\s+[oO])/g, '$1 u$2')
-          .replace(/([.!?¿¡])\s{2,}/g, '$1 ')
-          .replace(/(\s{2,})([a-zA-Z])/g, '$1$2')
-          .replace(/(\w),(\S)/g, '$1, $2')
-          .replace(/,\s*([.!?¿¡])/g, '$1')
-          .replace(/([a-zA-Z])\1{2,}/g, '$1')
           .trim();
       },
       wordCount: (text) => text.trim() ? text.trim().split(/\s+/).length : 0,
@@ -541,7 +505,16 @@
             if (parsed.inputText) {
               document.getElementById('input-text').value = parsed.inputText;
             }
-            SettingsManager.apply();
+            // Aplicar configuración SIN llamar a loadState nuevamente
+            if (parsed.settings) {
+              Object.keys(parsed.settings).forEach(key => {
+                const el = document.getElementById(`setting-${key}`);
+                if (el && typeof el.checked !== 'undefined') {
+                  el.checked = parsed.settings[key];
+                }
+              });
+              document.getElementById('setting-depth').value = parsed.settings.depth || 'suave';
+            }
             if (parsed.activeTab) {
               UI.setActiveTab(parsed.activeTab);
             }
@@ -569,33 +542,21 @@
         UI.updateProgress(0, "Iniciando...");
 
         await Utils.sleep(100);
-        UI.updateProgress(10, "Limpieza profunda...");
-        let processed = Utils.cleanText(State.inputText);
+        UI.updateProgress(20, "Limpieza inicial...");
+        let processed = State.inputText;
 
-        UI.updateProgress(25, "Reestructurando semánticamente...");
-        processed = this.deepSemanticRewrite(processed);
+        UI.updateProgress(40, "Aplicando variación...");
+        processed = this.introduceVariety(processed);
 
-        UI.updateProgress(40, "Simulando traducción múltiple...");
-        processed = this.translationSimulation(processed);
+        UI.updateProgress(60, "Añadiendo naturalidad...");
+        processed = this.addIdiomsAndFlow(processed);
 
-        UI.updateProgress(55, "Añadiendo elementos humanos...");
-        processed = this.addNaturalFlow(processed);
-
-        UI.updateProgress(70, "Optimizando legibilidad...");
-        processed = this.adjustToneAndReadability(processed);
-
-        UI.updateProgress(85, "Evaluando contra detectores...");
-        let aiScore = Utils.calculateAIScore(processed);
-        let attempts = 0;
-        while (aiScore > 30 && attempts < 3) {
-          processed = this.addExtraHumanization(processed);
-          aiScore = Utils.calculateAIScore(processed);
-          attempts++;
-        }
+        UI.updateProgress(80, "Ajustando tono...");
+        await Utils.sleep(100);
 
         UI.updateProgress(100, "¡Listo!");
         State.outputText = processed;
-        State.analysisScore = 100 - aiScore;
+        State.analysisScore = 100 - Utils.calculateAIScore(processed);
 
         setTimeout(() => {
           UI.setActiveTab('review');
@@ -605,115 +566,51 @@
         }, 300);
       },
 
-      deepSemanticRewrite: (text) => {
-        let paragraphs = text.split(/\n\s*\n/).filter(p => p.trim().length > 10);
-        if (paragraphs.length > 2 && Math.random() < 0.6) {
-          const intro = paragraphs.shift();
-          const conclusion = paragraphs.pop();
-          let body = paragraphs;
-          // Reordenar párrafos del cuerpo
-          for (let i = body.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [body[i], body[j]] = [body[j], body[i]];
-          }
-          if (SettingsManager.get().depth === 'profundo') {
-            body.reverse();
-          }
-          return [intro, ...body, conclusion].join('\n\n');
-        }
-        return text;
-      },
-
-      translationSimulation: (text) => {
-        // Simula "traducir al francés y volver"
-        const replacements = {
-          "implementar": "poner en práctica", "optimizar": "mejorar al máximo",
-          "paradigma": "modelo", "sinergia": "cooperación efectiva",
-          "facilitar": "hacer más fácil", "consecuentemente": "por eso mismo",
-          "utilizar": "emplear", "estrategia": "plan de acción"
-        };
-        let processed = text;
-        for (const [formal, informal] of Object.entries(replacements)) {
-          const regex = new RegExp(`\\b${formal}\\b`, 'gi');
-          if (Math.random() < 0.7) {
-            processed = processed.replace(regex, informal);
-          }
-        }
-        return processed;
-      },
-
-      addNaturalFlow: (text) => {
+      introduceVariety: (text) => {
         let sentences = text.split(/(?<=[.!?])\s+/);
         const settings = SettingsManager.get();
 
-        // Añadir conector inicial
-        if (settings.connectorVariety && Math.random() < 0.5) {
+        if (settings.connectorVariety && Math.random() > 0.6) {
           const connector = Utils.getRandom(Data.connectors);
-          if (!sentences[0].toLowerCase().startsWith(connector.toLowerCase().replace(/,$/, ''))) {
-            sentences[0] = `${connector} ${sentences[0].charAt(0).toLowerCase() + sentences[0].slice(1)}`;
-          }
+          sentences[0] = connector + " " + sentences[0].charAt(0).toLowerCase() + sentences[0].slice(1);
         }
 
-        // Añadir modismo o ejemplo personal
-        if (settings.naturalFlow && sentences.length > 3 && Math.random() < 0.4) {
-          const insertAt = Math.floor(sentences.length / 2);
-          const choice = Math.random();
-          if (choice < 0.3) {
-            const idiom = Utils.getRandom(Data.idioms);
-            sentences.splice(insertAt, 0, `Como quien dice, ${idiom}.`);
-          } else if (choice < 0.6) {
-            const example = Utils.getRandom(Data.examples);
-            sentences.splice(insertAt, 0, `${example}`);
-          } else {
-            const interjection = Utils.getRandom(Data.interjections);
-            sentences[insertAt] = `${interjection} ${sentences[insertAt]}`;
-          }
+        if (settings.naturalFlow && Math.random() > 0.7) {
+          const interjection = Utils.getRandom(Data.interjections);
+          const idx = Math.floor(Math.random() * sentences.length);
+          sentences[idx] = interjection + " " + sentences[idx];
         }
 
-        // Simular errores humanos
-        if (settings.simulateHumanErrors && Math.random() < 0.3) {
-          const errType = Math.random();
-          if (errType < 0.3 && sentences.length > 1) {
-            sentences[1] = sentences[1].replace(/\s+/, '... '); // Pausa
-          } else if (errType < 0.6) {
-            sentences[sentences.length - 1] += ' ¿no crees?'; // Pregunta retórica
-          }
+        if (settings.lexicalRichness) {
+          sentences = sentences.map(sentence => {
+            Object.keys(Data.synonyms).forEach(word => {
+              const regex = new RegExp(`\\b${word}\\b`, 'gi');
+              sentence = sentence.replace(regex, () => Utils.getRandom(Data.synonyms[word]));
+            });
+            return sentence;
+          });
+        }
+
+        if (settings.toneAdjustment) {
+          sentences = sentences.map(sentence => {
+            Object.keys(Data.formalToInformal).forEach(formal => {
+              const regex = new RegExp(`\\b${formal}\\b`, 'gi');
+              sentence = sentence.replace(regex, Data.formalToInformal[formal]);
+            });
+            return sentence;
+          });
         }
 
         return sentences.join(' ');
       },
 
-      adjustToneAndReadability: (text) => {
-        let processed = text;
-        const settings = SettingsManager.get();
-
-        if (settings.toneAdjustment) {
-          for (const [formal, informal] of Object.entries(Data.formalToInformal)) {
-            const regex = new RegExp(`\\b${formal}\\b`, 'gi');
-            if (regex.test(processed) && Math.random() < 0.8) {
-              processed = processed.replace(regex, informal);
-            }
-          }
-        }
-
-        // Variar longitud de oraciones
-        if (settings.avoidRepetition) {
-          const sentences = processed.split(/(?<=[.!?])\s+/);
-          if (sentences.length > 5) {
-            sentences.sort(() => Math.random() - 0.5);
-            processed = sentences.join(' ');
-          }
-        }
-
-        return processed;
-      },
-
-      addExtraHumanization: (text) => {
-        // Camuflaje con frases genéricas
-        const camoPhrase = Utils.getRandom(Data.camoPhrases);
+      addIdiomsAndFlow: (text) => {
         const sentences = text.split(/(?<=[.!?])\s+/);
-        const insertAt = Math.floor(sentences.length / 3);
-        sentences.splice(insertAt, 0, camoPhrase);
+        if (Math.random() > 0.5 && sentences.length > 2) {
+          const idiom = Utils.getRandom(Data.idioms);
+          const insertAt = Math.floor(Math.random() * sentences.length);
+          sentences[insertAt] = sentences[insertAt] + " —" + idiom + "—";
+        }
         return sentences.join(' ');
       }
     };
@@ -729,7 +626,7 @@
 
     // --- Inicialización ---
     document.addEventListener('DOMContentLoaded', () => {
-      Storage.loadState();
+      Storage.loadState(); // Cargar estado guardado
       HistoryManager.render();
       document.querySelectorAll('input[id^="setting-"], #setting-depth').forEach(el => {
         el.addEventListener('change', Storage.saveState);
