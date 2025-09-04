@@ -3,9 +3,9 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <meta name="description" content="RedactaPro Supremo: Humaniza textos de IA para evitar detectores académicos." />
-  <title>RedactaPro Supremo - Evita Detectores de IA</title>
-  <!-- Tailwind CSS vía CDN (válido para GitHub Pages) -->
+  <meta name="description" content="RedactaPro Supremo: La herramienta definitiva para humanizar textos de IA y evitar detectores académicos." />
+  <title>RedactaPro Supremo - Humaniza Textos de IA</title>
+  <!-- Tailwind CSS vía CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
@@ -36,6 +36,9 @@
     .whitespace-pre-wrap {
       white-space: pre-wrap;
     }
+    .toast-success {
+      background: linear-gradient(135deg, #059669, #047857);
+    }
   </style>
 </head>
 <body class="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-slate-100">
@@ -57,13 +60,13 @@
     <!-- Tabs -->
     <div class="container mx-auto px-4 pt-6">
       <div class="flex space-x-1 bg-slate-800/50 p-1 rounded-xl w-fit mb-6 backdrop-blur-sm">
-        <button onclick="setActiveTab('write')" class="px-6 py-2 rounded-lg font-medium transition-all duration-200 capitalize tab-btn" id="tab-write">
+        <button onclick="UI.setActiveTab('write')" class="px-6 py-2 rounded-lg font-medium transition-all duration-200 capitalize tab-btn" id="tab-write">
           Editor
         </button>
-        <button onclick="setActiveTab('analyze')" class="px-6 py-2 rounded-lg font-medium transition-all duration-200 capitalize tab-btn" id="tab-analyze">
+        <button onclick="UI.setActiveTab('analyze')" class="px-6 py-2 rounded-lg font-medium transition-all duration-200 capitalize tab-btn" id="tab-analyze">
           Análisis
         </button>
-        <button onclick="setActiveTab('review')" class="px-6 py-2 rounded-lg font-medium transition-all duration-200 capitalize tab-btn" id="tab-review">
+        <button onclick="UI.setActiveTab('review')" class="px-6 py-2 rounded-lg font-medium transition-all duration-200 capitalize tab-btn" id="tab-review">
           Resultado
         </button>
       </div>
@@ -74,7 +77,7 @@
       <div id="write-section" class="grid lg:grid-cols-5 gap-8">
         <div class="lg:col-span-2 space-y-6">
           <div class="bg-white/10 backdrop-blur-md border border-slate-700/50 rounded-2xl p-6 shadow-xl">
-            <h2 class="text-lg font-semibold mb-4 text-slate-100">Configuración</h2>
+            <h2 class="text-lg font-semibold mb-4 text-slate-100">Configuración Avanzada</h2>
             <div class="space-y-4">
               <div>
                 <label class="block text-sm font-medium text-slate-300 mb-2">Profundidad</label>
@@ -92,7 +95,7 @@
                 </label>
                 <label class="flex items-center space-x-2 text-sm">
                   <input type="checkbox" id="setting-toneAdjustment" checked class="w-4 h-4 text-teal-500 rounded focus:ring-teal-500">
-                  <span class="text-slate-300">Ajuste de tono</span>
+                  <span class="text-slate-300">Tono informal</span>
                 </label>
                 <label class="flex items-center space-x-2 text-sm">
                   <input type="checkbox" id="setting-readabilityFocus" checked class="w-4 h-4 text-teal-500 rounded focus:ring-teal-500">
@@ -104,11 +107,11 @@
                 </label>
                 <label class="flex items-center space-x-2 text-sm">
                   <input type="checkbox" id="setting-lexicalRichness" checked class="w-4 h-4 text-teal-500 rounded focus:ring-teal-500">
-                  <span class="text-slate-300">Riqueza léxica</span>
+                  <span class="text-slate-300">Sinónimos</span>
                 </label>
                 <label class="flex items-center space-x-2 text-sm">
                   <input type="checkbox" id="setting-avoidRepetition" checked class="w-4 h-4 text-teal-500 rounded focus:ring-teal-500">
-                  <span class="text-slate-300">Evitar repetición</span>
+                  <span class="text-slate-300">Evitar rep.</span>
                 </label>
               </div>
 
@@ -131,7 +134,7 @@
           <div class="bg-white/10 backdrop-blur-md border border-slate-700/50 rounded-2xl p-6 shadow-xl">
             <textarea id="input-text" placeholder="Pega tu texto aquí para humanizarlo..." class="w-full h-80 bg-transparent text-slate-100 placeholder-slate-400 resize-none outline-none"></textarea>
             <div class="flex flex-wrap gap-3 mt-4">
-              <button id="process-btn" onclick="processText()" class="flex-1 bg-gradient-to-r from-teal-500 to-emerald-600 hover:from-teal-600 hover:to-emerald-700 disabled:from-slate-600 disabled:to-slate-700 text-white font-medium py-3 px-6 rounded-xl transition-all duration-200 flex items-center justify-center gap-2">
+              <button id="process-btn" onclick="Processor.processText()" class="flex-1 bg-gradient-to-r from-teal-500 to-emerald-600 hover:from-teal-600 hover:to-emerald-700 disabled:from-slate-600 disabled:to-slate-700 text-white font-medium py-3 px-6 rounded-xl transition-all duration-200 flex items-center justify-center gap-2">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
                 </svg>
@@ -165,7 +168,7 @@
             <div class="bg-white/10 backdrop-blur-md border border-slate-700/50 rounded-2xl p-6 shadow-xl">
               <div class="flex items-center justify-between mb-6">
                 <h2 class="text-xl font-semibold text-slate-100">Texto Procesado</h2>
-                <button onclick="copyToClipboard()" class="text-sm bg-teal-500 hover:bg-teal-600 px-4 py-2 rounded-lg transition-colors">Copiar</button>
+                <button onclick="Utils.copyToClipboard()" class="text-sm bg-teal-500 hover:bg-teal-600 px-4 py-2 rounded-lg transition-colors">Copiar</button>
               </div>
               <div id="output-analysis" class="min-h-60 bg-slate-800/50 rounded-lg p-4 text-slate-100 whitespace-pre-wrap">
                 El texto procesado aparecerá aquí...
@@ -183,8 +186,8 @@
               <div class="flex items-center justify-between mb-6">
                 <h2 class="text-xl font-semibold text-slate-100">Texto Final</h2>
                 <div class="flex gap-2">
-                  <button onclick="downloadText('txt')" class="text-sm bg-slate-600 hover:bg-slate-700 px-3 py-1 rounded">TXT</button>
-                  <button onclick="downloadText('doc')" class="text-sm bg-slate-600 hover:bg-slate-700 px-3 py-1 rounded">DOC</button>
+                  <button onclick="Utils.downloadText('txt')" class="text-sm bg-slate-600 hover:bg-slate-700 px-3 py-1 rounded">TXT</button>
+                  <button onclick="Utils.downloadText('doc')" class="text-sm bg-slate-600 hover:bg-slate-700 px-3 py-1 rounded">DOC</button>
                 </div>
               </div>
               <div id="output-review" class="bg-slate-800/50 rounded-lg p-4 h-96 overflow-y-auto text-slate-100 whitespace-pre-wrap">
@@ -242,8 +245,8 @@
   </div>
 
   <script>
-    // --- Estado de la aplicación ---
-    const state = {
+    // --- Espacios de nombres para modularidad ---
+    const State = {
       inputText: '',
       outputText: '',
       isProcessing: false,
@@ -254,377 +257,378 @@
       progressMessage: 'Esperando...'
     };
 
-    // --- Listas de reemplazo ---
-    const connectors = [
-      "Bueno,", "Mira,", "La verdad es que,", "O sea,", "Tipo,", "Vamos,", "Pues,",
-      "Por otro lado,", "En contraste,", "De hecho,", "Asimismo,", "No obstante,",
-      "Así pues,", "De ahí que,", "En fin,", "Para que te hagas una idea,",
-      "A decir verdad,", "Entre tú y yo,", "Para serte sincero,", "Si te soy honesto,",
-      "De cualquier modo,", "En cualquier caso,", "Eso sí,", "En última instancia,",
-      "Por lo tanto,", "Ahora bien,", "Dicho esto,", "Hecho esto,",
-    ];
-
-    const humanIdioms = [
-      "cuesta abajo", "pan comido", "ponerse las pilas", "dar en el clavo",
-      "tirar la casa por la ventana", "estar en las nubes", "no tener pelos en la lengua",
-      "ser uña y carne", "hacer la vista gorda", "meter la pata",
-      "buscarle la quinta pata al gato", "el que madruga, Dios le ayuda",
-      "la curiosidad mató al gato", "más vale pájaro en mano que ciento volando",
-      "no pegar ojo", "irse por las ramas", "montar un pollo",
-    ];
-
-    const interjections = ["¡Vaya!", "¡Ojo!", "Bueno...", "Pues mira...", "¿Sabes?", "¿Me sigues?", "Anda,", "En fin,"];
-
-    const formalToInformal = {
-      "implementar": "usar", "optimizar": "mejorar", "paradigma": "enfoque",
-      "sinergia": "colaboración", "efectuar": "hacer", "procedimiento": "paso",
-      "facilitar": "ayudar", "consecuentemente": "por eso", "no obstante": "pero",
-      "por consiguiente": "así que", "en consecuencia": "por lo tanto",
-      "utilizar": "usar", "visualizar": "ver", "finalizar": "terminar",
-      "acelerar": "agilizar", "mitigar": "reducir", "viable": "posible",
-      "demostrar": "mostrar", "evaluar": "analizar", "estrategia": "plan",
-    };
-
-    const synonyms = {
-      "crear": ["generar", "hacer", "producir", "elaborar"],
-      "analizar": ["estudiar", "revisar", "examinar", "inspeccionar"],
-      "importante": ["clave", "fundamental", "esencial", "crítico"],
-      "rápido": ["veloz", "ágil", "pronto", "inmediato"],
-      "difícil": ["complicado", "duro", "arduo", "engorroso"],
-    };
-
-    // --- Funciones auxiliares ---
-    function getRandom(arr) {
-      return arr[Math.floor(Math.random() * arr.length)];
-    }
-
-    function cleanText(text) {
-      return text
-        .replace(/[\u200B-\u200D\uFEFF]/g, '')
-        .replace(/[\u00A0\u1680\u2000-\u200A\u202F\u205F\u3000]/g, ' ')
-        .replace(/[\r]{3,}/g, '')
-        .replace(/[ \t]+/g, ' ')
-        .replace(/ +([,.!?¿¡:]+)/g, '$1')
-        .replace(/([¿¡]) +/g, '$1')
-        .trim();
-    }
-
-    function wordCount(text) {
-      return text.trim() ? text.trim().split(/\s+/).length : 0;
-    }
-
-    function readability(text) {
-      const sentences = (text.match(/[.!?]+/g) || []).length || 1;
-      const words = wordCount(text);
-      const syllables = text.split(/[aeiouáéíóú]/i).length;
-      const asl = words / sentences;
-      const asw = syllables / words;
-      const flesch = 206.835 - (1.015 * asl) - (84.6 * asw);
-      return Math.max(0, Math.min(100, flesch / 2));
-    }
-
-    function calculateAIScore(text) {
-      const patterns = [
-        /(?:además|por otro lado|en conclusión)/g,
-        /\b(?:optimizar|implementar|paradigma|sinergia)\b/g,
-        /(?:es importante destacar que|vale la pena mencionar que)/g,
-        /(?:en el contexto actual|en la actualidad)/g,
-      ];
-      const aiIndicators = patterns.reduce((sum, pattern) => sum + (text.match(pattern)?.length || 0), 0);
-      const wordCount = text.split(/\s+/).length;
-      const aiScore = (aiIndicators / (wordCount / 100)) * 30;
-      return Math.min(100, Math.max(0, aiScore));
-    }
-
-    // --- Almacenamiento Local ---
-    function saveState() {
-      try {
-        localStorage.setItem('redactaproSupremoState', JSON.stringify(state));
-      } catch (e) {
-        console.warn("No se pudo guardar el estado:", e);
+    const Data = {
+      connectors: [
+        "Bueno,", "Mira,", "La verdad es que,", "O sea,", "Tipo,", "Vamos,", "Pues,",
+        "Por otro lado,", "En contraste,", "De hecho,", "Asimismo,", "No obstante,",
+        "Así pues,", "De ahí que,", "En fin,", "Para que te hagas una idea,",
+        "A decir verdad,", "Entre tú y yo,", "Para serte sincero,", "Si te soy honesto,",
+        "De cualquier modo,", "En cualquier caso,", "Eso sí,", "En última instancia,",
+        "Por lo tanto,", "Ahora bien,", "Dicho esto,", "Hecho esto,",
+      ],
+      idioms: [
+        "cuesta abajo", "pan comido", "ponerse las pilas", "dar en el clavo",
+        "tirar la casa por la ventana", "estar en las nubes", "no tener pelos en la lengua",
+        "ser uña y carne", "hacer la vista gorda", "meter la pata",
+        "buscarle la quinta pata al gato", "el que madruga, Dios le ayuda",
+        "la curiosidad mató al gato", "más vale pájaro en mano que ciento volando",
+        "no pegar ojo", "irse por las ramas", "montar un pollo",
+      ],
+      interjections: ["¡Vaya!", "¡Ojo!", "Bueno...", "Pues mira...", "¿Sabes?", "¿Me sigues?", "Anda,", "En fin,"],
+      formalToInformal: {
+        "implementar": "usar", "optimizar": "mejorar", "paradigma": "enfoque",
+        "sinergia": "colaboración", "efectuar": "hacer", "procedimiento": "paso",
+        "facilitar": "ayudar", "consecuentemente": "por eso", "no obstante": "pero",
+        "por consiguiente": "así que", "en consecuencia": "por lo tanto",
+        "utilizar": "usar", "visualizar": "ver", "finalizar": "terminar",
+        "acelerar": "agilizar", "mitigar": "reducir", "viable": "posible",
+        "demostrar": "mostrar", "evaluar": "analizar", "estrategia": "plan",
+      },
+      synonyms: {
+        "crear": ["generar", "hacer", "producir", "elaborar"],
+        "analizar": ["estudiar", "revisar", "examinar", "inspeccionar"],
+        "importante": ["clave", "fundamental", "esencial", "crítico"],
+        "rápido": ["veloz", "ágil", "pronto", "inmediato"],
+        "difícil": ["complicado", "duro", "arduo", "engorroso"],
       }
-    }
+    };
 
-    function loadState() {
-      const savedState = localStorage.getItem('redactaproSupremoState');
-      if (savedState) {
-        try {
-          const parsed = JSON.parse(savedState);
-          Object.assign(state, parsed);
-          document.getElementById('input-text').value = state.inputText;
-          if (state.history) {
-            renderHistory();
-          }
-          // Restaurar configuración
-          if (parsed.settings) {
-            Object.keys(parsed.settings).forEach(key => {
-              const el = document.getElementById(`setting-${key}`);
-              if (el) el.checked = parsed.settings[key];
+    // --- Utilidades ---
+    const Utils = {
+      getRandom: (arr) => arr[Math.floor(Math.random() * arr.length)],
+      cleanText: (text) => {
+        return text
+          .replace(/[\u200B-\u200D\uFEFF]/g, '')
+          .replace(/[\u00A0\u1680\u2000-\u200A\u202F\u205F\u3000]/g, ' ')
+          .replace(/[\r]{3,}/g, '')
+          .replace(/[ \t]+/g, ' ')
+          .replace(/ +([,.!?¿¡:]+)/g, '$1')
+          .replace(/([¿¡]) +/g, '$1')
+          .trim();
+      },
+      wordCount: (text) => text.trim() ? text.trim().split(/\s+/).length : 0,
+      readability: (text) => {
+        const sentences = (text.match(/[.!?]+/g) || []).length || 1;
+        const words = Utils.wordCount(text);
+        const syllables = text.split(/[aeiouáéíóú]/i).length;
+        const asl = words / sentences;
+        const asw = syllables / words;
+        const flesch = 206.835 - (1.015 * asl) - (84.6 * asw);
+        return Math.max(0, Math.min(100, flesch / 2));
+      },
+      calculateAIScore: (text) => {
+        const patterns = [
+          /(?:además|por otro lado|en conclusión)/g,
+          /\b(?:optimizar|implementar|paradigma|sinergia)\b/g,
+          /(?:es importante destacar que|vale la pena mencionar que)/g,
+          /(?:en el contexto actual|en la actualidad)/g,
+        ];
+        const aiIndicators = patterns.reduce((sum, pattern) => sum + (text.match(pattern)?.length || 0), 0);
+        const wordCount = text.split(/\s+/).length;
+        const aiScore = (aiIndicators / (wordCount / 100)) * 30;
+        return Math.min(100, Math.max(0, aiScore));
+      },
+      copyToClipboard: () => {
+        if (!State.outputText) return;
+        navigator.clipboard.writeText(State.outputText).then(() => {
+          const toast = document.getElementById('toast');
+          toast.classList.remove('hidden');
+          setTimeout(() => toast.classList.add('hidden'), 2000);
+        });
+      },
+      downloadText: (format) => {
+        if (!State.outputText) return;
+        const timestamp = new Date().toISOString().split('T')[0];
+        let blob, filename;
+
+        if (format === 'txt') {
+          blob = new Blob([State.outputText], { type: 'text/plain;charset=utf-8' });
+          filename = `redactapro-supremo-${timestamp}.txt`;
+        } else if (format === 'doc') {
+          const htmlContent = `
+            <!DOCTYPE html>
+            <html>
+            <head>
+              <meta charset="UTF-8">
+              <title>Texto Humanizado - RedactaPro Supremo</title>
+              <style>body { font-family: 'Inter', sans-serif; line-height: 1.7; color: #333; }</style>
+            </head>
+            <body>
+              <p>${State.outputText.replace(/\n/g, '<br>')}</p>
+            </body>
+            </html>`;
+          blob = new Blob([htmlContent], { type: 'application/msword;charset=utf-8' });
+          filename = `redactapro-supremo-${timestamp}.doc`;
+        }
+
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      }
+    };
+
+    // --- Procesador de Texto ---
+    const Processor = {
+      processText: async () => {
+        const inputEl = document.getElementById('input-text');
+        State.inputText = Utils.cleanText(inputEl.value.trim());
+
+        if (!State.inputText) {
+          alert("Por favor, introduce un texto.");
+          return;
+        }
+
+        State.isProcessing = true;
+        UI.setActiveTab('analyze');
+        UI.updateProgress(0, "Iniciando...");
+
+        await Utils.sleep(100);
+        UI.updateProgress(20, "Limpieza inicial...");
+        await Utils.sleep(100);
+
+        let processed = State.inputText;
+
+        UI.updateProgress(40, "Aplicando variación...");
+        processed = this.introduceVariety(processed);
+
+        UI.updateProgress(60, "Añadiendo naturalidad...");
+        processed = this.addIdiomsAndFlow(processed);
+
+        UI.updateProgress(80, "Ajustando tono...");
+        await Utils.sleep(100);
+
+        UI.updateProgress(100, "¡Listo!");
+        State.outputText = processed;
+        State.analysisScore = 100 - Utils.calculateAIScore(processed);
+
+        setTimeout(() => {
+          UI.setActiveTab('review');
+          UI.updateReviewUI();
+          HistoryManager.saveToHistory();
+          Storage.saveState();
+        }, 300);
+      },
+
+      introduceVariety: (text) => {
+        let sentences = text.split(/(?<=[.!?])\s+/);
+        const settings = SettingsManager.get();
+
+        if (settings.connectorVariety && Math.random() > 0.6) {
+          const connector = Utils.getRandom(Data.connectors);
+          sentences[0] = connector + " " + sentences[0].charAt(0).toLowerCase() + sentences[0].slice(1);
+        }
+
+        if (settings.naturalFlow && Math.random() > 0.7) {
+          const interjection = Utils.getRandom(Data.interjections);
+          const idx = Math.floor(Math.random() * sentences.length);
+          sentences[idx] = interjection + " " + sentences[idx];
+        }
+
+        if (settings.lexicalRichness) {
+          sentences = sentences.map(sentence => {
+            Object.keys(Data.synonyms).forEach(word => {
+              const regex = new RegExp(`\\b${word}\\b`, 'gi');
+              sentence = sentence.replace(regex, () => Utils.getRandom(Data.synonyms[word]));
             });
-            document.getElementById('setting-depth').value = parsed.settings.depth || 'suave';
-          }
-          // Restaurar pestaña
-          if (state.activeTab) {
-            setActiveTab(state.activeTab);
+            return sentence;
+          });
+        }
+
+        if (settings.toneAdjustment) {
+          sentences = sentences.map(sentence => {
+            Object.keys(Data.formalToInformal).forEach(formal => {
+              const regex = new RegExp(`\\b${formal}\\b`, 'gi');
+              sentence = sentence.replace(regex, Data.formalToInformal[formal]);
+            });
+            return sentence;
+          });
+        }
+
+        return sentences.join(' ');
+      },
+
+      addIdiomsAndFlow: (text) => {
+        const sentences = text.split(/(?<=[.!?])\s+/);
+        if (Math.random() > 0.5 && sentences.length > 2) {
+          const idiom = Utils.getRandom(Data.idioms);
+          const insertAt = Math.floor(Math.random() * sentences.length);
+          sentences[insertAt] = sentences[insertAt] + " —" + idiom + "—";
+        }
+        return sentences.join(' ');
+      }
+    };
+
+    // --- Gestor de Historial ---
+    const HistoryManager = {
+      saveToHistory: () => {
+        const item = {
+          original: State.inputText.substring(0, 100) + (State.inputText.length > 100 ? '...' : ''),
+          result: State.outputText.substring(0, 100) + (State.outputText.length > 100 ? '...' : ''),
+          score: State.analysisScore,
+          date: new Date().toLocaleDateString(),
+        };
+        State.history.unshift(item);
+        State.history = State.history.slice(0, 7);
+        HistoryManager.render();
+      },
+      render: () => {
+        const container = document.getElementById('history-container');
+        if (State.history.length === 0) {
+          container.innerHTML = '<p class="text-sm text-slate-400">No hay historial aún</p>';
+          return;
+        }
+        container.innerHTML = State.history.map(item => `
+          <div onclick="HistoryManager.load('${escapeHtml(item.original)}', '${escapeHtml(item.result)}', ${item.score})" class="p-3 bg-slate-800/30 rounded-lg cursor-pointer hover:bg-slate-700/30 transition-colors text-sm">
+            <p class="text-slate-200 line-clamp-1">${item.original}</p>
+            <p class="text-xs text-teal-400 mt-1">Puntuación: ${item.score.toFixed(1)}%</p>
+          </div>
+        `).join('');
+      },
+      load: (original, result, score) => {
+        document.getElementById('input-text').value = original;
+        State.outputText = result;
+        State.analysisScore = score;
+        UI.setActiveTab('review');
+        UI.updateReviewUI();
+      }
+    };
+
+    // --- Gestor de Configuración ---
+    const SettingsManager = {
+      get: () => {
+        return {
+          depth: document.getElementById('setting-depth').value,
+          naturalFlow: document.getElementById('setting-naturalFlow').checked,
+          toneAdjustment: document.getElementById('setting-toneAdjustment').checked,
+          readabilityFocus: document.getElementById('setting-readabilityFocus').checked,
+          connectorVariety: document.getElementById('setting-connectorVariety').checked,
+          lexicalRichness: document.getElementById('setting-lexicalRichness').checked,
+          avoidRepetition: document.getElementById('setting-avoidRepetition').checked,
+          simulateHumanErrors: document.getElementById('setting-simulateHumanErrors').checked,
+        };
+      },
+      apply: () => {
+        const saved = Storage.loadState();
+        if (saved?.settings) {
+          Object.keys(saved.settings).forEach(key => {
+            const el = document.getElementById(`setting-${key}`);
+            if (el && typeof el.checked !== 'undefined') {
+              el.checked = saved.settings[key];
+            }
+          });
+          document.getElementById('setting-depth').value = saved.settings.depth || 'suave';
+        }
+      }
+    };
+
+    // --- UI Manager ---
+    const UI = {
+      setActiveTab: (tab) => {
+        ['write', 'analyze', 'review'].forEach(t => {
+          document.getElementById(`${t}-section`).classList.add('hidden');
+          document.getElementById(`tab-${t}`).classList.remove('bg-teal-500', 'text-white');
+          document.getElementById(`tab-${t}`).classList.add('text-slate-400');
+        });
+        document.getElementById(`${tab}-section`).classList.remove('hidden');
+        document.getElementById(`tab-${tab}`).classList.remove('text-slate-400');
+        document.getElementById(`tab-${tab}`).classList.add('bg-teal-500', 'text-white');
+        State.activeTab = tab;
+      },
+      updateProgress: (percent, message) => {
+        State.progress = percent;
+        State.progressMessage = message;
+        document.getElementById('progress-bar').style.width = `${percent}%`;
+        document.getElementById('progress-message').textContent = message;
+        document.getElementById('progress-percent').textContent = `${percent}% completado`;
+        document.getElementById('output-analysis').textContent = State.outputText || 'Procesando...';
+      },
+      updateReviewUI: () => {
+        document.getElementById('output-review').textContent = State.outputText;
+        document.getElementById('analysis-score').textContent = State.analysisScore.toFixed(1) + '%';
+        document.getElementById('score-bar').style.width = `${State.analysisScore}%`;
+        document.getElementById('word-count-original').textContent = Utils.wordCount(State.inputText);
+        document.getElementById('word-count-final').textContent = Utils.wordCount(State.outputText);
+        document.getElementById('readability-score').textContent = Utils.readability(State.outputText).toFixed(1) + '%';
+
+        const msg = document.getElementById('score-message');
+        if (State.analysisScore > 70) {
+          msg.textContent = "Texto altamente humano. Baja probabilidad de detección.";
+        } else if (State.analysisScore > 50) {
+          msg.textContent = "Texto razonablemente humano. Algunos ajustes podrían ayudar.";
+        } else {
+          msg.textContent = "Alta probabilidad de ser detectado como IA. Considera ajustes más profundos.";
+        }
+      }
+    };
+
+    // --- Almacenamiento ---
+    const Storage = {
+      saveState: () => {
+        try {
+          const stateToSave = {
+            inputText: State.inputText,
+            outputText: State.outputText,
+            analysisScore: State.analysisScore,
+            activeTab: State.activeTab,
+            history: State.history,
+            settings: SettingsManager.get()
+          };
+          localStorage.setItem('redactaproSupremoState', JSON.stringify(stateToSave));
+        } catch (e) {
+          console.warn("No se pudo guardar el estado:", e);
+        }
+      },
+      loadState: () => {
+        try {
+          const saved = localStorage.getItem('redactaproSupremoState');
+          if (saved) {
+            const parsed = JSON.parse(saved);
+            Object.assign(State, {
+              inputText: parsed.inputText || '',
+              outputText: parsed.outputText || '',
+              analysisScore: parsed.analysisScore || 0,
+              activeTab: parsed.activeTab || 'write',
+              history: parsed.history || []
+            });
+            if (parsed.inputText) {
+              document.getElementById('input-text').value = parsed.inputText;
+            }
+            SettingsManager.apply();
+            if (parsed.activeTab) {
+              UI.setActiveTab(parsed.activeTab);
+            }
+            HistoryManager.render();
           }
         } catch (e) {
           console.error("Error al cargar el estado:", e);
         }
       }
-    }
+    };
 
-    // --- Procesamiento del texto ---
-    async function processText() {
-      const inputEl = document.getElementById('input-text');
-      state.inputText = inputEl.value.trim();
-
-      if (!state.inputText) {
-        alert("Por favor, introduce un texto.");
-        return;
-      }
-
-      state.isProcessing = true;
-      setActiveTab('analyze');
-      updateProgress(0, "Iniciando...");
-
-      // Simular pasos
-      await sleep(200);
-      updateProgress(20, "Limpieza inicial...");
-      await sleep(200);
-
-      let processed = cleanText(state.inputText);
-
-      updateProgress(40, "Aplicando variación...");
-      processed = introduceVariety(processed);
-
-      updateProgress(60, "Añadiendo naturalidad...");
-      if (Math.random() > 0.5) {
-        const idiom = getRandom(humanIdioms);
-        const sentences = processed.split(/(?<=[.!?])\s+/);
-        const insertAt = Math.floor(Math.random() * sentences.length);
-        sentences[insertAt] = sentences[insertAt] + " —" + idiom + "—";
-        processed = sentences.join(' ');
-      }
-
-      updateProgress(80, "Ajustando tono...");
-      await sleep(200);
-
-      updateProgress(100, "¡Listo!");
-      state.outputText = processed;
-      state.analysisScore = 100 - calculateAIScore(processed);
-
-      // Guardar en historial
-      addToHistory();
-      saveState();
-
-      // Actualizar UI final
-      setTimeout(() => {
-        setActiveTab('review');
-        updateReviewUI();
-      }, 300);
-    }
-
-    function introduceVariety(text) {
-      let sentences = text.split(/(?<=[.!?])\s+/);
-
-      const settings = getSettings();
-
-      if (settings.connectorVariety && Math.random() > 0.6) {
-        const connector = getRandom(connectors);
-        sentences[0] = connector + " " + sentences[0].charAt(0).toLowerCase() + sentences[0].slice(1);
-      }
-
-      if (settings.naturalFlow && Math.random() > 0.7) {
-        const interjection = getRandom(interjections);
-        const idx = Math.floor(Math.random() * sentences.length);
-        sentences[idx] = interjection + " " + sentences[idx];
-      }
-
-      if (settings.lexicalRichness) {
-        sentences = sentences.map(sentence => {
-          Object.keys(synonyms).forEach(word => {
-            const regex = new RegExp(`\\b${word}\\b`, 'gi');
-            sentence = sentence.replace(regex, () => getRandom(synonyms[word]));
-          });
-          return sentence;
-        });
-      }
-
-      if (settings.toneAdjustment) {
-        sentences = sentences.map(sentence => {
-          Object.keys(formalToInformal).forEach(formal => {
-            const regex = new RegExp(`\\b${formal}\\b`, 'gi');
-            sentence = sentence.replace(regex, formalToInformal[formal]);
-          });
-          return sentence;
-        });
-      }
-
-      return sentences.join(' ');
-    }
-
-    function getSettings() {
-      const settings = {};
-      document.querySelectorAll('input[id^="setting-"]').forEach(el => {
-        settings[el.id.replace('setting-', '')] = el.checked;
-      });
-      settings.depth = document.getElementById('setting-depth').value;
-      return settings;
-    }
-
-    function updateProgress(percent, message) {
-      state.progress = percent;
-      state.progressMessage = message;
-      document.getElementById('progress-bar').style.width = `${percent}%`;
-      document.getElementById('progress-message').textContent = message;
-      document.getElementById('progress-percent').textContent = `${percent}% completado`;
-      document.getElementById('output-analysis').textContent = state.outputText || 'Procesando...';
-    }
-
-    function updateReviewUI() {
-      document.getElementById('output-review').textContent = state.outputText;
-      document.getElementById('analysis-score').textContent = state.analysisScore.toFixed(1) + '%';
-      document.getElementById('score-bar').style.width = `${state.analysisScore}%`;
-      document.getElementById('word-count-original').textContent = wordCount(state.inputText);
-      document.getElementById('word-count-final').textContent = wordCount(state.outputText);
-      document.getElementById('readability-score').textContent = readability(state.outputText).toFixed(1) + '%';
-
-      const msg = document.getElementById('score-message');
-      if (state.analysisScore > 70) {
-        msg.textContent = "Texto altamente humano. Baja probabilidad de detección.";
-      } else if (state.analysisScore > 50) {
-        msg.textContent = "Texto razonablemente humano. Algunos ajustes podrían ayudar.";
-      } else {
-        msg.textContent = "Alta probabilidad de ser detectado como IA. Considera ajustes más profundos.";
-      }
-    }
-
-    function addToHistory() {
-      const item = {
-        original: state.inputText.substring(0, 100) + (state.inputText.length > 100 ? '...' : ''),
-        result: state.outputText.substring(0, 100) + (state.outputText.length > 100 ? '...' : ''),
-        score: state.analysisScore,
-        date: new Date().toLocaleDateString(),
-      };
-      state.history.unshift(item);
-      state.history = state.history.slice(0, 7);
-      renderHistory();
-    }
-
-    function renderHistory() {
-      const container = document.getElementById('history-container');
-      if (state.history.length === 0) {
-        container.innerHTML = '<p class="text-sm text-slate-400">No hay historial aún</p>';
-        return;
-      }
-      container.innerHTML = state.history.map(item => `
-        <div onclick="loadFromHistory('${escapeHtml(item.original)}', '${escapeHtml(item.result)}', ${item.score})" class="p-3 bg-slate-800/30 rounded-lg cursor-pointer hover:bg-slate-700/30 transition-colors text-sm">
-          <p class="text-slate-200 line-clamp-1">${item.original}</p>
-          <p class="text-xs text-teal-400 mt-1">Puntuación: ${item.score.toFixed(1)}%</p>
-        </div>
-      `).join('');
-    }
-
+    // --- Funciones auxiliares ---
     function escapeHtml(text) {
       const div = document.createElement('div');
       div.textContent = text;
       return div.innerHTML;
     }
 
-    function loadFromHistory(original, result, score) {
-      document.getElementById('input-text').value = original;
-      state.outputText = result;
-      state.analysisScore = score;
-      setActiveTab('review');
-      updateReviewUI();
-    }
-
-    function copyToClipboard() {
-      if (!state.outputText) return;
-      navigator.clipboard.writeText(state.outputText).then(() => {
-        const toast = document.getElementById('toast');
-        toast.classList.remove('hidden');
-        setTimeout(() => toast.classList.add('hidden'), 2000);
-      });
-    }
-
-    function downloadText(format) {
-      if (!state.outputText) return;
-      const timestamp = new Date().toISOString().split('T')[0];
-      let blob, filename;
-
-      if (format === 'txt') {
-        blob = new Blob([state.outputText], { type: 'text/plain;charset=utf-8' });
-        filename = `redactapro-supremo-${timestamp}.txt`;
-      } else if (format === 'doc') {
-        const htmlContent = `
-          <!DOCTYPE html>
-          <html>
-          <head>
-            <meta charset="UTF-8">
-            <title>Texto Humanizado - RedactaPro Supremo</title>
-            <style>body { font-family: 'Inter', sans-serif; line-height: 1.7; color: #333; }</style>
-          </head>
-          <body>
-            <p>${state.outputText.replace(/\n/g, '<br>')}</p>
-          </body>
-          </html>`;
-        blob = new Blob([htmlContent], { type: 'application/msword;charset=utf-8' });
-        filename = `redactapro-supremo-${timestamp}.doc`;
-      }
-
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = filename;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
-    }
-
-    function setActiveTab(tab) {
-      // Ocultar todas las secciones
-      document.getElementById('write-section').classList.add('hidden');
-      document.getElementById('analyze-section').classList.add('hidden');
-      document.getElementById('review-section').classList.add('hidden');
-
-      // Mostrar la seleccionada
-      document.getElementById(`${tab}-section`).classList.remove('hidden');
-
-      // Actualizar botones
-      ['write', 'analyze', 'review'].forEach(t => {
-        const btn = document.getElementById(`tab-${t}`);
-        btn.classList.remove('bg-teal-500', 'text-white');
-        btn.classList.add('text-slate-400');
-        if (t === tab) {
-          btn.classList.remove('text-slate-400');
-          btn.classList.add('bg-teal-500', 'text-white');
-        }
-      });
-
-      // Guardar pestaña actual
-      state.activeTab = tab;
-    }
-
-    function sleep(ms) {
-      return new Promise(resolve => setTimeout(resolve, ms));
-    }
+    Utils.sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
     // --- Inicialización ---
     document.addEventListener('DOMContentLoaded', () => {
-      loadState(); // Cargar estado guardado
-      renderHistory();
+      Storage.loadState();
+      HistoryManager.render();
+      document.querySelectorAll('input[id^="setting-"], #setting-depth').forEach(el => {
+        el.addEventListener('change', Storage.saveState);
+      });
     });
 
-    // Guardar configuración al cambiar
-    document.addEventListener('change', () => {
-      saveState();
-    });
-
-    window.addEventListener('beforeunload', () => {
-      saveState();
-    });
+    window.addEventListener('beforeunload', Storage.saveState);
   </script>
 </body>
 </html>
