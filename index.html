@@ -242,6 +242,13 @@
   </div>
 
   <script>
+    // --- FUNCIONES AUXILIARES GLOBALES (definidas antes de cualquier uso) ---
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
     // --- ESTADO DE LA APLICACIÓN (definido al inicio) ---
     let AppState = {
       inputText: '',
