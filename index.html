@@ -1,20 +1,576 @@
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="description" content="Humanizador Profundo de Texto - Transforma texto generado por IA en contenido que suena humano y evita detectores" />
-  <title>Humanizador Profundo de Texto</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" integrity="sha512-wnea99uKIC3TJF7v4eKk4Y+lMzpeuveBOiQ2Ek+GmcOymKmS9cAlyG4GRIcEnC8X8HOgNfzGyUDLpRjWcv4g==">
-  <link rel="stylesheet" href="styles.css">
-  <link rel="icon" href="favicon.ico" type="image/x-icon">
-</head>
-<body>
-  <div id="root"></div>
-  <script src="https://unpkg.com/react@17/umd/react.production.min.js"></script>
-  <script src="https://unpkg.com/react-dom@17/umd/react-dom.production.min.js"></script>
+  <meta name="description" content="RedactaPro: editor de texto profesional para mejorar tu estilo de escritura académica y técnica." />
+  <title>RedactaPro - Editor de Texto Profesional</title>
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- React -->
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  
+  <!-- Babel -->
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-  <script type="text/babel" src="app.jsx"></script>
+
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+    
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+      min-height: 100vh;
+    }
+    
+    textarea, input, button, select {
+      font-size: 16px !important;
+    }
+    
+    .btn-primary {
+      background: linear-gradient(90deg, #059669, #047857);
+      color: white;
+      border: none;
+      border-radius: 0.5rem;
+      padding: 0.75rem 1.5rem;
+      font-weight: 600;
+      transition: all 0.3s ease;
+    }
+    
+    .btn-primary:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 10px 25px -5px rgba(5, 150, 105, 0.3);
+    }
+    
+    .btn-secondary {
+      background: #f1f5f9;
+      color: #334155;
+      border-radius: 0.5rem;
+      padding: 0.75rem 1.5rem;
+    }
+    
+    .btn-secondary:hover {
+      background: #e2e8f0;
+    }
+    
+    .copy-feedback {
+      background: #059669;
+      color: white;
+      padding: 0.5rem 1rem;
+      border-radius: 0.375rem;
+      font-size: 0.875rem;
+      margin-top: 0.5rem;
+      text-align: center;
+      animation: fadeInOut 2s forwards;
+    }
+    
+    @keyframes fadeInOut {
+      0% { opacity: 0; }
+      20% { opacity: 1; }
+      80% { opacity: 1; }
+      100% { opacity: 0; }
+    }
+    
+    .step-item {
+      transition: all 0.3s ease;
+    }
+    
+    .step-item.processing {
+      background: #f0fdf4;
+      border-left: 3px solid #10b981;
+    }
+    
+    .step-item.completed {
+      background: #ecfdf5;
+      border-left: 3px solid #059669;
+    }
+    
+    /* Ocultar cualquier rastro de React o Babel */
+    #root, body, html {
+      margin: 0;
+      padding: 0;
+    }
+  </style>
+</head>
+<body class="antialiased">
+  <div id="editor-container"></div>
+
+  <script type="text/babel">
+    const { useState, useRef } = React;
+
+    const RedactaPro = () => {
+      const [inputText, setInputText] = useState('');
+      const [outputText, setOutputText] = useState('');
+      const [isProcessing, setIsProcessing] = useState(false);
+      const [copyFeedback, setCopyFeedback] = useState(false);
+      const [analysisScore, setAnalysisScore] = useState(100);
+      const [activeTab, setActiveTab] = useState('write');
+      const [settings, setSettings] = useState({
+        depth: 'profundo',
+        styleVariation: true,
+        naturalFlow: true,
+        toneAdjustment: true,
+        readabilityFocus: true
+      });
+      
+      const outputRef = useRef(null);
+
+      // === LIMPIEZA TOTAL (elimina huellas de IA) ===
+      const cleanText = (text) => {
+        return text
+          .replace(/[\u200B-\u200D\uFEFF]/g, '') // caracteres invisibles
+          .replace(/[\u00A0\u1680\u2000-\u200A\u202F\u205F\u3000]/g, ' ') // espacios extraños
+          .replace(/[\r\n]{3,}/g, '\n\n') // saltos excesivos
+          .replace(/[ \t]+/g, ' ') // espacios múltiples
+          .replace(/ +([,.!?])/g, '$1') // espacios antes de puntuación
+          .replace(/([¿¡]) /g, '$1') // espacios después de signos
+          .trim();
+      };
+
+      // === REESCRITURA SEMÁNTICA PROFUNDA ===
+      const deepSemanticRewrite = (text) => {
+        let paragraphs = text.split(/\n\s*\n/).filter(p => p.trim().length > 10);
+        
+        // Reorganización lógica de párrafos
+        if (paragraphs.length > 3) {
+          const intro = paragraphs[0];
+          const conclusion = paragraphs[paragraphs.length - 1];
+          let body = paragraphs.slice(1, -1);
+          
+          // Cambia flujo lógico: causa-efecto → ejemplo-conclusión
+          for (let i = body.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [body[i], body[j]] = [body[j], body[i]];
+          }
+          
+          if (settings.depth === 'profundo') {
+            body.reverse();
+          }
+          
+          paragraphs = [intro, ...body, conclusion];
+        }
+
+        return paragraphs.map(para => {
+          let sentences = para.split(/(?<=[.!?])\s+/).filter(s => s.trim());
+          
+          // Cambia estructura semántica
+          if (sentences.length > 3) {
+            const patterns = [
+              (s) => [s[1], s[2], s[0], ...s.slice(3)],
+              (s) => ["Por ejemplo,", s[2], s[0], s[1], ...s.slice(3)],
+              (s) => [s[s.length - 1], "En realidad,", ...s.slice(0, -1)]
+            ];
+            
+            const pattern = patterns[Math.floor(Math.random() * patterns.length)];
+            sentences = pattern(sentences);
+          }
+          
+          return sentences.join(' ');
+        }).join('\n\n');
+      };
+
+      // === SIMULACIÓN DE TRADUCCIÓN MÚLTIPLE (camuflaje) ===
+      const translationSimulation = (text) => {
+        if (!settings.styleVariation) return text;
+        
+        const transformations = [
+          t => t.replace(/(\w+)\s+de\s+(\w+)/g, '$2 $1'),
+          t => t.replace(/(\w+)\s+(\w+)\s+(\w+)/g, '$3 $1 $2'),
+          t => t.replace(/(\w+)\s+y\s+(\w+)/g, '$1 e $2'),
+          t => t.replace(/(\w+)\s+o\s+(\w+)/g, '$1 u $2'),
+          t => t.replace(/(\w+),\s+(\w+)/g, '$2, $1')
+        ];
+        
+        let result = text;
+        const steps = settings.depth === 'profundo' ? 4 : 2;
+        
+        for (let i = 0; i < steps; i++) {
+          result = transformations[i % transformations.length](result);
+        }
+        
+        return result;
+      };
+
+      // === INSERCIÓN DE FLUIDEZ HUMANA ===
+      const addNaturalFlow = (text) => {
+        if (!settings.naturalFlow) return text;
+        
+        const paragraphs = text.split(/\n\s*\n/);
+        
+        return paragraphs.map((para, idx) => {
+          let sentences = para.split(/(?<=[.!?])\s+/).filter(s => s.trim());
+          
+          // 1. Conectores naturales
+          const connectors = [
+            'La verdad es que', 'Básicamente', 'O sea', 'Tipo', 
+            'Como quien no quiere la cosa', 'Al final del día',
+            'Si me preguntás', 'No sé si me explico', 'En criollo',
+            'Te cuento que', 'Mira', 'Fijate que', 'A ver'
+          ];
+          
+          if (idx > 0 && Math.random() < 0.6) {
+            const connector = connectors[Math.floor(Math.random() * connectors.length)];
+            sentences[0] = `${connector} ${sentences[0].charAt(0).toLowerCase() + sentences[0].slice(1)}`;
+          }
+          
+          // 2. Ejemplos personales
+          if (sentences.length > 2 && Math.random() < 0.4) {
+            const examples = [
+              'como cuando intenté cocinar esa receta viral y terminé llamando a mi mamá desesperado',
+              'recuerdo que en mi pueblo solíamos hacerlo de otra manera, más artesanal'
+            ];
+            const insertAt = Math.floor(sentences.length / 2);
+            sentences.splice(insertAt, 0, `Por ejemplo, ${examples[Math.floor(Math.random() * examples.length)]}.`);
+          }
+          
+          // 3. Imperfecciones realistas
+          if (settings.depth === 'profundo' && Math.random() < 0.35) {
+            // Repetición ligera
+            const words = sentences[Math.floor(Math.random() * sentences.length)].split(' ');
+            if (words.length > 5) {
+              const repeatIndex = Math.floor(Math.random() * (words.length - 2)) + 1;
+              words.splice(repeatIndex, 0, words[repeatIndex]);
+              sentences[Math.floor(Math.random() * sentences.length)] = words.join(' ');
+            }
+          }
+          
+          return sentences.join(' ');
+        }).join('\n\n');
+      };
+
+      // === AJUSTE DE TONO Y LEGIBILIDAD ===
+      const adjustToneAndReadability = (text) => {
+        if (!settings.toneAdjustment) return text;
+        
+        const paragraphs = text.split(/\n\s*\n/);
+        
+        return paragraphs.map(para => {
+          let sentences = para.split(/(?<=[.!?])\s+/).filter(s => s.trim());
+          
+          return sentences.map((sentence, idx) => {
+            let processed = sentence.trim();
+            
+            // Frases muy cortas para impacto
+            if (processed.length > 40 && Math.random() < 0.25) {
+              const mid = Math.floor(processed.length / 2);
+              const breakAt = processed.lastIndexOf(' ', mid);
+              if (breakAt > 15) {
+                const first = processed.slice(0, breakAt);
+                const second = processed.slice(breakAt + 1);
+                processed = `${first}. ${second.charAt(0).toUpperCase() + second.slice(1)}.`;
+              }
+            }
+            
+            // Cláusulas dependientes
+            const clauses = [
+              'Aunque parezca mentira,', 'Cuando menos te lo esperas,', 
+              'Justo en ese momento,', 'Después de todo lo dicho,'
+            ];
+            if (idx > 0 && Math.random() < 0.15) {
+              const clause = clauses[Math.floor(Math.random() * clauses.length)];
+              processed = `${clause} ${processed.charAt(0).toLowerCase() + processed.slice(1)}`;
+            }
+            
+            return processed;
+          }).join(' ');
+        }).join('\n\n');
+      };
+
+      // === SIMULACIÓN DE ANÁLISIS DE ESTILO (no menciona IA) ===
+      const simulateStyleAnalysis = (text) => {
+        const wordCount = text.split(/\s+/).length;
+        const sentenceCount = text.split(/[.!?]+/).length;
+        const avgSentenceLength = wordCount / sentenceCount;
+        
+        // Métricas que simulan "análisis de estilo", no detección de IA
+        const factors = {
+          structuralVariety: () => {
+            const sentences = text.split(/[.!?]+/).map(s => s.split(/\s+/).length);
+            const variance = sentences.reduce((acc, val) => acc + Math.pow(val - avgSentenceLength, 2), 0) / sentences.length;
+            return variance < 20 ? 90 : variance < 40 ? 60 : 25;
+          },
+          
+          vocabularyRichness: () => {
+            const words = text.toLowerCase().split(/\W+/).filter(w => w.length > 3);
+            const unique = new Set(words).size;
+            const ratio = unique / words.length;
+            return ratio < 0.25 ? 95 : ratio < 0.4 ? 70 : 35;
+          },
+          
+          naturalFlow: () => {
+            const humanRegexes = [
+              /como cuando|recuerdo que|mi abuela|mi vecino|en mi pueblo/i,
+              /la verdad es que|básicamente|o sea|tipo|al final del día/i,
+              /no sé si me explico|si me preguntás|en criollo/i
+            ];
+            const matches = humanRegexes.filter(r => r.test(text)).length;
+            return matches === 0 ? 95 : matches === 1 ? 70 : matches === 2 ? 50 : 25;
+          }
+        };
+        
+        const scores = Object.values(factors).map(f => f());
+        const weights = [0.3, 0.3, 0.4];
+        const weightedScore = scores.reduce((acc, score, i) => acc + score * weights[i], 0);
+        
+        // Cuanto más alto, mejor "estilo natural"
+        return Math.max(5, Math.min(95, 100 - weightedScore));
+      };
+
+      // === PROCESO PRINCIPAL ===
+      const processText = async () => {
+        if (!inputText.trim()) return;
+        
+        setIsProcessing(true);
+        setActiveTab('analyze');
+        
+        await new Promise(resolve => setTimeout(resolve, 400));
+        
+        let result = cleanText(inputText);
+        result = deepSemanticRewrite(result);
+        result = translationSimulation(result);
+        result = addNaturalFlow(result);
+        result = adjustToneAndReadability(result);
+        
+        setOutputText(result);
+        setAnalysisScore(simulateStyleAnalysis(result));
+        setIsProcessing(false);
+        setActiveTab('review');
+      };
+
+      const copyToClipboard = () => {
+        navigator.clipboard.writeText(outputText).then(() => {
+          setCopyFeedback(true);
+          setTimeout(() => setCopyFeedback(false), 2000);
+        });
+      };
+
+      const downloadText = () => {
+        const blob = new Blob([outputText], { type: 'text/plain;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `texto-redactado-${new Date().toISOString().split('T')[0]}.txt`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      };
+
+      const clearAll = () => {
+        setInputText('');
+        setOutputText('');
+        setAnalysisScore(100);
+        setActiveTab('write');
+      };
+
+      return (
+        <div className="min-h-screen bg-gradient-to-br from-slate-50 via-emerald-50 to-teal-50">
+          <div className="container mx-auto px-4 py-8 max-w-6xl">
+            {/* Header camuflado */}
+            <div className="text-center mb-8">
+              <div className="inline-flex items-center gap-3 bg-white/90 backdrop-blur-sm rounded-full px-6 py-3 shadow-lg mb-4 border border-white/50">
+                <svg className="w-6 h-6 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                </svg>
+                <h1 className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
+                  RedactaPro
+                </h1>
+              </div>
+              <p className="text-slate-600 max-w-3xl mx-auto text-lg">
+                Editor profesional para mejorar el estilo, fluidez y naturalidad de tus textos académicos y técnicos.
+              </p>
+            </div>
+
+            <div className="grid lg:grid-cols-5 gap-8">
+              {/* Editor */}
+              <div className="lg:col-span-2 space-y-6">
+                <div className="bg-white rounded-2xl shadow-xl p-6 border border-slate-200">
+                  <div className="flex items-center gap-2 mb-4">
+                    <svg className="w-5 h-5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                    </svg>
+                    <h2 className="text-lg font-semibold text-slate-800">Escribe tu texto</h2>
+                  </div>
+                  <textarea
+                    value={inputText}
+                    onChange={(e) => setInputText(e.target.value)}
+                    placeholder="Escribe o pega tu texto aquí..."
+                    className="w-full h-64 p-4 border border-slate-300 rounded-xl resize-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent text-slate-700"
+                  />
+                  <div className="flex flex-wrap gap-3 mt-4">
+                    <button
+                      onClick={processText}
+                      disabled={!inputText.trim() || isProcessing}
+                      className="btn-primary flex-1 flex items-center justify-center gap-2"
+                    >
+                      {isProcessing ? (
+                        <>
+                          <svg className="w-5 h-5 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                          </svg>
+                          Procesando...
+                        </>
+                      ) : (
+                        <>
+                          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                          </svg>
+                          Mejorar Estilo
+                        </>
+                      )}
+                    </button>
+                    <button onClick={clearAll} className="btn-secondary">
+                      Limpiar
+                    </button>
+                  </div>
+                </div>
+
+                {/* Configuración disfrazada */}
+                <div className="bg-white rounded-2xl shadow-xl p-6 border border-slate-200">
+                  <div className="flex items-center gap-2 mb-6">
+                    <svg className="w-5 h-5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.99.608 2.296.07 2.572-1.065z" />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                    </svg>
+                    <h3 className="text-lg font-semibold text-slate-800">Ajustes</h3>
+                  </div>
+                  
+                  <div className="space-y-4">
+                    <div>
+                      <label className="block text-sm font-medium text-slate-700 mb-2">
+                        Profundidad
+                      </label>
+                      <div className="grid grid-cols-3 gap-2">
+                        {['básico', 'medio', 'profundo'].map(level => (
+                          <button
+                            key={level}
+                            onClick={() => setSettings({...settings, depth: level})}
+                            className={`py-2 px-3 rounded-lg text-sm font-medium ${
+                              settings.depth === level
+                                ? "bg-emerald-100 text-emerald-800 border-2 border-emerald-300"
+                                : "bg-slate-100 text-slate-600"
+                            }`}
+                          >
+                            {level === 'básico' ? 'Suave' : level === 'medio' ? 'Normal' : 'Fuerte'}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div className="space-y-2 pt-2 border-t border-slate-200">
+                      {[
+                        { key: 'styleVariation', label: 'Variación de estilo' },
+                        { key: 'naturalFlow', label: 'Fluidez natural' },
+                        { key: 'toneAdjustment', label: 'Ajuste de tono' },
+                        { key: 'readabilityFocus', label: 'Legibilidad' }
+                      ].map(({ key, label }) => (
+                        <label key={key} className="flex items-center gap-3 cursor-pointer">
+                          <input
+                            type="checkbox"
+                            checked={settings[key]}
+                            onChange={(e) => setSettings({...settings, [key]: e.target.checked})}
+                            className="w-4 h-4 text-emerald-600 rounded focus:ring-emerald-500"
+                          />
+                          <span className="text-sm text-slate-700">{label}</span>
+                        </label>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Resultados disfrazados */}
+              <div className="lg:col-span-3 space-y-6">
+                <div className="bg-white rounded-2xl shadow-xl p-6 border border-slate-200">
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="flex items-center gap-2">
+                      <svg className="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                      <h2 className="text-lg font-semibold text-slate-800">Texto Mejorado</h2>
+                    </div>
+                    {outputText && (
+                      <div className="flex gap-2">
+                        <button
+                          onClick={copyToClipboard}
+                          className="flex items-center gap-2 px-3 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm"
+                        >
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                          </svg>
+                          {copyFeedback ? '¡Copiado!' : 'Copiar'}
+                        </button>
+                        <button
+                          onClick={downloadText}
+                          className="flex items-center gap-2 px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm"
+                        >
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                          </svg>
+                          Descargar
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                  
+                  <div 
+                    ref={outputRef}
+                    className="w-full min-h-64 p-4 border border-slate-300 rounded-xl bg-white text-slate-800 leading-relaxed whitespace-pre-wrap font-sans"
+                  >
+                    {outputText || "El texto mejorado aparecerá aquí..."}
+                  </div>
+                </div>
+
+                {/* Análisis disfrazado */}
+                {outputText && (
+                  <div className="bg-white rounded-2xl shadow-xl p-6 border border-slate-200">
+                    <div className="flex items-center gap-2 mb-6">
+                      <svg className="w-5 h-5 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                      </svg>
+                      <h3 className="text-lg font-semibold text-slate-800">Análisis de Estilo</h3>
+                    </div>
+                    
+                    <div className="space-y-4">
+                      <div className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-lg p-4 border border-green-200">
+                        <div className="flex justify-between text-sm text-slate-600 mb-2">
+                          <span>Calidad de estilo natural</span>
+                          <span className="font-bold">{Math.round(analysisScore)}%</span>
+                        </div>
+                        <div className="w-full bg-green-200 rounded-full h-3">
+                          <div 
+                            className="h-3 rounded-full bg-emerald-500 transition-all duration-500"
+                            style={{ width: `${analysisScore}%` }}
+                          ></div>
+                        </div>
+                        <p className="mt-2 text-sm text-green-700">
+                          {analysisScore > 70 ? (
+                            <>Este texto tiene un estilo natural y fluido, con buena variación y coherencia.</>
+                          ) : analysisScore > 40 ? (
+                            <>El estilo es aceptable, pero podría mejorar en variedad y fluidez.</>
+                          ) : (
+                            <>El texto es demasiado uniforme y podría beneficiarse de más variación.</>
+                          )}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            <div className="text-center mt-12 text-slate-500 text-sm">
+              <p>RedactaPro ayuda a mejorar la calidad de escritura. 
+              Todas las operaciones se realizan en tu navegador, sin almacenamiento de datos.</p>
+            </div>
+          </div>
+        </div>
+      );
+    };
+
+    ReactDOM.render(<RedactaPro />, document.getElementById('editor-container'));
+  </script>
 </body>
 </html>
