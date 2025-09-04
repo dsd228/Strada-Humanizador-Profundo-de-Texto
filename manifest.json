@@ -27,5 +27,5 @@
       "matches": ["<all_urls>"]
     }
   ]
-  // CSP eliminada si usas build. Si usas Babel standalone, reañádela.
+  
 }
