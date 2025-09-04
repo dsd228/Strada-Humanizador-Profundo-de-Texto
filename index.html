@@ -3,23 +3,220 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="RedactaPro: Mejora tu escritura para sonar más humano y evadir detectores de IA con estilo moderno." />
   <title>RedactaPro - Tu Escritura Humana</title>
   
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
   
-  <!-- React, ReactDOM -->
+  <!-- React, ReactDOM, Babel -->
   <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
   <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 
-  <!-- Tu CSS -->
-  <link rel="stylesheet" href="css/popup.css">
+  <!-- Estilos CSS integrados -->
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@500;600;700&display=swap');
+    
+    :root {
+      --color-primary: #059669; /* Emerald 600 */
+      --color-secondary: #047857; /* Emerald 700 */
+      --color-bg-light: #f8fafc; /* Slate 50 */
+      --color-bg-medium: #f1f5f9; /* Slate 100 */
+      --color-text-normal: #334155; /* Slate 700 */
+      --color-text-muted: #64748b; /* Slate 500 */
+      --color-accent: #2dd4bf; /* Teal 400 */
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(135deg, var(--color-bg-light) 0%, var(--color-bg-medium) 100%);
+      min-height: 100vh;
+      scroll-behavior: smooth;
+    }
+    
+    h1, h2, h3, h4, h5, h6 {
+      font-family: 'Poppins', sans-serif;
+    }
+
+    textarea, input, button, select {
+      font-size: 1rem; /* 16px */
+    }
+    
+    .btn-primary {
+      background: linear-gradient(90deg, var(--color-primary), var(--color-secondary));
+      color: white;
+      border: none;
+      border-radius: 0.75rem; /* 12px */
+      padding: 0.75rem 1.5rem;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    }
+    
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 25px -5px rgba(5, 150, 105, 0.3);
+    }
+    
+    .btn-secondary {
+      background: #e2e8f0; /* Slate 200 */
+      color: var(--color-text-normal);
+      border-radius: 0.75rem;
+      padding: 0.75rem 1.5rem;
+      transition: all 0.3s ease;
+      box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+    }
+    
+    .btn-secondary:hover {
+      background: #cbd5e1; /* Slate 300 */
+      transform: translateY(-1px);
+    }
+    
+    .input-textarea {
+      border: 1px solid #cbd5e1; /* Slate 300 */
+      border-radius: 0.75rem;
+      transition: all 0.3s ease;
+      resize: vertical; /* Permitir redimensionamiento vertical */
+    }
+    .input-textarea:focus {
+      outline: 2px solid #10b981; /* emerald-500 */
+      outline-offset: 2px;
+      border-color: transparent;
+      box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.3); /* Focus ring */
+    }
+    
+    .progress-bar-container {
+      background-color: #e2e8f0; /* Slate 200 */
+      border-radius: 9999px; /* Full rounded */
+      overflow: hidden;
+    }
+    .progress-bar-fill {
+      background: linear-gradient(90deg, var(--color-primary), var(--color-secondary));
+      height: 0.75rem; /* 12px */
+      border-radius: 9999px;
+      transition: width 0.5s ease-in-out;
+    }
+
+    /* Estilos para el feedback de copia */
+    .toast-success {
+      background-color: var(--color-primary);
+      color: white;
+      padding: 0.75rem 1.5rem;
+      border-radius: 0.5rem;
+      font-size: 0.875rem;
+      text-align: center;
+      opacity: 0;
+      animation: fadeInOut 2s forwards;
+      position: fixed;
+      bottom: 2rem;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 50;
+      box-shadow: 0 4px 6px -1px rgba(0,0,0,.1), 0 2px 4px -1px rgba(0,0,0,.06);
+    }
+    
+    @keyframes fadeInOut {
+      0% { opacity: 0; transform: translateX(-50%) translateY(20px); }
+      20% { opacity: 1; transform: translateX(-50%) translateY(-10px); }
+      80% { opacity: 1; transform: translateX(-50%) translateY(-10px); }
+      100% { opacity: 0; transform: translateX(-50%) translateY(-20px); }
+    }
+    
+    /* Estilos para la sección de análisis */
+    .analysis-card {
+      background-color: white;
+      border-radius: 1rem; /* 16px */
+      box-shadow: 0 10px 15px -3px rgba(0,0,0,.05), 0 4px 6px -2px rgba(0,0,0,.05);
+      border: 1px solid #e2e8f0; /* Slate 200 */
+    }
+    
+    .analysis-title-icon {
+      color: var(--color-accent); /* Teal 400 */
+    }
+
+    .tooltip {
+      position: relative;
+      display: inline-block;
+    }
+    .tooltip .tooltiptext {
+      visibility: hidden;
+      width: 220px;
+      background-color: #555;
+      color: #fff;
+      text-align: center;
+      border-radius: 6px;
+      padding: 5px 10px;
+      position: absolute;
+      z-index: 1;
+      bottom: 125%; /* Position the tooltip above the element */
+      left: 50%;
+      margin-left: -110px; /* Use half of the width to center */
+      opacity: 0;
+      transition: opacity 0.3s;
+      font-size: 0.75rem; /* Smaller font */
+      line-height: 1.2;
+    }
+    .tooltip:hover .tooltiptext {
+      visibility: visible;
+      opacity: 1;
+    }
+    .tooltip .tooltiptext::after {
+      content: "";
+      position: absolute;
+      top: 100%; /* At the bottom of the tooltip */
+      left: 50%;
+      margin-left: -5px;
+      border-width: 5px;
+      border-style: solid;
+      border-color: #555 transparent transparent #555;
+    }
+
+    /* Nuevos estilos para mejoras */
+    .history-item {
+      transition: all 0.2s ease;
+      border-left: 3px solid transparent;
+    }
+    .history-item:hover {
+      border-left-color: var(--color-primary);
+      background-color: #f8fafc;
+    }
+    
+    .stats-card {
+      background: linear-gradient(135deg, #f0fdf4 0%, #ecfdf5 100%);
+      border: 1px solid #bbf7d0;
+    }
+    
+    .export-option {
+      transition: all 0.2s ease;
+    }
+    .export-option:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
+    }
+    
+    .fade-in {
+      animation: fadeIn 0.5s ease-in-out;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .hidden {
+      display: none;
+    }
+  </style>
 </head>
 <body class="antialiased">
-  <!-- Este div es el punto de montaje para tu aplicación React -->
+  <!-- Este div es donde React montará tu aplicación -->
   <div id="root"></div>
-  
+
   <!-- Tu script de React compilado por esbuild -->
+  <!-- Asegúrate de que build.js genere public/js/popup.js -->
+  <!-- Y que tu package.json tenga el script "build": "node build.js" -->
+  <!-- El script de Babel ya no se usa aquí, ya que todo está compilado -->
   <script src="js/popup.js"></script>
 </body>
 </html>
