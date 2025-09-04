@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Humanizador de Texto IA Mejorado</title>
+    <title>Humanizador Avanzado de Texto IA</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
             --primary: #4361ee;
@@ -17,6 +18,20 @@
             --danger: #f94144;
             --gray: #6c757d;
             --border: #dee2e6;
+            --card-bg: #ffffff;
+            --text-color: #333333;
+            --sidebar-width: 250px;
+        }
+
+        .dark-mode {
+            --primary: #5e72e4;
+            --primary-dark: #4a57c9;
+            --light: #1a1a1a;
+            --dark: #f8f9fa;
+            --card-bg: #2d3748;
+            --text-color: #e2e8f0;
+            --border: #4a5568;
+            --gray: #a0aec0;
         }
         
         * {
@@ -28,16 +43,36 @@
         
         body {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: var(--dark);
+            color: var(--text-color);
             line-height: 1.6;
-            padding: 20px;
+            padding: 0;
+            min-height: 100vh;
+            transition: background 0.3s ease;
+        }
+        
+        .app-container {
+            display: flex;
             min-height: 100vh;
         }
         
+        .sidebar {
+            width: var(--sidebar-width);
+            background: var(--card-bg);
+            padding: 20px;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+            overflow-y: auto;
+        }
+        
+        .main-content {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+        }
+        
         .container {
-            max-width: 1000px;
+            max-width: 1200px;
             margin: 0 auto;
-            background: white;
+            background: var(--card-bg);
             border-radius: 15px;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
             overflow: hidden;
@@ -108,6 +143,8 @@
             line-height: 1.6;
             transition: all 0.3s ease;
             box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
+            background: var(--card-bg);
+            color: var(--text-color);
         }
         
         textarea:focus {
@@ -219,6 +256,7 @@
             display: flex;
             gap: 12px;
             margin-top: 15px;
+            flex-wrap: wrap;
         }
         
         .copy-btn {
@@ -230,7 +268,7 @@
         }
         
         .features {
-            background: linear-gradient(to bottom, #f8f9fa, #e9ecef);
+            background: linear-gradient(to bottom, var(--light), #e9ecef);
             padding: 40px 30px;
             border-top: 1px solid var(--border);
         }
@@ -249,7 +287,7 @@
         }
         
         .feature {
-            background: white;
+            background: var(--card-bg);
             padding: 25px;
             border-radius: 12px;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
@@ -283,7 +321,156 @@
             opacity: 0.8;
         }
         
+        .settings-panel {
+            margin-bottom: 30px;
+        }
+        
+        .settings-title {
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .settings-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+        
+        .setting-item {
+            background: var(--card-bg);
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .setting-item label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+        
+        .slider {
+            width: 100%;
+            margin: 10px 0;
+        }
+        
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 30px;
+        }
+        
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        
+        .slider-toggle {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 30px;
+        }
+        
+        .slider-toggle:before {
+            position: absolute;
+            content: "";
+            height: 22px;
+            width: 22px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        
+        input:checked + .slider-toggle {
+            background-color: var(--primary);
+        }
+        
+        input:checked + .slider-toggle:before {
+            transform: translateX(30px);
+        }
+        
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .stat-card {
+            background: var(--card-bg);
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .stat-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--primary);
+            margin: 10px 0;
+        }
+        
+        .stat-label {
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+        
+        .history-item {
+            padding: 10px;
+            border-bottom: 1px solid var(--border);
+            cursor: pointer;
+        }
+        
+        .history-item:hover {
+            background: rgba(0,0,0,0.05);
+        }
+        
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            background: var(--card-bg);
+            border: none;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            cursor: pointer;
+        }
+        
         @media (max-width: 768px) {
+            .app-container {
+                flex-direction: column;
+            }
+            
+            .sidebar {
+                width: 100%;
+                order: 2;
+            }
+            
+            .main-content {
+                order: 1;
+            }
+            
             .controls {
                 flex-direction: column;
                 align-items: flex-start;
@@ -302,86 +489,153 @@
             h1 {
                 font-size: 2rem;
             }
+            
+            .settings-grid {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <header>
-            <h1>Humanizador de Texto IA Mejorado</h1>
-            <p class="description">Transforma tus textos generados por inteligencia artificial en contenido que suene natural y humano, con un algoritmo mejorado para evitar repeticiones y cortes incorrectos.</p>
-        </header>
-        
-        <div class="tool-container">
-            <div class="input-section">
-                <div class="section-title">
-                    <span>📥</span>
-                    <h2>Texto original de IA</h2>
-                </div>
-                <textarea id="inputText" placeholder="Pega aquí el texto generado por IA...">La inteligencia artificial está revolucionando diversas industrias. Sus capacidades de análisis de datos y automatización de procesos están incrementando la eficiencia en múltiples sectores. A continuación, sin embargo, la implementación generalizada de la inteligencia artificial también plantea preocupaciones éticas importantes. La privacidad de los datos, la posible pérdida de empleos y el creación de sistemas autónomos son temas cruciales que requieren una consideración cuidadosa. Es vital que el avance tecnológico vaya acompañado de un marco regulatorio adecuado y un debate social informado. La adopción responsable de la inteligencia artificial es esencial para maximizar sus beneficios y mitigar sus riesgos.</textarea>
-            </div>
-            
-            <div class="controls">
-                <button id="processBtn">
-                    <span>🪄</span> Humanizar Texto
-                </button>
-                <div class="process-indicator">
-                    <span>Procesando:</span>
-                    <div class="progress-bar">
-                        <div class="progress" id="progressBar"></div>
+    <button class="theme-toggle" id="themeToggle">
+        <i class="fas fa-moon"></i>
+    </button>
+
+    <div class="app-container">
+        <aside class="sidebar">
+            <div class="settings-panel">
+                <h3 class="settings-title"><i class="fas fa-cog"></i> Configuración</h3>
+                <div class="settings-grid">
+                    <div class="setting-item">
+                        <label for="intensity">Intensidad de humanización</label>
+                        <input type="range" id="intensity" class="slider" min="1" max="5" value="3">
+                        <div id="intensityValue">Media</div>
                     </div>
-                    <span id="progressText">0%</span>
-                </div>
-            </div>
-            
-            <div class="output-section">
-                <div class="output-header">
-                    <div class="section-title">
-                        <span>📤</span>
-                        <h2>Texto humanizado</h2>
+                    <div class="setting-item">
+                        <label for="formality">Nivel de formalidad</label>
+                        <input type="range" id="formality" class="slider" min="1" max="5" value="3">
+                        <div id="formalityValue">Neutral</div>
                     </div>
-                    <div class="ai-score">
-                        <span>Probabilidad de IA:</span>
-                        <span class="score-value ai" id="aiScore">92%</span>
+                    <div class="setting-item">
+                        <label for="creativity">Creatividad</label>
+                        <input type="range" id="creativity" class="slider" min="1" max="5" value="3">
+                        <div id="creativityValue">Moderada</div>
+                    </div>
+                    <div class="setting-item">
+                        <label>Modo oscuro</label>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="darkModeToggle">
+                            <span class="slider-toggle"></span>
+                        </label>
                     </div>
                 </div>
-                <textarea id="outputText" readonly></textarea>
-                <div class="action-buttons">
-                    <button id="copyBtn" class="copy-btn">
-                        <span>📋</span> Copiar texto
-                    </button>
-                    <button id="downloadBtn" class="download-btn">
-                        <span>💾</span> Descargar como TXT
-                    </button>
+            </div>
+
+            <div class="stats-container">
+                <div class="stat-card">
+                    <div class="stat-label">Palabras procesadas</div>
+                    <div class="stat-value" id="wordCount">0</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Texto humanizado</div>
+                    <div class="stat-value" id="humanizedCount">0</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Tiempo ahorrado</div>
+                    <div class="stat-value" id="timeSaved">0h</div>
                 </div>
             </div>
-        </div>
-        
-        <div class="features">
-            <h2>Algoritmo mejorado de humanización</h2>
-            <div class="feature-grid">
-                <div class="feature">
-                    <h3><span class="feature-icon">🔍</span> Análisis contextual</h3>
-                    <p>Nuevo sistema que analiza el contexto completo de las frases para evitar repeticiones y cortes incorrectos de palabras.</p>
-                </div>
-                <div class="feature">
-                    <h3><span class="feature-icon">🔄</span> Reemplazo inteligente</h3>
-                    <p>Algoritmo mejorado que evita reemplazos parciales dentro de palabras, previniendo errores como "inteligencinteligencia".</p>
-                </div>
-                <div class="feature">
-                    <h3><span class="feature-icon">✂️</span> División precisa</h3>
-                    <p>Mecanismo de división de oraciones que respeta los límites de las palabras y la estructura gramatical.</p>
-                </div>
-                <div class="feature">
-                    <h3><span class="feature-icon">✅</span> Validación mejorada</h3>
-                    <p>Sistema de verificación que detecta y corrige errores de procesamiento antes de mostrar el resultado final.</p>
+
+            <div class="history-section" style="margin-top: 20px;">
+                <h3 class="settings-title"><i class="fas fa-history"></i> Historial</h3>
+                <div id="historyList">
+                    <div class="history-item">No hay historial aún</div>
                 </div>
             </div>
-        </div>
+        </aside>
+
+        <main class="main-content">
+            <div class="container">
+                <header>
+                    <h1>Humanizador Avanzado de Texto IA</h1>
+                    <p class="description">Transforma tus textos generados por inteligencia artificial en contenido que suene natural y humano, con opciones avanzadas de personalización.</p>
+                </header>
+                
+                <div class="tool-container">
+                    <div class="input-section">
+                        <div class="section-title">
+                            <span>📥</span>
+                            <h2>Texto original de IA</h2>
+                        </div>
+                        <textarea id="inputText" placeholder="Pega aquí el texto generado por IA...">La inteligencia artificial está revolucionando diversas industrias. Sus capacidades de análisis de datos y automatización de procesos están incrementando la eficiencia en múltiples sectores. A continuación, sin embargo, la implementación generalizada de la inteligencia artificial también plantea preocupaciones éticas importantes. La privacidad de los datos, la posible pérdida de empleos y el creación de sistemas autónomos son temas cruciales que requieren una consideración cuidadosa. Es vital que el avance tecnológico vaya acompañado de un marco regulatorio adecuado y un debate social informado. La adopción responsable de la inteligencia artificial es esencial para maximizar sus beneficios y mitigar sus riesgos.</textarea>
+                    </div>
+                    
+                    <div class="controls">
+                        <button id="processBtn">
+                            <span>🪄</span> Humanizar Texto
+                        </button>
+                        <div class="process-indicator">
+                            <span>Procesando:</span>
+                            <div class="progress-bar">
+                                <div class="progress" id="progressBar"></div>
+                            </div>
+                            <span id="progressText">0%</span>
+                        </div>
+                    </div>
+                    
+                    <div class="output-section">
+                        <div class="output-header">
+                            <div class="section-title">
+                                <span>📤</span>
+                                <h2>Texto humanizado</h2>
+                            </div>
+                            <div class="ai-score">
+                                <span>Probabilidad de IA:</span>
+                                <span class="score-value ai" id="aiScore">92%</span>
+                            </div>
+                        </div>
+                        <textarea id="outputText" readonly></textarea>
+                        <div class="action-buttons">
+                            <button id="copyBtn" class="copy-btn">
+                                <span>📋</span> Copiar texto
+                            </button>
+                            <button id="downloadBtn" class="download-btn">
+                                <span>💾</span> Descargar como TXT
+                            </button>
+                            <button id="clearBtn" class="download-btn" style="background: linear-gradient(to right, var(--danger), #e63946);">
+                                <span>🗑️</span> Limpiar todo
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="features">
+                    <h2>Características avanzadas de humanización</h2>
+                    <div class="feature-grid">
+                        <div class="feature">
+                            <h3><span class="feature-icon">🔍</span> Análisis contextual profundo</h3>
+                            <p>Nuestro algoritmo analiza el contexto completo de las frases para garantizar coherencia semántica y evitar repeticiones.</p>
+                        </div>
+                        <div class="feature">
+                            <h3><span class="feature-icon">🎭</span> Modulación de estilo</h3>
+                            <p>Ajusta el nivel de formalidad, creatividad y tono del texto según tus necesidades específicas.</p>
+                        </div>
+                        <div class="feature">
+                            <h3><span class="feature-icon">📊</span> Estadísticas en tiempo real</h3>
+                            <p>Obtén métricas detalladas sobre el proceso de humanización y el impacto en la detección de IA.</p>
+                        </div>
+                        <div class="feature">
+                            <h3><span class="feature-icon">🔄</span> Historial y comparación</h3>
+                            <p>Guarda y compara diferentes versiones de tu texto para perfeccionar el resultado final.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
     </div>
 
     <div class="footer">
-        <p>Humanizador de Texto IA Mejorado © 2023 - Solución optimizada para resultados más naturales</p>
+        <p>Humanizador Avanzado de Texto IA © 2023 - Versión 2.0 con características mejoradas</p>
     </div>
 
     <script>
@@ -391,60 +645,131 @@
             const processBtn = document.getElementById('processBtn');
             const copyBtn = document.getElementById('copyBtn');
             const downloadBtn = document.getElementById('downloadBtn');
+            const clearBtn = document.getElementById('clearBtn');
             const progressBar = document.getElementById('progressBar');
             const progressText = document.getElementById('progressText');
             const aiScore = document.getElementById('aiScore');
+            const themeToggle = document.getElementById('themeToggle');
+            const darkModeToggle = document.getElementById('darkModeToggle');
+            const intensitySlider = document.getElementById('intensity');
+            const intensityValue = document.getElementById('intensityValue');
+            const formalitySlider = document.getElementById('formality');
+            const formalityValue = document.getElementById('formalityValue');
+            const creativitySlider = document.getElementById('creativity');
+            const creativityValue = document.getElementById('creativityValue');
+            const wordCount = document.getElementById('wordCount');
+            const humanizedCount = document.getElementById('humanizedCount');
+            const timeSaved = document.getElementById('timeSaved');
+            const historyList = document.getElementById('historyList');
+            
+            let history = [];
+            let totalWordsProcessed = 0;
+            let totalTextsHumanized = 0;
             
             // Diccionario mejorado de sinónimos y transformaciones
             const synonyms = {
-                "inteligencia artificial": ["IA", "sistemas inteligentes", "tecnología cognitiva", "machine learning"],
-                "revolucionando": ["transformando", "cambiando radicalmente", "alterando profundamente", "innovando"],
-                "diversas industrias": ["múltiples sectores", "distintos campos", "varios ámbitos", "numerosos rubros"],
-                "capacidades de análisis": ["habilidades para analizar", "potencial de evaluación", "competencias examinadoras"],
-                "automatización de procesos": ["mecanización de procedimientos", "sistematización de tareas", "robotización de operaciones"],
-                "incrementando la eficiencia": ["mejorando el rendimiento", "optimizando la productividad", "aumentando la efectividad"],
-                "implementación generalizada": ["aplicación extensiva", "uso generalizado", "implantación masiva", "adopción amplia"],
-                "plantea preocupaciones éticas": ["genera inquietudes morales", "presenta dilemas éticos", "suscite cuestionamientos deontológicos"],
-                "privacidad de los datos": ["confidencialidad de la información", "protección de datos personales", "reserva informativa"],
-                "pérdida de empleos": ["reducción de puestos laborales", "disminución de trabajos", "eliminación de ocupaciones"],
-                "sistemas autónomos": ["mecanismos independientes", "dispositivos autosuficientes", "sistemas autónomos"],
-                "temas cruciales": ["asuntos fundamentales", "cuestiones críticas", "problemas esenciales"],
-                "consideración cuidadosa": ["reflexión detenida", "análisis exhaustivo", "evaluación minuciosa"],
-                "avance tecnológico": ["progreso tecnológico", "desarrollo técnico", "evolución digital"],
-                "marco regulatorio adecuado": ["reglamentación apropiada", "normativa pertinente", "estructura legal idónea"],
-                "debate social informado": ["discusión colectiva documentada", "conversación pública educada", "diálogo social consciente"],
-                "adopción responsable": ["implementación consciente", "uso prudente", "aplicación ética"],
-                "maximizar sus beneficios": ["optimizar sus ventajas", "potenciar sus aspectos positivos", "incrementar sus provechos"],
-                "mitigar sus riesgos": ["reducir sus peligros", "atenuar sus amenazas", "minimizar sus desventajas"]
+                "inteligencia artificial": ["IA", "sistemas inteligentes", "tecnología cognitiva", "machine learning", "algoritmos avanzados"],
+                "revolucionando": ["transformando", "cambiando radicalmente", "alterando profundamente", "innovando", "redefiniendo"],
+                "diversas industrias": ["múltiples sectores", "distintos campos", "varios ámbitos", "numerosos rubros", "diferentes industrias"],
+                "capacidades de análisis": ["habilidades para analizar", "potencial de evaluación", "competencias examinadoras", "aptitud analítica"],
+                "automatización de procesos": ["mecanización de procedimientos", "sistematización de tareas", "robotización de operaciones", "automatización de flujos de trabajo"],
+                "incrementando la eficiencia": ["mejorando el rendimiento", "optimizando la productividad", "aumentando la efectividad", "incrementando el rendimiento"],
+                "implementación generalizada": ["aplicación extensiva", "uso generalizado", "implantación masiva", "adopción amplia", "difusión extensa"],
+                "plantea preocupaciones éticas": ["genera inquietudes morales", "presenta dilemas éticos", "suscite cuestionamientos deontológicos", "provoca debates éticos"],
+                "privacidad de los datos": ["confidencialidad de la información", "protección de datos personales", "reserva informativa", "intimidad digital"],
+                "pérdida de empleos": ["reducción de puestos laborales", "disminución de trabajos", "eliminación de ocupaciones", "merma de empleos"],
+                "sistemas autónomos": ["mecanismos independientes", "dispositivos autosuficientes", "sistemas autónomos", "tecnologías autogestionadas"],
+                "temas cruciales": ["asuntos fundamentales", "cuestiones críticas", "problemas esenciales", "temas primordiales"],
+                "consideración cuidadosa": ["reflexión detenida", "análisis exhaustivo", "evaluación minuciosa", "ponderación cuidadosa"],
+                "avance tecnológico": ["progreso tecnológico", "desarrollo técnico", "evolución digital", "innovación tecnológica"],
+                "marco regulatorio adecuado": ["reglamentación apropiada", "normativa pertinente", "estructura legal idónea", "regulación adecuada"],
+                "debate social informado": ["discusión colectiva documentada", "conversación pública educada", "diálogo social consciente", "debate comunitario ilustrado"],
+                "adopción responsable": ["implementación consciente", "uso prudente", "aplicación ética", "utilización responsable"],
+                "maximizar sus beneficios": ["optimizar sus ventajas", "potenciar sus aspectos positivos", "incrementar sus provechos", "amplificar sus beneficios"],
+                "mitigar sus riesgos": ["reducir sus peligros", "atenuar sus amenazas", "minimizar sus desventajas", "paliar sus riesgos"]
             };
             
             // Expresiones humanas para insertar
-            const humanExpressions = [
-                "Desde mi punto de vista,",
-                "En mi experiencia,",
-                "La verdad es que",
-                "A decir verdad,",
-                "Personalmente, creo que",
-                "Me atrevería a decir que",
-                "Parece ser que",
-                "Curiosamente,",
-                "Como seguramente sabes,",
-                "Resulta interesante cómo",
-                "Es fascinante ver cómo",
-                "En realidad,",
-                "Lo que pasa es que",
-                "Desde luego,",
-                "Sin duda,"
-            ];
+            const humanExpressions = {
+                formal: [
+                    "Desde una perspectiva objetiva,",
+                    "De acuerdo con los análisis recientes,",
+                    "Según la evidencia disponible,",
+                    "En base a los datos recopilados,",
+                    "Desde el punto de vista técnico,"
+                ],
+                neutral: [
+                    "Desde mi punto de vista,",
+                    "En mi experiencia,",
+                    "La verdad es que",
+                    "A decir verdad,",
+                    "Personalmente, creo que"
+                ],
+                informal: [
+                    "La cosa es que",
+                    "Mira, la verdad es que",
+                    "A ver, es que",
+                    "O sea, que",
+                    "Pues resulta que"
+                ]
+            };
             
             // Conectores alternativos
-            const connectors = [
-                "Además,", "Por otro lado,", "En consecuencia,", 
-                "Asimismo,", "De hecho,", "En resumen,", 
-                "Es decir,", "En otras palabras,", "Sin duda,",
-                "Por tanto,", "No obstante,", "Sin embargo,",
-                "A continuación,", "En primer lugar,", "Finalmente,"
-            ];
+            const connectors = {
+                formal: [
+                    "Adicionalmente,", "Por consiguiente,", "En consecuencia,", 
+                    "Asimismo,", "De hecho,", "En resumen,", 
+                    "Es decir,", "En otras palabras,", "Sin lugar a dudas,"
+                ],
+                neutral: [
+                    "Además,", "Por otro lado,", "También,",
+                    "Así que,", "De cualquier manera,", "En fin,",
+                    "Básicamente,", "O sea,", "Entonces,"
+                ],
+                informal: [
+                    "Otra cosa,", "Aparte,", "Y luego,",
+                    "Así que bueno,", "Total, que", "Vamos, que",
+                    "O sea,", "Pues eso,", "Ya ves,"
+                ]
+            };
+            
+            // Actualizar valores de los sliders
+            intensitySlider.addEventListener('input', function() {
+                const values = ["Muy baja", "Baja", "Media", "Alta", "Muy alta"];
+                intensityValue.textContent = values[this.value - 1];
+            });
+            
+            formalitySlider.addEventListener('input', function() {
+                const values = ["Muy informal", "Informal", "Neutral", "Formal", "Muy formal"];
+                formalityValue.textContent = values[this.value - 1];
+            });
+            
+            creativitySlider.addEventListener('input', function() {
+                const values = ["Muy baja", "Baja", "Moderada", "Alta", "Muy alta"];
+                creativityValue.textContent = values[this.value - 1];
+            });
+            
+            // Toggle del modo oscuro
+            darkModeToggle.addEventListener('change', function() {
+                document.body.classList.toggle('dark-mode', this.checked);
+                themeToggle.innerHTML = this.checked ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+                localStorage.setItem('darkMode', this.checked);
+            });
+            
+            // Cargar preferencia de modo oscuro
+            if (localStorage.getItem('darkMode') === 'true') {
+                document.body.classList.add('dark-mode');
+                darkModeToggle.checked = true;
+                themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+            }
+            
+            // Toggle manual del tema
+            themeToggle.addEventListener('click', function() {
+                document.body.classList.toggle('dark-mode');
+                darkModeToggle.checked = document.body.classList.contains('dark-mode');
+                themeToggle.innerHTML = darkModeToggle.checked ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+                localStorage.setItem('darkMode', darkModeToggle.checked);
+            });
             
             processBtn.addEventListener('click', function() {
                 const text = inputText.value.trim();
@@ -495,37 +820,60 @@
                 URL.revokeObjectURL(url);
             });
             
+            clearBtn.addEventListener('click', function() {
+                if (confirm('¿Estás seguro de que quieres limpiar todo el texto?')) {
+                    inputText.value = '';
+                    outputText.value = '';
+                    aiScore.textContent = '0%';
+                    aiScore.className = 'score-value human';
+                    progressBar.style.width = '0%';
+                    progressText.textContent = '0%';
+                }
+            });
+            
             function humanizeText(text) {
                 let progress = 0;
                 let humanizedText = text;
                 
+                // Calcular palabras procesadas
+                const words = text.split(/\s+/).length;
+                totalWordsProcessed += words;
+                totalTextsHumanized++;
+                wordCount.textContent = totalWordsProcessed;
+                humanizedCount.textContent = totalTextsHumanized;
+                timeSaved.textContent = Math.round(totalWordsProcessed / 200) + 'h';
+                
                 const simulationSteps = [
-                    {name: "Preprocesamiento...", progress: 20},
-                    {name: "Reescribiendo...", progress: 40},
-                    {name: "Variación sintáctica...", progress: 60},
-                    {name: "Inserción de expresiones...", progress: 80},
+                    {name: "Preprocesamiento...", progress: 15},
+                    {name: "Reescribiendo...", progress: 35},
+                    {name: "Variación sintáctica...", progress: 55},
+                    {name: "Inserción de expresiones...", progress: 75},
+                    {name: "Ajustando estilo...", progress: 90},
                     {name: "Verificando...", progress: 95},
                     {name: "Completado!", progress: 100}
                 ];
                 
                 const interval = setInterval(() => {
-                    const step = simulationSteps.find(s => s.progress > progress) || simulationSteps[5];
+                    const step = simulationSteps.find(s => s.progress > progress) || simulationSteps[6];
                     
                     progressBar.style.width = `${step.progress}%`;
                     progressText.textContent = step.name;
                     
-                    if (step.progress === 20) {
+                    if (step.progress === 15) {
                         // Preprocesamiento
                         humanizedText = cleanText(humanizedText);
-                    } else if (step.progress === 40) {
+                    } else if (step.progress === 35) {
                         // Reescritura
                         humanizedText = rewriteText(humanizedText);
-                    } else if (step.progress === 60) {
+                    } else if (step.progress === 55) {
                         // Variación sintáctica
                         humanizedText = varySyntax(humanizedText);
-                    } else if (step.progress === 80) {
+                    } else if (step.progress === 75) {
                         // Inserción de expresiones
                         humanizedText = insertExpressions(humanizedText);
+                    } else if (step.progress === 90) {
+                        // Ajuste de estilo
+                        humanizedText = adjustStyle(humanizedText);
                     } else if (step.progress === 95) {
                         // Chequeo final
                         humanizedText = finalCheck(humanizedText);
@@ -540,9 +888,15 @@
                         outputText.value = humanizedText;
                         
                         // Simular una reducción en la detección de IA
-                        const newScore = Math.floor(Math.random() * 15) + 5;
+                        const intensity = intensitySlider.value;
+                        const reduction = intensity * 15 + Math.floor(Math.random() * 10);
+                        const newScore = Math.max(5, 95 - reduction);
+                        
                         aiScore.textContent = `${newScore}%`;
-                        aiScore.className = 'score-value human';
+                        aiScore.className = 'score-value ' + (newScore < 30 ? 'human' : 'ai');
+                        
+                        // Añadir al historial
+                        addToHistory(text, humanizedText);
                         
                         // Restaurar botón
                         processBtn.disabled = false;
@@ -561,6 +915,9 @@
             }
             
             function rewriteText(text) {
+                // Obtener nivel de intensidad
+                const intensity = intensitySlider.value;
+                
                 // Reemplazar palabras con sinónimos (mejorado para evitar reemplazos parciales)
                 let newText = text;
                 
@@ -570,17 +927,20 @@
                 for (const phrase of sortedKeys) {
                     const alternatives = synonyms[phrase];
                     if (newText.toLowerCase().includes(phrase.toLowerCase())) {
-                        const randomSynonym = alternatives[Math.floor(Math.random() * alternatives.length)];
-                        // Usar expresión regular con word boundaries para evitar reemplazos parciales
-                        const regex = new RegExp(`\\b${phrase}\\b`, 'gi');
-                        newText = newText.replace(regex, (match) => {
-                            // Preservar capitalización
-                            if (match[0] === match[0].toUpperCase()) {
-                                return randomSynonym.charAt(0).toUpperCase() + randomSynonym.slice(1);
-                            } else {
-                                return randomSynonym;
-                            }
-                        });
+                        // Mayor intensidad = mayor probabilidad de reemplazo
+                        if (Math.random() < intensity * 0.15) {
+                            const randomSynonym = alternatives[Math.floor(Math.random() * alternatives.length)];
+                            // Usar expresión regular con word boundaries para evitar reemplazos parciales
+                            const regex = new RegExp(`\\b${phrase}\\b`, 'gi');
+                            newText = newText.replace(regex, (match) => {
+                                // Preservar capitalización
+                                if (match[0] === match[0].toUpperCase()) {
+                                    return randomSynonym.charAt(0).toUpperCase() + randomSynonym.slice(1);
+                                } else {
+                                    return randomSynonym;
+                                }
+                            });
+                        }
                     }
                 }
                 
@@ -588,22 +948,29 @@
             }
             
             function varySyntax(text) {
+                // Obtener nivel de creatividad
+                const creativity = creativitySlider.value;
+                
                 // Dividir en oraciones (mejorado para respetar límites de oración)
                 let sentences = text.split(/(?<=[.!?])\s+/);
                 
                 if (sentences.length > 1) {
-                    // Mezclar estructuras de oraciones
+                    // Mezclar estructuras de oraciones (más creatividad = más cambios)
                     for (let i = 0; i < sentences.length; i++) {
-                        // 30% de probabilidad de cambiar la estructura
-                        if (Math.random() < 0.3) {
+                        // Probabilidad basada en creatividad
+                        if (Math.random() < creativity * 0.15) {
                             sentences[i] = changeSentenceStructure(sentences[i]);
                         }
                     }
                     
                     // Añadir conectores alternativos
+                    const formality = formalitySlider.value;
+                    const formalityType = formality < 2 ? "informal" : formality < 4 ? "neutral" : "formal";
+                    const connectorSet = connectors[formalityType];
+                    
                     for (let i = 1; i < sentences.length; i++) {
                         if (i % 2 === 0 && Math.random() > 0.5) {
-                            const randomConnector = connectors[Math.floor(Math.random() * connectors.length)];
+                            const randomConnector = connectorSet[Math.floor(Math.random() * connectorSet.length)];
                             sentences[i] = randomConnector + " " + sentences[i].toLowerCase();
                         }
                     }
@@ -627,15 +994,35 @@
             }
             
             function insertExpressions(text) {
+                // Obtener nivel de formalidad
+                const formality = formalitySlider.value;
+                const formalityType = formality < 2 ? "informal" : formality < 4 ? "neutral" : "formal";
+                const expressionSet = humanExpressions[formalityType];
+                
                 // Insertar expresiones humanas aleatorias
                 let sentences = text.split(/(?<=[.!?])\s+/);
                 
-                if (sentences.length > 0 && Math.random() > 0.5) {
-                    const randomExpression = humanExpressions[Math.floor(Math.random() * humanExpressions.length)];
+                if (sentences.length > 0 && Math.random() > 0.4) {
+                    const randomExpression = expressionSet[Math.floor(Math.random() * expressionSet.length)];
                     sentences[0] = randomExpression + " " + sentences[0].toLowerCase();
                 }
                 
                 return sentences.join(' ');
+            }
+            
+            function adjustStyle(text) {
+                // Ajustar el estilo según la formalidad
+                const formality = formalitySlider.value;
+                
+                if (formality < 2) { // Muy informal
+                    text = text.replace(/\./g, '. ');
+                    text = text.replace(/\ses\s/g, ' es ');
+                } else if (formality > 4) { // Muy formal
+                    text = text.replace(/\s\s+/g, ' ');
+                    text = text.replace(/\.\s+/g, '. ');
+                }
+                
+                return text;
             }
             
             function finalCheck(text) {
@@ -646,6 +1033,48 @@
                     .replace(/([.!?])([A-Z])/g, '$1 $2') // Asegurar espacios después de puntuación
                     .replace(/\s([,.;:!?])/g, '$1') // Eliminar espacios antes de puntuación
                     .trim();
+            }
+            
+            function addToHistory(original, humanized) {
+                // Añadir al historial
+                const timestamp = new Date().toLocaleTimeString();
+                const item = {
+                    original: original,
+                    humanized: humanized,
+                    time: timestamp
+                };
+                
+                history.unshift(item);
+                if (history.length > 5) history.pop();
+                
+                // Actualizar la lista de historial
+                updateHistoryList();
+            }
+            
+            function updateHistoryList() {
+                if (history.length === 0) {
+                    historyList.innerHTML = '<div class="history-item">No hay historial aún</div>';
+                    return;
+                }
+                
+                historyList.innerHTML = '';
+                history.forEach((item, index) => {
+                    const div = document.createElement('div');
+                    div.className = 'history-item';
+                    div.innerHTML = `
+                        <div><strong>${item.time}</strong></div>
+                        <div style="font-size: 0.9rem; margin-top: 5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                            ${item.original.substring(0, 50)}...
+                        </div>
+                    `;
+                    
+                    div.addEventListener('click', () => {
+                        inputText.value = item.original;
+                        outputText.value = item.humanized;
+                    });
+                    
+                    historyList.appendChild(div);
+                });
             }
         });
     </script>
