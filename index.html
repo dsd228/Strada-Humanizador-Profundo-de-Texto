@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+paja<!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="utf-8" />
@@ -798,7 +798,7 @@
         let sentences = para.split(/(?<=[.!?])\s+/).filter(s => s.trim());
         
         // Añadir conectores naturales al inicio de párrafos (excepto el primero)
-        if (settings.connectorVariety && idx > 0 && Math.random() < 0.2) { // Probabilidad muy baja
+        if (settings.connectorVariety && idx > 0 && Math.random() < 0.3) { 
           let connector = getSafeIntroPhrase(connectors);
           // Evitar conectores IA y evitar conectores si la oración empieza con uno ya
           if (aiConectors.some(ac => connector.toLowerCase().includes(ac)) && Math.random() < 0.5) { 
@@ -812,17 +812,17 @@
         }
         
         // Incorporar modismos, ejemplos personales, interjecciones
-        if (settings.naturalFlow && sentences.length > 2 && Math.random() < 0.3) { // Probabilidad reducida
+        if (settings.naturalFlow && sentences.length > 2 && Math.random() < 0.4) { 
           const insertAt = Math.floor(sentences.length / 2); 
           const choice = Math.random();
-          if (choice < 0.08) { // Modismos (probabilidad muy baja)
+          if (choice < 0.10) { // Modismos (probabilidad más baja)
             const idiom = getSafeIntroPhrase(humanIdioms);
             if (idiom && !usedIdiomsLastRound.has(idiom)) { 
               sentences.splice(insertAt, 0, `Como quien dice, ${idiom}. ¿No crees?`);
               lastIntroPhrase = idiom;
               usedIdiomsLastRound.add(idiom);
             }
-          } else if (choice < 0.20) { // Ejemplos personales (probabilidad reducida)
+          } else if (choice < 0.25) { // Ejemplos personales (probabilidad reducida)
             const examples = [
               'yo mismo me acuerdo de una vez que...', 'me pasó algo parecido el otro día...',
               'imagínate la escena:', 'recuerdo perfectamente cuando...', 'no te vas a creer lo que pasó...',
@@ -832,7 +832,7 @@
             const examplePhrase = getSafeIntroPhrase(examples);
             sentences.splice(insertAt, 0, `Por ejemplo, ${examplePhrase}`);
             lastIntroPhrase = 'Por ejemplo';
-          } else if (choice < 0.35) { // Interjecciones/Rellenos (probabilidad reducida)
+          } else if (choice < 0.50) { // Interjecciones/Rellenos (probabilidad reducida)
              const interjections = ['¡Vaya!', '¡Ojo!', 'Bueno...', 'Pues mira...', '¿Sabes?', '¿Me sigues?', 'Anda,', 'En fin,'];
              const interjection = getSafeIntroPhrase(interjections);
              // Evitar insertar si la oración ya empieza con algo similar
@@ -840,7 +840,7 @@
                  sentences.splice(insertAt, 0, `${interjection}`);
                  lastIntroPhrase = interjection;
              }
-          } else if (settings.depth === 'fuerte' && Math.random() < 0.2) { // Rellenos verbales en modo fuerte (probabilidad reducida)
+          } else if (settings.depth === 'fuerte' && Math.random() < 0.3) { // Rellenos verbales en modo fuerte
               const pause = ['eh...', 'pues...', 'bueno...', 'digamos...', 'verá...', 'o sea...', 'este...', 'mmh...', 'a ver,'];
               const filler = getSafeIntroPhrase(pause);
               // Evitar insertar si la oración ya empieza con un relleno similar
