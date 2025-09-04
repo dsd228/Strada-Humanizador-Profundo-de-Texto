@@ -1,4 +1,4 @@
-puto<!DOCTYPE html>
+trolo<!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="utf-8" />
@@ -679,7 +679,7 @@ puto<!DOCTYPE html>
       return paragraphs.map(para => {
         let sentences = para.split(/(?<=[.!?])\s+/).filter(s => s.trim());
         
-        if (settings.styleVariation && sentences.length > 3 && Math.random() < 0.5) { 
+        if (settings.styleVariation && sentences.length > 3 && Math.random() < 0.4) { // Probabilidad reducida
           const patterns = [
             (s) => [s[1], s[0], s[2], s[3], ...s.slice(4)], 
             (s) => { 
