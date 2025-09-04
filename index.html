@@ -1,4 +1,4 @@
-888<!DOCTYPE html>
+444<!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="utf-8" />
@@ -100,7 +100,7 @@
       background: linear-gradient(90deg, var(--color-primary), var(--color-secondary));
       height: 0.75rem; 
       border-radius: 9999px;
-      transition: width 0.5s ease-in-in-out;
+      transition: width 0.5s ease-in-out;
     }
 
     /* Estilos para el feedback de copia */
@@ -621,14 +621,17 @@
         
         let availablePhrases = [...phrases];
         
+        // Excluir la última frase introducida si es posible
         if (lastIntroPhrase && availablePhrases.includes(lastIntroPhrase) && availablePhrases.length > 1) {
             availablePhrases = availablePhrases.filter(p => p !== lastIntroPhrase);
         }
         
+        // Excluir modismos usados recientemente
         if (phrases === humanIdioms && usedIdiomsLastRound.size > 0) {
              availablePhrases = availablePhrases.filter(p => !usedIdiomsLastRound.has(p));
         }
         
+        // Evitar insertar frases muy similares a las últimas insertadas o a la oración siguiente
         if (availablePhrases.length > 0) {
              availablePhrases = availablePhrases.filter(p => 
                  !recentPhrases.includes(p.replace(/[\s,.]/g, '').toLowerCase()) && 
@@ -794,10 +797,11 @@
         // Añadir conectores naturales al inicio de párrafos (excepto el primero)
         if (settings.connectorVariety && idx > 0 && Math.random() < 0.4) { 
           let connector = getSafeIntroPhrase(connectors);
+          // Evitar conectores IA y evitar conectores si la oración empieza con uno ya
           if (aiConectors.some(ac => connector.toLowerCase().includes(ac)) && Math.random() < 0.5) { 
               connector = getSafeIntroPhrase(connectors); 
           }
-          // Evitar doble conector y asegurarse de que la frase siguiente no empiece ya con algo similar
+          // Evitar doble conector y asegurarse de que la frase siguiente no empiece con algo similar
           if (connector && !sentences[0].toLowerCase().startsWith(connector.replace(/,$/, '').toLowerCase())) {
             sentences[0] = `${connector.replace(/,$/, '')} ${sentences[0].charAt(0).toLowerCase() + sentences[0].slice(1)}`;
             lastIntroPhrase = connector; 
@@ -912,7 +916,7 @@
           }
 
           if (settings.toneAdjustment || settings.readabilityFocus) {
-            if (settings.readabilityFocus && processed.length > 65 && Math.random() < 0.3) { // Probabilidad reducida
+            if (settings.readabilityFocus && processed.length > 65 && Math.random() < 0.3) { 
               const mid = Math.floor(processed.length / 2);
               const breakAt = processed.lastIndexOf(' ', mid);
               if (breakAt > 25) { 
@@ -924,7 +928,7 @@
               }
             }
             
-            if (settings.toneAdjustment && idx > 0 && Math.random() < 0.3) { // Probabilidad reducida
+            if (settings.toneAdjustment && idx > 0 && Math.random() < 0.3) { 
               const introClauses = [
                 'Aunque parezca mentira,', 'Cuando menos te lo esperas,', 'Justo en ese momento,', 
                 'Después de todo lo dicho,', 'Si bien es cierto que,', 'Cabe destacar que,', 
@@ -936,7 +940,7 @@
               lastIntroPhrase = clause;
             }
             
-            if (settings.readabilityFocus && Math.random() < 0.3) { // Probabilidad reducida
+            if (settings.readabilityFocus && Math.random() < 0.3) { 
               const formalToInformal = {
                 "implementar": "usar", "optimizar": "mejorar", "paradigma": "enfoque",
                 "sinergia": "colaboración", "efectuar": "hacer", "procedimiento": "paso",
