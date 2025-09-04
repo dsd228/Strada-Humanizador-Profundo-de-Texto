@@ -233,19 +233,35 @@
     <div id="toast" class="fixed bottom-4 right-4 bg-teal-500 text-white px-4 py-2 rounded-lg shadow-lg hidden animate-fade-in">
       ¡Texto copiado al portapapeles!
     </div>
+
+    <footer class="header py-6 border-t border-slate-700/50 mt-8 backdrop-blur-md">
+      <div class="container mx-auto px-4 text-center text-sm text-slate-300">
+        <p>RedactaPro Supremo © 2024. Procesamiento 100% local.</p>
+        <p class="mt-1">El poder de la escritura humana, ahora en tus manos.</p>
+      </div>
+    </footer>
   </div>
 
   <script>
     // --- Estado de la aplicación ---
-    const state = {
+    let appState = {
       inputText: '',
       outputText: '',
       isProcessing: false,
       analysisScore: 0,
       activeTab: 'write',
-      history: [],
-      progress: 0,
-      progressMessage: 'Esperando...'
+      conversionHistory: [],
+      stats: { wordsBefore: 0, wordsAfter: 0, readability: 0 },
+      settings: {
+        depth: 'suave',
+        naturalFlow: true,
+        toneAdjustment: true,
+        readabilityFocus: true,
+        connectorVariety: true,
+        lexicalRichness: true,
+        avoidRepetition: true,
+        simulateHumanErrors: false,
+      }
     };
 
     // --- Listas de reemplazo ---
@@ -330,17 +346,43 @@
       return Math.min(100, Math.max(0, aiScore));
     }
 
+    // --- Almacenamiento Local ---
+    function saveState() {
+      try {
+        localStorage.setItem('redactaproSupremoState', JSON.stringify(appState));
+      } catch (e) {
+        console.warn("No se pudo guardar el estado:", e);
+      }
+    }
+
+    function loadState() {
+      const savedState = localStorage.getItem('redactaproSupremoState');
+      if (savedState) {
+        try {
+          const parsed = JSON.parse(savedState);
+          appState = { ...appState, ...parsed };
+          document.getElementById('input-text').value = appState.inputText;
+          if (appState.conversionHistory) {
+            renderHistory();
+          }
+          updateUI();
+        } catch (e) {
+          console.error("Error al cargar el estado:", e);
+        }
+      }
+    }
+
     // --- Procesamiento del texto ---
     async function processText() {
       const inputEl = document.getElementById('input-text');
-      state.inputText = inputEl.value.trim();
+      appState.inputText = inputEl.value.trim();
 
-      if (!state.inputText) {
+      if (!appState.inputText) {
         alert("Por favor, introduce un texto.");
         return;
       }
 
-      state.isProcessing = true;
+      appState.isProcessing = true;
       setActiveTab('analyze');
       updateProgress(0, "Iniciando...");
 
@@ -349,7 +391,7 @@
       updateProgress(20, "Limpieza inicial...");
       await sleep(200);
 
-      let processed = cleanText(state.inputText);
+      let processed = cleanText(appState.inputText);
 
       updateProgress(40, "Aplicando variación...");
       processed = introduceVariety(processed);
@@ -367,21 +409,29 @@
       await sleep(200);
 
       updateProgress(100, "¡Listo!");
-      state.outputText = processed;
-      state.analysisScore = 100 - calculateAIScore(processed);
+      appState.outputText = processed;
+      appState.analysisScore = 100 - calculateAIScore(processed);
+      appState.stats = {
+        wordsBefore: wordCount(appState.inputText),
+        wordsAfter: wordCount(processed),
+        readability: readability(processed)
+      };
+
+      // Guardar en historial
+      saveToHistory();
+      saveState();
 
       // Actualizar UI final
       setTimeout(() => {
         setActiveTab('review');
         updateReviewUI();
-        addToHistory();
       }, 300);
     }
 
     function introduceVariety(text) {
       let sentences = text.split(/(?<=[.!?])\s+/);
 
-      const settings = getSettings();
+      const settings = appState.settings;
 
       if (settings.connectorVariety && Math.random() > 0.6) {
         const connector = getRandom(connectors);
@@ -417,66 +467,28 @@
       return sentences.join(' ');
     }
 
-    function getSettings() {
-      return {
-        depth: document.getElementById('setting-depth').value,
-        naturalFlow: document.getElementById('setting-naturalFlow').checked,
-        toneAdjustment: document.getElementById('setting-toneAdjustment').checked,
-        readabilityFocus: document.getElementById('setting-readabilityFocus').checked,
-        connectorVariety: document.getElementById('setting-connectorVariety').checked,
-        lexicalRichness: document.getElementById('setting-lexicalRichness').checked,
-        avoidRepetition: document.getElementById('setting-avoidRepetition').checked,
-        simulateHumanErrors: document.getElementById('setting-simulateHumanErrors').checked,
-      };
-    }
-
-    function updateProgress(percent, message) {
-      state.progress = percent;
-      state.progressMessage = message;
-      document.getElementById('progress-bar').style.width = `${percent}%`;
-      document.getElementById('progress-message').textContent = message;
-      document.getElementById('progress-percent').textContent = `${percent}% completado`;
-      document.getElementById('output-analysis').textContent = state.outputText || 'Procesando...';
-    }
-
-    function updateReviewUI() {
-      document.getElementById('output-review').textContent = state.outputText;
-      document.getElementById('analysis-score').textContent = state.analysisScore.toFixed(1) + '%';
-      document.getElementById('score-bar').style.width = `${state.analysisScore}%`;
-      document.getElementById('word-count-original').textContent = wordCount(state.inputText);
-      document.getElementById('word-count-final').textContent = wordCount(state.outputText);
-      document.getElementById('readability-score').textContent = readability(state.outputText).toFixed(1) + '%';
-
-      const msg = document.getElementById('score-message');
-      if (state.analysisScore > 70) {
-        msg.textContent = "Texto altamente humano. Baja probabilidad de detección.";
-      } else if (state.analysisScore > 50) {
-        msg.textContent = "Texto razonablemente humano. Algunos ajustes podrían ayudar.";
-      } else {
-        msg.textContent = "Alta probabilidad de ser detectado como IA. Considera ajustes más profundos.";
-      }
-    }
-
-    function addToHistory() {
+    function saveToHistory() {
       const item = {
-        original: state.inputText.substring(0, 100) + (state.inputText.length > 100 ? '...' : ''),
-        result: state.outputText.substring(0, 100) + (state.outputText.length > 100 ? '...' : ''),
-        score: state.analysisScore,
-        date: new Date().toLocaleDateString()
+        original: appState.inputText.substring(0, 100) + (appState.inputText.length > 100 ? '...' : ''),
+        result: appState.outputText.substring(0, 100) + (appState.outputText.length > 100 ? '...' : ''),
+        score: appState.analysisScore,
+        date: new Date().toLocaleString()
       };
-      state.history.unshift(item);
-      state.history = state.history.slice(0, 7);
+      appState.conversionHistory.unshift(item);
+      if (appState.conversionHistory.length > 7) {
+        appState.conversionHistory = appState.conversionHistory.slice(0, 7);
+      }
       renderHistory();
     }
 
     function renderHistory() {
       const container = document.getElementById('history-container');
-      if (state.history.length === 0) {
+      if (appState.conversionHistory.length === 0) {
         container.innerHTML = '<p class="text-sm text-slate-400">No hay historial aún</p>';
         return;
       }
-      container.innerHTML = state.history.map(item => `
-        <div onclick="loadFromHistory('${escapeHtml(item.original)}', '${escapeHtml(state.history.find(h => h.original === item.original)?.result || '')}', ${item.score})" class="p-3 bg-slate-800/30 rounded-lg cursor-pointer hover:bg-slate-700/30 transition-colors text-sm">
+      container.innerHTML = appState.conversionHistory.map(item => `
+        <div onclick="loadFromHistory('${escapeHtml(item.original)}', '${escapeHtml(item.result)}', ${item.score})" class="p-3 bg-slate-800/30 rounded-lg cursor-pointer hover:bg-slate-700/30 transition-colors text-sm">
           <p class="text-slate-200 line-clamp-1">${item.original}</p>
           <p class="text-xs text-teal-400 mt-1">Puntuación: ${item.score.toFixed(1)}%</p>
         </div>
@@ -491,15 +503,41 @@
 
     function loadFromHistory(original, result, score) {
       document.getElementById('input-text').value = original;
-      state.outputText = result;
-      state.analysisScore = score;
+      appState.outputText = result;
+      appState.analysisScore = score;
       setActiveTab('review');
       updateReviewUI();
     }
 
+    function updateProgress(percent, message) {
+      appState.processingProgress = percent;
+      document.getElementById('progress-bar').style.width = `${percent}%`;
+      document.getElementById('progress-message').textContent = message;
+      document.getElementById('progress-percent').textContent = `${percent}% completado`;
+      document.getElementById('output-analysis').textContent = appState.outputText || 'Procesando...';
+    }
+
+    function updateReviewUI() {
+      document.getElementById('output-review').textContent = appState.outputText;
+      document.getElementById('analysis-score').textContent = appState.analysisScore.toFixed(1) + '%';
+      document.getElementById('score-bar').style.width = `${appState.analysisScore}%`;
+      document.getElementById('word-count-original').textContent = appState.stats.wordsBefore;
+      document.getElementById('word-count-final').textContent = appState.stats.wordsAfter;
+      document.getElementById('readability-score').textContent = appState.stats.readability.toFixed(1) + '%';
+
+      const msg = document.getElementById('score-message');
+      if (appState.analysisScore > 70) {
+        msg.textContent = "Texto altamente humano. Baja probabilidad de detección.";
+      } else if (appState.analysisScore > 50) {
+        msg.textContent = "Texto razonablemente humano. Algunos ajustes podrían ayudar.";
+      } else {
+        msg.textContent = "Alta probabilidad de ser detectado como IA. Considera ajustes más profundos.";
+      }
+    }
+
     function copyToClipboard() {
-      if (!state.outputText) return;
-      navigator.clipboard.writeText(state.outputText).then(() => {
+      if (!appState.outputText) return;
+      navigator.clipboard.writeText(appState.outputText).then(() => {
         const toast = document.getElementById('toast');
         toast.classList.remove('hidden');
         setTimeout(() => toast.classList.add('hidden'), 2000);
@@ -507,12 +545,12 @@
     }
 
     function downloadText(format) {
-      if (!state.outputText) return;
+      if (!appState.outputText) return;
       const timestamp = new Date().toISOString().split('T')[0];
       let blob, filename;
 
       if (format === 'txt') {
-        blob = new Blob([state.outputText], { type: 'text/plain;charset=utf-8' });
+        blob = new Blob([appState.outputText], { type: 'text/plain;charset=utf-8' });
         filename = `redactapro-supremo-${timestamp}.txt`;
       } else if (format === 'doc') {
         const htmlContent = `
@@ -524,7 +562,7 @@
             <style>body { font-family: 'Inter', sans-serif; line-height: 1.7; color: #333; }</style>
           </head>
           <body>
-            <p>${state.outputText.replace(/\n/g, '<br>')}</p>
+            <p>${appState.outputText.replace(/\n/g, '<br>')}</p>
           </body>
           </html>`;
         blob = new Blob([htmlContent], { type: 'application/msword;charset=utf-8' });
@@ -542,22 +580,23 @@
     }
 
     function setActiveTab(tab) {
-      state.activeTab = tab;
-      document.getElementById('write-section').classList.add('hidden');
-      document.getElementById('analyze-section').classList.add('hidden');
-      document.getElementById('review-section').classList.add('hidden');
-
-      document.getElementById(`${tab}-section`).classList.remove('hidden');
-
-      // Actualizar botones
+      appState.activeTab = tab;
       ['write', 'analyze', 'review'].forEach(t => {
+        document.getElementById(`${t}-section`).classList.add('hidden');
         document.getElementById(`tab-${t}`).classList.remove('bg-teal-500', 'text-white');
         document.getElementById(`tab-${t}`).classList.add('text-slate-400');
-        if (t === tab) {
-          document.getElementById(`tab-${t}`).classList.remove('text-slate-400');
-          document.getElementById(`tab-${t}`).classList.add('bg-teal-500', 'text-white');
-        }
       });
+      document.getElementById(`${tab}-section`).classList.remove('hidden');
+      document.getElementById(`tab-${tab}`).classList.remove('text-slate-400');
+      document.getElementById(`tab-${tab}`).classList.add('bg-teal-500', 'text-white');
+      updateUI();
+    }
+
+    function updateUI() {
+      document.getElementById('input-text').value = appState.inputText;
+      if (appState.activeTab) setActiveTab(appState.activeTab);
+      if (appState.conversionHistory) renderHistory();
+      saveState();
     }
 
     function sleep(ms) {
@@ -565,12 +604,9 @@
     }
 
     // --- Inicialización ---
-    setActiveTab('write');
-    renderHistory();
-
-    // Cargar texto al inicio (opcional)
-    document.getElementById('input-text').addEventListener('input', function() {
-      state.inputText = this.value;
+    document.addEventListener('DOMContentLoaded', () => {
+      loadState(); // Cargar estado guardado
+      updateUI();
     });
   </script>
 </body>
