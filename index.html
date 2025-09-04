@@ -1,4 +1,4 @@
-ppp<!DOCTYPE html>
+ttt<!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="utf-8" />
@@ -421,7 +421,7 @@ ppp<!DOCTYPE html>
                 
                 <div class="space-y-4">
                   <div class="flex justify-between items-center"><span class="text-slate-300">Palabras antes:</span><span id="words-before" class="font-semibold text-slate-200">0</span></div>
-                  <div class              ="flex justify-between items-center"><span class="text-slate-300">Palabras después:</span><span id="words-after" class="font-semibold text-slate-200">0</span></div>
+                  <div class="flex justify-between items-center"><span class="text-slate-300">Palabras después:</span><span id="words-after" class="font-semibold text-slate-200">0</span></div>
                   <div class="flex justify-between items-center"><span class="text-slate-300">Legibilidad:</span><span id="readability-score" class="font-semibold text-slate-200">0%</span></div>
                   <div class="flex justify-between items-center"><span class="text-slate-300">Mejora general:</span><span id="improvement-score" class="font-semibold text-emerald-400">+0%</span></div>
                 </div>
@@ -592,7 +592,10 @@ ppp<!DOCTYPE html>
         .replace(/y i/g, ' y i')
         .replace(/y e/g, ' y e')
         // Eliminar ".." que pueden quedar de errores de puntuación
-        .replace(/\.\./g, '.');
+        .replace(/\.\./g, '.')
+        // Corregir "poder" vs "facultad" / "capacidad"
+        .replace(/concentración de facultad/g, 'concentración de poder') 
+        .replace(/concentración de habilidad/g, 'concentración de poder');
         
       return cleaned;
     }
@@ -621,14 +624,17 @@ ppp<!DOCTYPE html>
         
         let availablePhrases = [...phrases];
         
+        // Excluir la última frase introducida si es posible
         if (lastIntroPhrase && availablePhrases.includes(lastIntroPhrase) && availablePhrases.length > 1) {
             availablePhrases = availablePhrases.filter(p => p !== lastIntroPhrase);
         }
         
+        // Excluir modismos usados recientemente
         if (phrases === humanIdioms && usedIdiomsLastRound.size > 0) {
              availablePhrases = availablePhrases.filter(p => !usedIdiomsLastRound.has(p));
         }
         
+        // Evitar insertar frases muy similares a las últimas insertadas o a la oración siguiente
         if (availablePhrases.length > 0) {
              availablePhrases = availablePhrases.filter(p => 
                  !recentPhrases.includes(p.replace(/[\s,.]/g, '').toLowerCase()) && 
@@ -1109,7 +1115,7 @@ ppp<!DOCTYPE html>
     }
 
     function loadState() {
-      const savedState = localStorage.getItem('redactaproSupremoState');
+      const savedState = localStorage.getItem('redaproSupremoState');
       if (savedState) {
         try {
           const parsedState = JSON.parse(savedState);
