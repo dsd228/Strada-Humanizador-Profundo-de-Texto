@@ -1,4 +1,4 @@
-2222<!DOCTYPE html>
+888<!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="utf-8" />
@@ -100,7 +100,7 @@
       background: linear-gradient(90deg, var(--color-primary), var(--color-secondary));
       height: 0.75rem; 
       border-radius: 9999px;
-      transition: width 0.5s ease-in-out;
+      transition: width 0.5s ease-in-in-out;
     }
 
     /* Estilos para el feedback de copia */
@@ -579,7 +579,7 @@
         .replace(/([.!?¿¡])([a-zA-Z])/g, '$1 $2') 
         .replace(/([a-zA-Z])([¿¡])/g, '$1 $2')
         .replace(/([¿¡])([a-zA-Z])/g, '$1 $2')
-        // Corregir duplicación de letras específicas que puedan quedar
+        // Corregir duplicación de letras específicas
         .replace(/ccantidades/g, 'cantidades')
         .replace(/jjustos/g, 'justos')
         .replace(/ccuerpo/g, 'cuerpo')
@@ -590,7 +590,9 @@
         .replace(/y a/g, ' y a')
         .replace(/y o/g, ' y o')
         .replace(/y i/g, ' y i')
-        .replace(/y e/g, ' y e');
+        .replace(/y e/g, ' y e')
+        // Eliminar ".." que pueden quedar de errores de puntuación
+        .replace(/\.\./g, '.');
         
       return cleaned;
     }
@@ -619,17 +621,14 @@
         
         let availablePhrases = [...phrases];
         
-        // Excluir la última frase introducida si es posible
         if (lastIntroPhrase && availablePhrases.includes(lastIntroPhrase) && availablePhrases.length > 1) {
             availablePhrases = availablePhrases.filter(p => p !== lastIntroPhrase);
         }
         
-        // Excluir modismos usados recientemente
         if (phrases === humanIdioms && usedIdiomsLastRound.size > 0) {
              availablePhrases = availablePhrases.filter(p => !usedIdiomsLastRound.has(p));
         }
         
-        // Evitar insertar frases muy similares a las últimas insertadas o a la oración siguiente
         if (availablePhrases.length > 0) {
              availablePhrases = availablePhrases.filter(p => 
                  !recentPhrases.includes(p.replace(/[\s,.]/g, '').toLowerCase()) && 
@@ -793,13 +792,12 @@
         let sentences = para.split(/(?<=[.!?])\s+/).filter(s => s.trim());
         
         // Añadir conectores naturales al inicio de párrafos (excepto el primero)
-        if (settings.connectorVariety && idx > 0 && Math.random() < 0.4) { // Probabilidad reducida
+        if (settings.connectorVariety && idx > 0 && Math.random() < 0.4) { 
           let connector = getSafeIntroPhrase(connectors);
-          // Evitar conectores IA y evitar conectores si la oración empieza con uno ya
           if (aiConectors.some(ac => connector.toLowerCase().includes(ac)) && Math.random() < 0.5) { 
               connector = getSafeIntroPhrase(connectors); 
           }
-          // Evitar doble conector
+          // Evitar doble conector y asegurarse de que la frase siguiente no empiece ya con algo similar
           if (connector && !sentences[0].toLowerCase().startsWith(connector.replace(/,$/, '').toLowerCase())) {
             sentences[0] = `${connector.replace(/,$/, '')} ${sentences[0].charAt(0).toLowerCase() + sentences[0].slice(1)}`;
             lastIntroPhrase = connector; 
@@ -807,10 +805,10 @@
         }
         
         // Incorporar modismos, ejemplos personales, interjecciones
-        if (settings.naturalFlow && sentences.length > 2 && Math.random() < 0.4) { // Probabilidad reducida
+        if (settings.naturalFlow && sentences.length > 2 && Math.random() < 0.4) { 
           const insertAt = Math.floor(sentences.length / 2); 
           const choice = Math.random();
-          if (choice < 0.10) { // Modismos (probabilidad reducida)
+          if (choice < 0.10) { // Modismos (probabilidad más baja)
             const idiom = getSafeIntroPhrase(humanIdioms);
             if (idiom && !usedIdiomsLastRound.has(idiom)) { 
               sentences.splice(insertAt, 0, `Como quien dice, ${idiom}. ¿No crees?`);
@@ -830,18 +828,24 @@
           } else if (choice < 0.50) { // Interjecciones/Rellenos (probabilidad reducida)
              const interjections = ['¡Vaya!', '¡Ojo!', 'Bueno...', 'Pues mira...', '¿Sabes?', '¿Me sigues?', 'Anda,', 'En fin,'];
              const interjection = getSafeIntroPhrase(interjections);
-             sentences.splice(insertAt, 0, `${interjection}`);
-             lastIntroPhrase = interjection;
-          } else if (settings.depth === 'fuerte' && Math.random() < 0.3) { // Rellenos verbales en modo fuerte (probabilidad reducida)
+             // Evitar insertar si la oración ya empieza con algo similar
+             if (!sentences[insertAt].toLowerCase().startsWith(interjection.toLowerCase().replace(/[\s,.]/g, ''))) {
+                 sentences.splice(insertAt, 0, `${interjection}`);
+                 lastIntroPhrase = interjection;
+             }
+          } else if (settings.depth === 'fuerte' && Math.random() < 0.3) { // Rellenos verbales en modo fuerte
               const pause = ['eh...', 'pues...', 'bueno...', 'digamos...', 'verá...', 'o sea...', 'este...', 'mmh...', 'a ver,'];
               const filler = getSafeIntroPhrase(pause);
-              sentences[insertAt] = `${filler} ${sentences[insertAt].charAt(0).toLowerCase() + sentences[insertAt].slice(1)}`;
-              lastIntroPhrase = filler;
+              // Evitar insertar si la oración ya empieza con un relleno similar
+              if (!sentences[insertAt].toLowerCase().startsWith(filler.toLowerCase().replace(/[\s,.]/g, ''))) {
+                  sentences[insertAt] = `${filler} ${sentences[insertAt].charAt(0).toLowerCase() + sentences[insertAt].slice(1)}`;
+                  lastIntroPhrase = filler;
+              }
           }
         }
         
         // Simular repetición de palabras (solo en modo 'fuerte')
-        if (settings.depth === 'fuerte' && settings.avoidRepetition && Math.random() < 0.25) { // Probabilidad reducida
+        if (settings.depth === 'fuerte' && settings.avoidRepetition && Math.random() < 0.25) { 
             const sentenceIdx = Math.floor(Math.random() * sentences.length);
             if (sentences[sentenceIdx].split(' ').length > 6) { 
               const words = sentences[sentenceIdx].split(' ');
