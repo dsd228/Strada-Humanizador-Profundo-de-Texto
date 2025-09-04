@@ -1,4 +1,4 @@
-pijon<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="utf-8" />
@@ -349,6 +349,89 @@ pijon<!DOCTYPE html>
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                   </svg>
                   Introduce texto o carga un archivo para comenzar
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div id="review-section" class="hidden">
+          <div class="grid lg:grid-cols-3 gap-8 fade-in">
+            <div class="lg:col-span-2">
+              <div class="analysis-card p-6">
+                <div class="flex items-center justify-between mb-4">
+                  <div class="flex items-center gap-2">
+                    <svg class="w-5 h-5 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <h2 class="text-xl font-semibold text-slate-100">Texto Humanizado</h2>
+                  </div>
+                  <div class="flex gap-2">
+                    <button id="copy-btn" class="flex items-center gap-2 px-3 py-2 bg-emerald-500 text-white rounded-lg hover:bg-emerald-600 transition-colors text-sm shadow-md">
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>Copiar
+                    </button>
+                    <div class="relative group">
+                      <button id="download-btn" class="flex items-center gap-2 px-3 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors text-sm shadow-md">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.707.707V19a2 2 0 01-2 2z"/></svg>Descargar
+                      </button>
+                      <div class="absolute right-0 mt-1 w-48 bg-white/80 backdrop-blur-md rounded-lg shadow-lg py-2 z-10 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 border border-gray-700/50">
+                        <button data-format="txt" class="export-option block w-full text-left px-4 py-2 text-sm text-slate-300 hover:bg-gray-700/50">Como archivo de texto (.txt)</button>
+                        <button data-format="doc" class="export-option block w-full text-left px-4 py-2 text-sm text-slate-300 hover:bg-gray-700/50">Como documento Word (.doc)</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
+                <div id="output-text" class="w-full min-h-64 p-4 border border-border-color rounded-xl bg-white/5 text-slate-300 leading-relaxed whitespace-pre-wrap font-sans">
+                  El texto mejorado aparecerá aquí...
+                </div>
+              </div>
+            </div>
+
+            <div class="lg:col-span-1 space-y-6">
+              <div class="analysis-card p-6">
+                <div class="flex items-center gap-2 mb-6">
+                  <svg class="w-5 h-5 text-teal-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                  </svg>
+                  <h3 class="text-xl font-semibold text-slate-100">Análisis de "Calidad Humana"</h3>
+                </div>
+                
+                <div class="space-y-4">
+                  <div class="bg-gradient-to-r from-yellow-500/10 to-orange-500/10 rounded-lg p-4 border border-orange-400/30">
+                    <div class="flex justify-between text-sm text-slate-300 mb-2">
+                      <span>Probabilidad de ser Humano</span>
+                      <span id="analysis-score" class="font-bold text-yellow-300">0%</span>
+                    </div>
+                    <div class="progress-bar-container h-3">
+                      <div id="analysis-bar" class="progress-bar-fill" style="width: 0%"></div>
+                    </div>
+                    <p id="analysis-feedback" class="mt-2 text-sm text-orange-200">Introduce texto y procesa para ver el análisis.</p>
+                  </div>
+                </div>
+              </div>
+
+              <div class="stats-card p-6 rounded-xl">
+                <div class="flex items-center gap-2 mb-4">
+                  <svg class="w-5 h-5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                  </svg>
+                  <h3 class="text-xl font-semibold text-slate-100">Estadísticas</h3>
+                </div>
+                
+                <div class="space-y-4">
+                  <div class="flex justify-between items-center"><span class="text-slate-300">Palabras antes:</span><span id="words-before" class="font-semibold text-slate-200">0</span></div>
+                  <div class="flex justify-between items-center"><span class="text-slate-300">Palabras después:</span><span id="words-after" class="font-semibold text-slate-200">0</span></div>
+                  <div class="flex justify-between items-center"><span class="text-slate-300">Legibilidad:</span><span id="readability-score" class="font-semibold text-slate-200">0%</span></div>
+                  <div class="flex justify-between items-center"><span class="text-slate-300">Mejora general:</span><span id="improvement-score" class="font-semibold text-emerald-400">+0%</span></div>
+                </div>
+              </div>
+
+              <div class="analysis-card p-6">
+                <h3 class="text-lg font-semibold text-slate-100 mb-4">Acciones Rápidas</h3>
+                <div class="space-y-3">
+                  <button id="another-text-btn" class="w-full btn-secondary text-center">Procesar otro texto</button>
+                  <button id="clear-all-btn" class="w-full btn-secondary text-center">Limpiar todo y comenzar</button>
                 </div>
               </div>
             </div>
@@ -715,7 +798,7 @@ pijon<!DOCTYPE html>
         let sentences = para.split(/(?<=[.!?])\s+/).filter(s => s.trim());
         
         // Añadir conectores naturales al inicio de párrafos (excepto el primero)
-        if (settings.connectorVariety && idx > 0 && Math.random() < 0.3) { 
+        if (settings.connectorVariety && idx > 0 && Math.random() < 0.2) { // Probabilidad muy baja
           let connector = getSafeIntroPhrase(connectors);
           // Evitar conectores IA y evitar conectores si la oración empieza con uno ya
           if (aiConectors.some(ac => connector.toLowerCase().includes(ac)) && Math.random() < 0.5) { 
@@ -729,17 +812,17 @@ pijon<!DOCTYPE html>
         }
         
         // Incorporar modismos, ejemplos personales, interjecciones
-        if (settings.naturalFlow && sentences.length > 2 && Math.random() < 0.4) { 
+        if (settings.naturalFlow && sentences.length > 2 && Math.random() < 0.3) { // Probabilidad reducida
           const insertAt = Math.floor(sentences.length / 2); 
           const choice = Math.random();
-          if (choice < 0.10) { // Modismos (probabilidad más baja)
+          if (choice < 0.08) { // Modismos (probabilidad muy baja)
             const idiom = getSafeIntroPhrase(humanIdioms);
             if (idiom && !usedIdiomsLastRound.has(idiom)) { 
               sentences.splice(insertAt, 0, `Como quien dice, ${idiom}. ¿No crees?`);
               lastIntroPhrase = idiom;
               usedIdiomsLastRound.add(idiom);
             }
-          } else if (choice < 0.25) { // Ejemplos personales (probabilidad reducida)
+          } else if (choice < 0.20) { // Ejemplos personales (probabilidad reducida)
             const examples = [
               'yo mismo me acuerdo de una vez que...', 'me pasó algo parecido el otro día...',
               'imagínate la escena:', 'recuerdo perfectamente cuando...', 'no te vas a creer lo que pasó...',
@@ -749,7 +832,7 @@ pijon<!DOCTYPE html>
             const examplePhrase = getSafeIntroPhrase(examples);
             sentences.splice(insertAt, 0, `Por ejemplo, ${examplePhrase}`);
             lastIntroPhrase = 'Por ejemplo';
-          } else if (choice < 0.50) { // Interjecciones/Rellenos (probabilidad reducida)
+          } else if (choice < 0.35) { // Interjecciones/Rellenos (probabilidad reducida)
              const interjections = ['¡Vaya!', '¡Ojo!', 'Bueno...', 'Pues mira...', '¿Sabes?', '¿Me sigues?', 'Anda,', 'En fin,'];
              const interjection = getSafeIntroPhrase(interjections);
              // Evitar insertar si la oración ya empieza con algo similar
@@ -757,7 +840,7 @@ pijon<!DOCTYPE html>
                  sentences.splice(insertAt, 0, `${interjection}`);
                  lastIntroPhrase = interjection;
              }
-          } else if (settings.depth === 'fuerte' && Math.random() < 0.3) { // Rellenos verbales en modo fuerte
+          } else if (settings.depth === 'fuerte' && Math.random() < 0.2) { // Rellenos verbales en modo fuerte (probabilidad reducida)
               const pause = ['eh...', 'pues...', 'bueno...', 'digamos...', 'verá...', 'o sea...', 'este...', 'mmh...', 'a ver,'];
               const filler = getSafeIntroPhrase(pause);
               // Evitar insertar si la oración ya empieza con un relleno similar
