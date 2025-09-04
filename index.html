@@ -1,4 +1,4 @@
-jjj<!DOCTYPE html>
+ppp<!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="utf-8" />
@@ -421,7 +421,7 @@ jjj<!DOCTYPE html>
                 
                 <div class="space-y-4">
                   <div class="flex justify-between items-center"><span class="text-slate-300">Palabras antes:</span><span id="words-before" class="font-semibold text-slate-200">0</span></div>
-                  <div class="flex justify-between items-center"><span class="text-slate-300">Palabras después:</span><span id="words-after" class="font-semibold text-slate-200">0</span></div>
+                  <div class              ="flex justify-between items-center"><span class="text-slate-300">Palabras después:</span><span id="words-after" class="font-semibold text-slate-200">0</span></div>
                   <div class="flex justify-between items-center"><span class="text-slate-300">Legibilidad:</span><span id="readability-score" class="font-semibold text-slate-200">0%</span></div>
                   <div class="flex justify-between items-center"><span class="text-slate-300">Mejora general:</span><span id="improvement-score" class="font-semibold text-emerald-400">+0%</span></div>
                 </div>
@@ -656,7 +656,7 @@ jjj<!DOCTYPE html>
     function deepSemanticRewrite(text, settings) {
       let paragraphs = text.split(/\n\s*\n/).filter(p => p.trim().length > 5);
       
-      if (paragraphs.length > 3 && Math.random() < 0.6) { // Probabilidad reducida
+      if (paragraphs.length > 3 && Math.random() < 0.6) {
         const intro = paragraphs.shift();
         const conclusion = paragraphs.pop();
         let body = paragraphs;
