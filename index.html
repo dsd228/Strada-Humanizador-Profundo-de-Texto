@@ -354,6 +354,89 @@
           </div>
         </div>
 
+        <div id="review-section" class="hidden">
+          <div class="grid lg:grid-cols-3 gap-8 fade-in">
+            <div class="lg:col-span-2">
+              <div class="analysis-card p-6">
+                <div class="flex items-center justify-between mb-4">
+                  <div class="flex items-center gap-2">
+                    <svg class="w-5 h-5 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <h2 class="text-xl font-semibold text-slate-100">Texto Humanizado</h2>
+                  </div>
+                  <div class="flex gap-2">
+                    <button id="copy-btn" class="flex items-center gap-2 px-3 py-2 bg-emerald-500 text-white rounded-lg hover:bg-emerald-600 transition-colors text-sm shadow-md">
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>Copiar
+                    </button>
+                    <div class="relative group">
+                      <button id="download-btn" class="flex items-center gap-2 px-3 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors text-sm shadow-md">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.707.707V19a2 2 0 01-2 2z"/></svg>Descargar
+                      </button>
+                      <div class="absolute right-0 mt-1 w-48 bg-white/80 backdrop-blur-md rounded-lg shadow-lg py-2 z-10 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 border border-gray-700/50">
+                        <button data-format="txt" class="export-option block w-full text-left px-4 py-2 text-sm text-slate-300 hover:bg-gray-700/50">Como archivo de texto (.txt)</button>
+                        <button data-format="doc" class="export-option block w-full text-left px-4 py-2 text-sm text-slate-300 hover:bg-gray-700/50">Como documento Word (.doc)</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
+                <div id="output-text" class="w-full min-h-64 p-4 border border-border-color rounded-xl bg-white/5 text-slate-300 leading-relaxed whitespace-pre-wrap font-sans">
+                  El texto mejorado aparecerá aquí...
+                </div>
+              </div>
+            </div>
+
+            <div class="lg:col-span-1 space-y-6">
+              <div class="analysis-card p-6">
+                <div class="flex items-center gap-2 mb-6">
+                  <svg class="w-5 h-5 text-teal-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                  </svg>
+                  <h3 class="text-xl font-semibold text-slate-100">Análisis de "Calidad Humana"</h3>
+                </div>
+                
+                <div class="space-y-4">
+                  <div class="bg-gradient-to-r from-yellow-500/10 to-orange-500/10 rounded-lg p-4 border border-orange-400/30">
+                    <div class="flex justify-between text-sm text-slate-300 mb-2">
+                      <span>Probabilidad de ser Humano</span>
+                      <span id="analysis-score" class="font-bold text-yellow-300">0%</span>
+                    </div>
+                    <div class="progress-bar-container h-3">
+                      <div id="analysis-bar" class="progress-bar-fill" style="width: 0%"></div>
+                    </div>
+                    <p id="analysis-feedback" class="mt-2 text-sm text-orange-200">Introduce texto y procesa para ver el análisis.</p>
+                  </div>
+                </div>
+              </div>
+
+              <div class="stats-card p-6 rounded-xl">
+                <div class="flex items-center gap-2 mb-4">
+                  <svg class="w-5 h-5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                  </svg>
+                  <h3 class="text-xl font-semibold text-slate-100">Estadísticas</h3>
+                </div>
+                
+                <div class="space-y-4">
+                  <div class="flex justify-between items-center"><span class="text-slate-300">Palabras antes:</span><span id="words-before" class="font-semibold text-slate-200">0</span></div>
+                  <div class="flex justify-between items-center"><span class="text-slate-300">Palabras después:</span><span id="words-after" class="font-semibold text-slate-200">0</span></div>
+                  <div class="flex justify-between items-center"><span class="text-slate-300">Legibilidad:</span><span id="readability-score" class="font-semibold text-slate-200">0%</span></div>
+                  <div class="flex justify-between items-center"><span class="text-slate-300">Mejora general:</span><span id="improvement-score" class="font-semibold text-emerald-400">+0%</span></div>
+                </div>
+              </div>
+
+              <div class="analysis-card p-6">
+                <h3 class="text-lg font-semibold text-slate-100 mb-4">Acciones Rápidas</h3>
+                <div class="space-y-3">
+                  <button id="another-text-btn" class="w-full btn-secondary text-center">Procesar otro texto</button>
+                  <button id="clear-all-btn" class="w-full btn-secondary text-center">Limpiar todo y comenzar</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
         <div id="analyze-section" class="hidden text-center py-20">
           <h2 class="text-2xl font-bold text-slate-200 mb-4">¡Listo para procesar!</h2>
           <p class="text-lg text-slate-300 mb-8">Ajusta las opciones de humanización y haz clic en 'Humanizar y Analizar' para ver los resultados.</p>
@@ -973,13 +1056,15 @@
     function updateUI() {
       const { inputText, outputText, isProcessing, analysisScore, activeTab, conversionHistory, stats, settings } = appState;
       
+      // --- Manejo de Visibilidad de Secciones ---
       document.getElementById('write-section').classList.toggle('hidden', activeTab !== 'write');
       document.getElementById('analyze-section').classList.toggle('hidden', activeTab !== 'analyze');
       document.getElementById('review-section').classList.toggle('hidden', activeTab !== 'review');
       
+      // --- Actualización de Clases de Botones de Pestaña ---
       const updateTabButton = (id, isActive) => {
         const button = document.getElementById(id);
-        if (button) {
+        if (button) { // Verificar que el botón existe
           button.classList.toggle('tab-active', isActive);
           button.classList.toggle('tab-inactive', !isActive);
         }
@@ -988,11 +1073,13 @@
       updateTabButton('analyze-tab', activeTab === 'analyze');
       updateTabButton('review-tab', activeTab === 'review');
 
+      // --- Actualización del Campo de Texto de Entrada ---
       const inputTextElement = document.getElementById('input-text');
       if (inputTextElement && inputTextElement.value !== inputText) {
           inputTextElement.value = inputText;
       }
       
+      // --- Actualización de Botones de Profundidad ---
       document.querySelectorAll('[data-depth]').forEach(btn => {
         if (btn.dataset.depth === settings.depth) {
           btn.classList.add('btn-primary', 'shadow-sm');
@@ -1003,6 +1090,7 @@
         }
       });
 
+      // --- Actualización de Checkboxes ---
       document.getElementById('styleVariation').checked = settings.styleVariation;
       document.getElementById('naturalFlow').checked = settings.naturalFlow;
       document.getElementById('toneAdjustment').checked = settings.toneAdjustment;
@@ -1014,8 +1102,10 @@
       const humanErrorCheckbox = document.getElementById('humanErrorCheckbox'); 
       if (humanErrorCheckbox) humanErrorCheckbox.checked = settings.simulateHumanErrors;
       
+      // --- Actualización del Texto de Salida ---
       document.getElementById('output-text').textContent = outputText || "El texto mejorado aparecerá aquí...";
       
+      // --- Actualización del Análisis ---
       const analysisScoreElement = document.getElementById('analysis-score');
       if (analysisScoreElement) analysisScoreElement.textContent = `${analysisScore.toFixed(1)}%`;
       const analysisBar = document.getElementById('analysis-bar');
@@ -1035,6 +1125,7 @@
       }
       document.getElementById('analysis-feedback').textContent = feedbackText;
       
+      // --- Actualización de Estadísticas ---
       document.getElementById('words-before').textContent = stats.wordsBefore;
       document.getElementById('words-after').textContent = stats.wordsAfter;
       document.getElementById('readability-score').textContent = `${stats.readability.toFixed(1)}%`;
@@ -1055,6 +1146,7 @@
       ).toFixed(1);
       document.getElementById('improvement-score').textContent = `+${improvementScore}%`;
       
+      // --- Actualización del Historial ---
       const historyContainer = document.getElementById('history-container');
       const historyList = document.getElementById('history-list');
       
@@ -1087,8 +1179,10 @@
         historyContainer.classList.add('hidden');
       }
       
+      // --- Advertencia de Entrada Vacía ---
       document.getElementById('input-warning').classList.toggle('hidden', inputText.trim().length > 0);
       
+      // --- Estado del Botón de Procesamiento ---
       const processBtn = document.getElementById('process-btn');
       if (isProcessing) {
         processBtn.innerHTML = `
@@ -1167,9 +1261,9 @@
       loadState(); 
 
       // --- Event Listeners ---
-      document.getElementById('write-tab').addEventListener('click', () => { appState.activeTab = 'write'; updateUI(); });
-      document.getElementById('analyze-tab').addEventListener('click', () => { if (appState.inputText.trim()) { appState.activeTab = 'analyze'; updateUI(); } else { showError("Por favor, introduce texto primero."); } });
-      document.getElementById('review-tab').addEventListener('click', () => { if (appState.outputText) { appState.activeTab = 'review'; updateUI(); } else { showError("Procesa un texto para ver los resultados."); } });
+      document.getElementById('write-tab')?.addEventListener('click', () => { appState.activeTab = 'write'; updateUI(); });
+      document.getElementById('analyze-tab')?.addEventListener('click', () => { if (appState.inputText.trim()) { appState.activeTab = 'analyze'; updateUI(); } else { showError("Por favor, introduce texto primero."); } });
+      document.getElementById('review-tab')?.addEventListener('click', () => { if (appState.outputText) { appState.activeTab = 'review'; updateUI(); } else { showError("Procesa un texto para ver los resultados."); } });
       
       document.querySelectorAll('[data-depth]').forEach(button => {
         button.addEventListener('click', () => { 
@@ -1182,17 +1276,17 @@
         checkbox.addEventListener('change', () => { loadSettingsFromUI(); });
       });
       
-      document.getElementById('process-btn').addEventListener('click', processText);
-      document.getElementById('process-from-analyze').addEventListener('click', processText);
+      document.getElementById('process-btn')?.addEventListener('click', processText);
+      document.getElementById('process-from-analyze')?.addEventListener('click', processText);
       
-      document.getElementById('copy-btn').addEventListener('click', copyToClipboard);
+      document.getElementById('copy-btn')?.addEventListener('click', copyToClipboard);
       
       document.querySelectorAll('.export-option').forEach(button => {
         button.addEventListener('click', (e) => { downloadText(e.target.dataset.format); });
       });
       
-      document.getElementById('load-file').addEventListener('click', () => { document.getElementById('file-input').click(); });
-      document.getElementById('file-input').addEventListener('change', function(event) {
+      document.getElementById('load-file')?.addEventListener('click', () => { document.getElementById('file-input').click(); });
+      document.getElementById('file-input')?.addEventListener('change', function(event) {
         const file = event.target.files[0];
         if (!file) return;
         const reader = new FileReader();
@@ -1205,11 +1299,11 @@
         reader.readAsText(file);
       });
       
-      document.getElementById('clear-input-btn').addEventListener('click', () => {
+      document.getElementById('clear-input-btn')?.addEventListener('click', () => {
         appState.inputText = ''; appState.outputText = ''; appState.analysisScore = 0; appState.stats = { wordsBefore: 0, wordsAfter: 0, readability: 0 };
         appState.activeTab = 'write'; updateUI();
       });
-      document.getElementById('clear-all-btn').addEventListener('click', () => {
+      document.getElementById('clear-all-btn')?.addEventListener('click', () => {
         appState = { 
           inputText: '', outputText: '', isProcessing: false, analysisScore: 0,
           processingProgress: 0, activeTab: 'write', conversionHistory: [],
@@ -1224,7 +1318,7 @@
         updateUI();
       });
       
-      document.getElementById('another-text-btn').addEventListener('click', () => { appState.activeTab = 'write'; updateUI(); });
+      document.getElementById('another-text-btn')?.addEventListener('click', () => { appState.activeTab = 'write'; updateUI(); });
       
       updateUI(); 
     });
