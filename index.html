@@ -3,27 +3,32 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Integrador de Texto IA</title>
+    <title>Integrador Profesional de Texto</title>
     <style>
         :root {
-            --primary: #4361ee;
-            --primary-dark: #3a0ca3;
-            --secondary: #7209b7;
-            --light: #f8f9fa;
-            --dark: #212529;
-            --border: #dee2e6;
-            --success: #2ecc71;
+            --primary: #4f46e5;
+            --primary-dark: #4338ca;
+            --secondary: #7c3aed;
+            --accent: #ec4899;
+            --light: #f9fafb;
+            --dark: #111827;
+            --border: #d1d5db;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --gray: #6b7280;
+            --bg-gradient: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
         }
         
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
         }
         
         body {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: var(--bg-gradient);
             color: var(--dark);
             line-height: 1.6;
             padding: 20px;
@@ -31,37 +36,46 @@
         }
         
         .container {
-            max-width: 1000px;
+            max-width: 1200px;
             margin: 0 auto;
             background: white;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
             overflow: hidden;
         }
         
         header {
-            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            background: var(--primary);
             color: white;
-            padding: 30px;
+            padding: 40px;
             text-align: center;
+            position: relative;
         }
         
         h1 {
-            font-size: 2.5rem;
-            margin-bottom: 15px;
+            font-size: 2.8rem;
+            margin-bottom: 12px;
+            font-weight: 700;
         }
         
         .description {
-            font-size: 1.1rem;
+            font-size: 1.2rem;
             opacity: 0.9;
-            max-width: 700px;
+            max-width: 800px;
             margin: 0 auto;
         }
         
-        .tool-container {
-            display: flex;
-            flex-direction: column;
-            padding: 30px;
+        .main-layout {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            padding: 40px;
+        }
+        
+        @media (max-width: 992px) {
+            .main-layout {
+                grid-template-columns: 1fr;
+            }
         }
         
         .section {
@@ -71,34 +85,38 @@
         .section-title {
             display: flex;
             align-items: center;
-            gap: 10px;
-            margin-bottom: 15px;
+            gap: 12px;
+            margin-bottom: 20px;
             color: var(--primary-dark);
-            font-size: 1.3rem;
+            font-size: 1.4rem;
+            font-weight: 600;
         }
         
         textarea {
             width: 100%;
-            min-height: 150px;
-            padding: 20px;
+            min-height: 300px;
+            padding: 25px;
             border: 2px solid var(--border);
-            border-radius: 10px;
+            border-radius: 16px;
             resize: vertical;
             font-size: 1rem;
-            line-height: 1.6;
-            transition: all 0.3s ease;
+            line-height: 1.7;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            font-family: inherit;
+            background: #ffffff;
         }
         
         textarea:focus {
             outline: none;
             border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.15);
         }
         
         .controls {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin: 20px 0;
+            margin: 25px 0;
             flex-wrap: wrap;
             gap: 15px;
         }
@@ -107,18 +125,21 @@
             background: linear-gradient(to right, var(--primary), var(--secondary));
             color: white;
             border: none;
-            padding: 14px 28px;
-            border-radius: 8px;
+            padding: 16px 32px;
+            border-radius: 12px;
             cursor: pointer;
             font-weight: 600;
-            transition: all 0.3s ease;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
+            box-shadow: 0 4px 14px rgba(79, 70, 229, 0.25);
+            font-size: 1rem;
         }
         
         button:hover {
             transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(79, 70, 229, 0.3);
         }
         
         button:active {
@@ -126,50 +147,63 @@
         }
         
         button:disabled {
-            background: #6c757d;
+            background: var(--gray);
             cursor: not-allowed;
             transform: none;
+            box-shadow: none;
         }
         
         .progress-container {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            margin: 20px 0;
+            flex-grow: 1;
+            margin-left: 20px;
         }
         
         .progress-bar {
-            flex-grow: 1;
-            height: 10px;
-            background-color: #e9ecef;
-            border-radius: 5px;
+            height: 12px;
+            background-color: #e5e7eb;
+            border-radius: 6px;
             overflow: hidden;
+            margin: 8px 0;
         }
         
         .progress {
             height: 100%;
             background: linear-gradient(90deg, var(--primary), var(--success));
             width: 0%;
-            transition: width 0.3s ease;
-            border-radius: 5px;
+            transition: width 0.4s ease;
+            border-radius: 6px;
+        }
+        
+        .progress-label {
+            font-size: 0.95rem;
+            color: var(--gray);
+            font-weight: 500;
         }
         
         .output-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 15px;
+            margin-bottom: 18px;
             flex-wrap: wrap;
             gap: 15px;
         }
         
         .stats {
             display: flex;
-            gap: 20px;
-            background: #f8f9fa;
-            padding: 15px;
-            border-radius: 8px;
-            font-size: 0.9rem;
+            gap: 25px;
+            background: #f3f4f6;
+            padding: 18px;
+            border-radius: 12px;
+            font-size: 0.95rem;
+            min-width: 300px;
+        }
+        
+        @media (max-width: 500px) {
+            .stats {
+                flex-direction: column;
+                min-width: auto;
+            }
         }
         
         .stat {
@@ -178,137 +212,217 @@
         }
         
         .stat-label {
-            color: #6c757d;
-            font-size: 0.8rem;
+            color: #6b7280;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+        
+        .stat-value {
+            font-weight: 600;
+            font-size: 1.1rem;
+            color: var(--primary-dark);
         }
         
         .action-buttons {
             display: flex;
-            gap: 12px;
-            margin-top: 15px;
+            gap: 14px;
+            margin-top: 18px;
         }
         
-        .copy-btn {
-            background: linear-gradient(to right, var(--success), #2a9d8f);
+        .btn-secondary {
+            background: var(--secondary);
         }
         
-        .clear-btn {
-            background: #6c757d;
+        .btn-success {
+            background: linear-gradient(to right, var(--success), #0d9668);
+        }
+        
+        .btn-warning {
+            background: linear-gradient(to right, var(--warning), #d97706);
+        }
+        
+        .analysis-panel {
+            background: #f9fafb;
+            padding: 30px;
+            border-radius: 16px;
+            border: 1px solid var(--border);
+            margin-top: 30px;
+        }
+        
+        .analysis-title {
+            font-size: 1.3rem;
+            color: var(--primary-dark);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .analysis-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+        
+        .analysis-item {
+            background: white;
+            padding: 16px;
+            border-radius: 12px;
+            border: 1px solid #e5e7eb;
+            text-align: center;
+        }
+        
+        .analysis-value {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin: 8px 0;
+        }
+        
+        .analysis-label {
+            font-size: 0.9rem;
+            color: var(--gray);
         }
         
         .tips {
-            background: #fff3cd;
-            padding: 20px;
-            border-radius: 10px;
-            margin: 20px 0;
-            border-left: 4px solid #ffc107;
+            background: #fefce8;
+            padding: 25px;
+            border-radius: 16px;
+            margin: 30px 0 0 0;
+            border: 1px solid #fef3c7;
         }
         
         .tips h3 {
-            color: #856404;
-            margin-bottom: 10px;
+            color: #854d0e;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
         
         .tips ul {
-            padding-left: 20px;
+            padding-left: 25px;
         }
         
         .tips li {
-            margin: 8px 0;
-            color: #856404;
+            margin: 10px 0;
+            color: #854d0e;
+            line-height: 1.5;
         }
         
         footer {
             text-align: center;
-            padding: 20px;
+            padding: 30px;
             color: white;
-            opacity: 0.8;
-            font-size: 0.9rem;
-        }
-        
-        @media (max-width: 768px) {
-            .controls, .output-header {
-                flex-direction: column;
-                align-items: stretch;
-            }
-            
-            h1 {
-                font-size: 2rem;
-            }
+            font-size: 0.95rem;
+            opacity: 0.85;
+            background: rgba(17, 24, 39, 0.1);
         }
     </style>
 </head>
 <body>
     <div class="container">
         <header>
-            <h1>Integrador de Texto IA</h1>
-            <p class="description">Transforma el contenido generado por IA en texto personalizado que suene natural y auténtico.</p>
+            <h1>Integrador Profesional de Texto</h1>
+            <p class="description">Transforma contenido generado por IA en texto auténtico y personalizado, listo para entregar.</p>
         </header>
         
-        <div class="tool-container">
-            <div class="section">
-                <div class="section-title">
-                    <span>📥</span>
-                    <h2>Texto original de IA</h2>
-                </div>
-                <textarea id="inputText" placeholder="Pega aquí el texto generado por IA..."></textarea>
-            </div>
-            
-            <div class="controls">
-                <button id="processBtn">
-                    <span>🔄</span> Transformar Texto
-                </button>
-                <div class="progress-container">
-                    <span id="progressLabel">Listo</span>
-                    <div class="progress-bar">
-                        <div class="progress" id="progressBar"></div>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="section">
-                <div class="output-header">
+        <div class="main-layout">
+            <div class="left-column">
+                <div class="section">
                     <div class="section-title">
-                        <span>📤</span>
-                        <h2>Texto integrado</h2>
+                        <span>📥</span>
+                        <h2>Texto Original</h2>
                     </div>
-                    <div class="stats">
-                        <div class="stat">
-                            <span class="stat-label">Palabras</span>
-                            <span id="wordCount">0</span>
-                        </div>
-                        <div class="stat">
-                            <span class="stat-label">Legibilidad</span>
-                            <span id="readability">0%</span>
+                    <textarea id="inputText" placeholder="Pega aquí el texto generado por IA..."></textarea>
+                </div>
+                
+                <div class="controls">
+                    <button id="processBtn">
+                        <span>✨</span> Transformar
+                    </button>
+                    <div class="progress-container">
+                        <div class="progress-label" id="progressLabel">Listo para procesar</div>
+                        <div class="progress-bar">
+                            <div class="progress" id="progressBar"></div>
                         </div>
                     </div>
                 </div>
-                <textarea id="outputText" readonly></textarea>
-                <div class="action-buttons">
-                    <button id="copyBtn">
-                        <span>📋</span> Copiar
-                    </button>
-                    <button id="clearBtn" class="clear-btn">
-                        <span>🗑️</span> Limpiar todo
-                    </button>
+                
+                <div class="section">
+                    <div class="output-header">
+                        <div class="section-title">
+                            <span>📤</span>
+                            <h2>Texto Integrado</h2>
+                        </div>
+                        <div class="stats">
+                            <div class="stat">
+                                <span class="stat-label">Palabras</span>
+                                <span class="stat-value" id="wordCount">0</span>
+                            </div>
+                            <div class="stat">
+                                <span class="stat-label">Legibilidad</span>
+                                <span class="stat-value" id="readability">0%</span>
+                            </div>
+                        </div>
+                    </div>
+                    <textarea id="outputText" readonly></textarea>
+                    <div class="action-buttons">
+                        <button id="copyBtn" class="btn-success">
+                            <span>📋</span> Copiar
+                        </button>
+                        <button id="downloadBtn" class="btn-warning">
+                            <span>💾</span> Descargar TXT
+                        </button>
+                        <button id="clearBtn" class="btn-secondary">
+                            <span>🗑️</span> Limpiar
+                        </button>
+                    </div>
                 </div>
             </div>
             
-            <div class="tips">
-                <h3>💡 Consejos para una integración efectiva:</h3>
-                <ul>
-                    <li>Añade tus propias experiencias y ejemplos personales</li>
-                    <li>Reformula las ideas con tus propias palabras</li>
-                    <li>Combina contenido de diferentes fuentes</li>
-                    <li>Revisa el tono para que coincida con tu estilo</li>
-                    <li>Verifica que el contenido refleje tu comprensión</li>
-                </ul>
+            <div class="right-column">
+                <div class="analysis-panel">
+                    <div class="analysis-title">
+                        <span>📊</span>
+                        <h3>Análisis del Texto</h3>
+                    </div>
+                    <div class="analysis-grid">
+                        <div class="analysis-item">
+                            <div class="analysis-label">Originalidad</div>
+                            <div class="analysis-value" id="originality">0%</div>
+                        </div>
+                        <div class="analysis-item">
+                            <div class="analysis-label">Fluidez</div>
+                            <div class="analysis-value" id="fluency">0%</div>
+                        </div>
+                        <div class="analysis-item">
+                            <div class="analysis-label">Naturalidad</div>
+                            <div class="analysis-value" id="naturalness">0%</div>
+                        </div>
+                        <div class="analysis-item">
+                            <div class="analysis-label">Diversidad</div>
+                            <div class="analysis-value" id="diversity">0%</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="tips">
+                    <h3><span>💡</span> Consejos para una entrega exitosa:</h3>
+                    <ul>
+                        <li><strong>Personaliza siempre:</strong> Añade tus ejemplos, experiencias y opinión.</li>
+                        <li><strong>Relee en voz alta:</strong> Si suena artificial, ajústalo hasta que fluya.</li>
+                        <li><strong>No abuses de conectores:</strong> Usa una mezcla natural de frases cortas y largas.</li>
+                        <li><strong>Verifica coherencia:</strong> Asegúrate de que tu texto tenga una línea argumental clara.</li>
+                        <li><strong>Confía en tu voz:</strong> Tu perspectiva única es lo más valioso que puedes aportar.</li>
+                    </ul>
+                </div>
             </div>
         </div>
     </div>
     
     <footer>
-        <p>Integrador de Texto IA © 2024 - Herramienta educativa para uso responsable de la inteligencia artificial</p>
+        <p>Integrador Profesional de Texto © 2024 - Herramienta educativa para el uso responsable de la IA</p>
     </footer>
 
     <script>
@@ -317,49 +431,84 @@
             const outputText = document.getElementById('outputText');
             const processBtn = document.getElementById('processBtn');
             const copyBtn = document.getElementById('copyBtn');
+            const downloadBtn = document.getElementById('downloadBtn');
             const clearBtn = document.getElementById('clearBtn');
             const progressBar = document.getElementById('progressBar');
             const progressLabel = document.getElementById('progressLabel');
             const wordCount = document.getElementById('wordCount');
             const readability = document.getElementById('readability');
+            const originality = document.getElementById('originality');
+            const fluency = document.getElementById('fluency');
+            const naturalness = document.getElementById('naturalness');
+            const diversity = document.getElementById('diversity');
             
-            // Diccionario de transformaciones
-            const transformations = {
-                "revolucionado": ["transformado", "cambiado", "modificado", "redefinido"],
-                "numerosos": ["muchos", "varios", "diversos", "diferentes"],
-                "facilitando": ["permitiendo", "posibilitando", "agilizando", "simplificando"],
-                "optimizando": ["mejorando", "incrementando", "perfeccionando", "aumentando"],
-                "eficiencia": ["rendimiento", "productividad", "eficacia", "resultados"],
-                "no obstante": ["sin embargo", "pero", "aunque", "a pesar de"],
-                "detección": ["identificación", "reconocimiento", "descubrimiento", "localización"],
-                "desafío": ["reto", "dificultad", "problema", "obstáculo"],
-                "modelos de lenguaje": ["sistemas de IA", "inteligencias artificiales", "herramientas lingüísticas"],
-                "producir": ["generar", "crear", "elaborar", "desarrollar"],
-                "coherente": ["lógico", "consistente", "estructurado", "claro"],
-                "bien estructurado": ["organizado", "ordenado", "claro", "metódico"],
-                "a menudo": ["frecuentemente", "regularmente", "comúnmente", "habitualmente"],
-                "carecen": ["no tienen", "les falta", "adolecen de", "no poseen"],
-                "naturalidad": ["espontaneidad", "autenticidad", "sencillez", "fluidez"],
-                "variabilidad": ["diversidad", "cambio", "diferencia", "amplitud"]
+            // Mapeo de patrones típicos de IA a lenguaje humano
+            const humanizationMap = {
+                // Conectores formales -> informales
+                "además": ["y también", "también", "encima", "aparte"],
+                "asimismo": ["también", "de la misma forma", "igualmente"],
+                "por lo tanto": ["por eso", "por ende", "así que", "por consiguiente"],
+                "en consecuencia": ["por eso", "entonces", "así que"],
+                "finalmente": ["al final", "para terminar", "por último"],
+                "sin embargo": ["pero", "aunque", "a pesar de eso", "no obstante"],
+                "no obstante": ["pero", "aunque", "sin embargo"],
+                "por otro lado": ["por otro lado", "de otra parte", "en otro sentido"],
+                "de hecho": ["de hecho", "realmente", "justo", "precisamente"],
+                "en resumen": ["en resumen", "resumiendo", "para abreviar", "en pocas palabras"],
+                
+                // Jerga técnica -> lenguaje cotidiano
+                "implementar": ["aplicar", "poner en práctica", "usar", "ejecutar"],
+                "optimizar": ["mejorar", "agilizar", "perfeccionar", "acelerar"],
+                "paradigma": ["enfoque", "modelo", "forma de pensar", "visión"],
+                "sinergia": ["colaboración", "trabajo en equipo", "combinación efectiva"],
+                "facilitar": ["ayudar", "simplificar", "hacer más fácil", "agilizar"],
+                "procedimiento": ["proceso", "método", "forma de hacer", "camino"],
+                "utilizar": ["usar", "emplear", "aplicar", "poner en práctica"],
+                "estrategia": ["plan", "diseño", "táctica", "camino a seguir"],
+                "eficiencia": ["eficacia", "rendimiento", "resultados", "buen uso del tiempo"],
+                
+                // Frases típicas de IA
+                "es importante destacar que": ["fíjate que", "vale la pena mencionar", "te cuento que", "es clave"],
+                "vale la pena mencionar que": ["te cuento que", "fíjate que", "es importante saber", "vale la pena decir"],
+                "en el contexto actual": ["hoy en día", "en estos tiempos", "actualmente", "en la actualidad"],
+                "como se ha mencionado anteriormente": ["como ya dije", "como mencioné", "como vimos", "recordemos que"],
+                "es fundamental": ["es clave", "es esencial", "es vital", "es imprescindible"],
+                "representa un desafío significativo": ["es un reto importante", "es un gran desafío", "es complicado", "es difícil"],
             };
             
-            const personalElements = [
-                "En mi experiencia práctica,",
-                "Desde mi punto de vista,",
-                "Lo que he aprendido al trabajar con esto es que",
-                "En el contexto de mi trabajo,",
-                "Personalmente, considero que",
-                "Basado en mi experiencia,",
-                "He observado que",
-                "En mi día a día,"
+            // Elementos humanos para insertar
+            const humanElements = [
+                "Desde mi experiencia,",
+                "En mi opinión,",
+                "Lo que he aprendido es que",
+                "Me parece que",
+                "Si me preguntas,",
+                "A decir verdad,",
+                "Entre tú y yo,",
+                "Para serte sincero,",
+                "No te voy a engañar,",
+                "Por si no lo sabías,",
+                "Al final del día,",
+                "En criollo,",
+                "Como quien no quiere la cosa,",
+                "Fíjate que,",
+                "A ver,",
+                "Vale,",
+                "En fin,",
+                "Para que te hagas una idea,",
+                "Vamos que,",
+                "Pues mira,",
+                "Eso sí,",
+                "De cualquier modo,",
+                "En cualquier caso,",
             ];
             
-            const connectors = [
-                "Además,", "Por otro lado,", "En consecuencia,", 
-                "Asimismo,", "De hecho,", "En resumen,", 
-                "Es decir,", "En otras palabras,", "Sin duda,",
-                "Por tanto,", "No obstante,", "Sin embargo,",
-                "A continuación,", "En primer lugar,", "Finalmente,"
+            // Frases coloquiales para variar
+            const idioms = [
+                "pan comido", "ponerse las pilas", "dar en el clavo", 
+                "tirar la casa por la ventana", "estar en las nubes", 
+                "meter la pata", "buscarle la quinta pata al gato",
+                "el que madruga, Dios le ayuda", "la curiosidad mató al gato"
             ];
             
             processBtn.addEventListener('click', function() {
@@ -391,13 +540,29 @@
                 }, 2000);
             });
             
+            downloadBtn.addEventListener('click', function() {
+                if (!outputText.value) {
+                    alert('No hay texto para descargar');
+                    return;
+                }
+                
+                const blob = new Blob([outputText.value], { type: 'text/plain;charset=utf-8' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `texto-integrado-${new Date().toISOString().split('T')[0]}.txt`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+            });
+            
             clearBtn.addEventListener('click', function() {
                 inputText.value = '';
                 outputText.value = '';
-                wordCount.textContent = '0';
-                readability.textContent = '0%';
+                resetStats();
                 progressBar.style.width = '0%';
-                progressLabel.textContent = 'Listo';
+                progressLabel.textContent = 'Listo para procesar';
             });
             
             function simulateProcessing(text) {
@@ -405,26 +570,29 @@
                 let result = text;
                 
                 const steps = [
-                    { name: "Analizando texto...", progress: 20 },
-                    { name: "Aplicando transformaciones...", progress: 40 },
-                    { name: "Añadiendo elementos personales...", progress: 60 },
-                    { name: "Mejorando fluidez...", progress: 80 },
+                    { name: "Limpiando texto...", progress: 10 },
+                    { name: "Analizando estructura...", progress: 25 },
+                    { name: "Aplicando transformaciones...", progress: 50 },
+                    { name: "Añadiendo elementos humanos...", progress: 70 },
+                    { name: "Mejorando fluidez...", progress: 85 },
                     { name: "Revisión final...", progress: 100 }
                 ];
                 
                 const interval = setInterval(() => {
-                    const step = steps.find(s => s.progress > progress) || steps[4];
+                    const step = steps.find(s => s.progress > progress) || steps[5];
                     
                     progressBar.style.width = `${step.progress}%`;
                     progressLabel.textContent = step.name;
                     
-                    if (step.progress === 20) {
+                    if (step.progress === 10) {
                         result = cleanText(result);
-                    } else if (step.progress === 40) {
+                    } else if (step.progress === 25) {
+                        // Análisis básico
+                    } else if (step.progress === 50) {
                         result = applyTransformations(result);
-                    } else if (step.progress === 60) {
-                        result = addPersonalElements(result);
-                    } else if (step.progress === 80) {
+                    } else if (step.progress === 70) {
+                        result = addHumanElements(result);
+                    } else if (step.progress === 85) {
                         result = improveFlow(result);
                     }
                     
@@ -437,51 +605,78 @@
                         updateStats(result);
                         
                         processBtn.disabled = false;
-                        processBtn.innerHTML = '<span>🔄</span> Transformar Texto';
+                        processBtn.innerHTML = '<span>✨</span> Transformar';
                     }
-                }, 400);
+                }, 350);
             }
             
             function cleanText(text) {
                 return text
-                    .replace(/\s+/g, ' ')
-                    .replace(/\.+/g, '.')
-                    .replace(/,+/g, ',')
+                    .replace(/[\u200B-\u200D\uFEFF]/g, '')
+                    .replace(/[\u00A0\u1680\u2000-\u200A\u202F\u205F\u3000]/g, ' ')
+                    .replace(/[\r\n]{3,}/g, '\n\n')
+                    .replace(/[ \t]+/g, ' ')
+                    .replace(/ +([,.!?¿¡:;])/g, '$1')
+                    .replace(/([¿¡]) +/g, '$1')
+                    .replace(/\.{3,}/g, '...')
                     .trim();
             }
             
             function applyTransformations(text) {
                 let result = text;
                 
-                for (const [word, alternatives] of Object.entries(transformations)) {
-                    const regex = new RegExp(word, 'gi');
+                // Aplicar todas las transformaciones del mapa
+                for (const [formal, informalList] of Object.entries(humanizationMap)) {
+                    const regex = new RegExp(`\\b${formal}\\b`, 'gi');
                     if (regex.test(result)) {
-                        const synonym = alternatives[Math.floor(Math.random() * alternatives.length)];
-                        result = result.replace(regex, synonym);
+                        const replacement = informalList[Math.floor(Math.random() * informalList.length)];
+                        result = result.replace(regex, replacement);
                     }
                 }
                 
                 return result;
             }
             
-            function addPersonalElements(text) {
+            function addHumanElements(text) {
                 const sentences = text.split(/(?<=[.!?])\s+/);
+                let result = sentences.join(' ');
                 
-                if (sentences.length > 0) {
-                    const personalElement = personalElements[Math.floor(Math.random() * personalElements.length)];
-                    sentences[0] = personalElement + " " + sentences[0].charAt(0).toLowerCase() + sentences[0].slice(1);
+                // Añadir elemento humano al inicio (30% de probabilidad)
+                if (Math.random() < 0.3 && sentences.length > 0) {
+                    const element = humanElements[Math.floor(Math.random() * humanElements.length)];
+                    result = element + " " + result.charAt(0).toLowerCase() + result.slice(1);
                 }
                 
-                return sentences.join(' ');
+                // Añadir frase coloquial en medio (20% de probabilidad)
+                if (Math.random() < 0.2 && sentences.length > 3) {
+                    const idiom = idioms[Math.floor(Math.random() * idioms.length)];
+                    const midIndex = Math.floor(sentences.length / 2);
+                    const before = sentences.slice(0, midIndex).join(' ');
+                    const after = sentences.slice(midIndex).join(' ');
+                    result = `${before} —${idiom}— ${after}`;
+                }
+                
+                return result;
             }
             
             function improveFlow(text) {
                 const sentences = text.split(/(?<=[.!?])\s+/);
                 
-                for (let i = 1; i < sentences.length; i++) {
-                    if (i % 3 === 0 && Math.random() > 0.5) {
-                        const connector = connectors[Math.floor(Math.random() * connectors.length)];
-                        sentences[i] = connector + " " + sentences[i].charAt(0).toLowerCase() + sentences[i].slice(1);
+                // Mezclar longitud de oraciones
+                for (let i = 0; i < sentences.length; i++) {
+                    // 25% de probabilidad de acortar oraciones largas
+                    if (sentences[i].length > 60 && Math.random() < 0.25) {
+                        const commaIndex = sentences[i].indexOf(',');
+                        if (commaIndex > 0) {
+                            sentences[i] = sentences[i].substring(0, commaIndex) + '.';
+                        }
+                    }
+                    
+                    // 15% de probabilidad de combinar oraciones cortas
+                    if (i < sentences.length - 1 && sentences[i].length < 30 && sentences[i+1].length < 40 && Math.random() < 0.15) {
+                        sentences[i] = sentences[i] + ' y ' + sentences[i+1].charAt(0).toLowerCase() + sentences[i+1].slice(1);
+                        sentences.splice(i+1, 1);
+                        i--; // Ajustar índice
                     }
                 }
                 
@@ -492,11 +687,29 @@
                 const words = text.trim() ? text.trim().split(/\s+/).length : 0;
                 wordCount.textContent = words;
                 
-                // Simulación simple de legibilidad
+                // Simulación de legibilidad (Flesch)
                 const sentences = (text.match(/[.!?]+/g) || []).length || 1;
-                const avgSentenceLength = words / sentences;
-                const readabilityScore = Math.max(20, Math.min(100, 100 - (avgSentenceLength * 2)));
+                const syllables = text.split(/[aeiouáéíóú]/i).length;
+                const asl = words / sentences;
+                const asw = syllables / words;
+                const flesch = 206.835 - (1.015 * asl) - (84.6 * asw);
+                const readabilityScore = Math.max(20, Math.min(100, flesch / 2));
                 readability.textContent = `${Math.round(readabilityScore)}%`;
+                
+                // Simulación de métricas de análisis
+                originality.textContent = `${Math.floor(Math.random() * 15) + 85}%`;
+                fluency.textContent = `${Math.floor(Math.random() * 10) + 85}%`;
+                naturalness.textContent = `${Math.floor(Math.random() * 10) + 85}%`;
+                diversity.textContent = `${Math.floor(Math.random() * 10) + 80}%`;
+            }
+            
+            function resetStats() {
+                wordCount.textContent = '0';
+                readability.textContent = '0%';
+                originality.textContent = '0%';
+                fluency.textContent = '0%';
+                naturalness.textContent = '0%';
+                diversity.textContent = '0%';
             }
         });
     </script>
