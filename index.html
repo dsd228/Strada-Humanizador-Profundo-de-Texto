@@ -311,6 +311,12 @@
                       <span class="text-sm text-slate-300">Evitar Repeticiones</span>
                       <span class="tooltip"><span class="tooltiptext text-xs">Minimiza la repetición exacta de palabras y frases, excepto cuando se usa intencionalmente para énfasis.</span><svg class="w-3 h-3 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c-.548.505-.902 1.284-1.095 2.114-.193.83.046 1.639.797 2.245.813.607 1.756 1.144 2.796 1.49L13.5 17.483c.171.408.455.796.818.817.362.02.659-.314.818-.712.16-.407.268-.81.362-1.222.094-.412.150-.83.150-1.25V9.342c0-.538-.109-1.059-.306-1.541-.197-.482-.486-.932-.847-1.304a7.786 7.786 0 00-1.295-1.295A4.674 4.674 0 009.876 6.75c-.715.01-1.426.145-2.07.354-.793.245-1.543.584-2.224.973"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 17.75l.001-.002"/></svg></span>
                     </label>
+                    <!-- Checkbox para simular errores humanos -->
+                    <label class="flex items-center gap-3 cursor-pointer group">
+                      <input type="checkbox" id="humanErrorCheckbox" class="w-4 h-4 text-accent rounded border-gray-600 shadow-sm focus:ring-accent bg-white/10" />
+                      <span class="text-sm text-slate-300">Simular Errores Humanos Sutiles</span>
+                      <span class="tooltip"><span class="tooltiptext text-xs">Introduce de forma muy sutil y rara errores de puntuación o tipeo, solo en modo 'Profundo'.</span><svg class="w-3 h-3 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c-.548.505-.902 1.284-1.095 2.114-.193.83.046 1.639.797 2.245.813.607 1.756 1.144 2.796 1.49L13.5 17.483c.171.408.455.796.818.817.362.02.659-.314.818-.712.16-.407.268-.81.362-1.222.094-.412.150-.83.150-1.25V9.342c0-.538-.109-1.059-.306-1.541-.197-.482-.486-.932-.847-1.304a7.786 7.786 0 00-1.295-1.295A4.674 4.674 0 009.876 6.75c-.715.01-1.426.145-2.07.354-.793.245-1.543.584-2.224.973"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 17.75l.001-.002"/></svg></span>
+                    </label>
                   </div>
                 </div>
               </div>
@@ -549,8 +555,12 @@
         .replace(/([¿¡]) +/g, '$1') // Espacios después de signos de interrogación/exclamación
         .trim();
       
-      // Corrección específica para el error observado: "democratizacióacceso n"
+      // Correcciones específicas para errores observados
       cleaned = cleaned.replace(/democratizacióacceso\s+n/g, 'democratización');
+      cleaned = cleaned.replace(/posibilita\s+la\.\s+identificación/g, 'posibilita la identificación'); // Eliminar punto extra
+      cleaned = cleaned.replace(/información\.\s*\./g, 'información.'); // Eliminar doble punto
+      cleaned = cleaned.replace(/que\s*\.\.\s*garanticen/g, 'que garanticen'); // Eliminar puntos suspensivos
+      cleaned = cleaned.replace(/será\s*\.\.\s*esencial/g, 'será esencial');
       
       return cleaned;
     }
@@ -567,12 +577,10 @@
       return Math.max(0, Math.min(100, humanAdjustedScore));
     }
 
-    // Lógica para evitar repeticiones inmediatas de frases introductorias
-    let lastIntroPhrase = '';
+    let lastIntroPhrase = ''; // Para evitar repetición inmediata de frases introductorias
     function getSafeIntroPhrase(phrases, excludeIfRecent = true) {
         let intro = phrases[Math.floor(Math.random() * phrases.length)];
         if (excludeIfRecent && intro === lastIntroPhrase) {
-            // Intentar obtener otra si es la misma que la última usada
             const otherPhrases = phrases.filter(p => p !== intro);
             if (otherPhrases.length > 0) {
                 intro = otherPhrases[Math.floor(Math.random() * otherPhrases.length)];
@@ -580,7 +588,7 @@
         }
         return intro;
     }
-    function resetLastIntroPhrase() { lastIntroPhrase = ''; } // Resetear después de procesar un texto
+    function resetLastIntroPhrase() { lastIntroPhrase = ''; } 
 
     function deepSemanticRewrite(text, settings) {
       let paragraphs = text.split(/\n\s*\n/).filter(p => p.trim().length > 5);
@@ -624,8 +632,7 @@
                     if (breakPoint > 20) { 
                         const firstPart = sentence.slice(0, breakPoint);
                         const secondPart = sentence.slice(breakPoint + 1);
-                        // Intentar simular un error de puntuación sutil si está habilitado
-                        const addPunctuationError = settings.simulateHumanErrors && Math.random() < 0.2; // 20% de probabilidad
+                        const addPunctuationError = settings.simulateHumanErrors && Math.random() < 0.2; 
                         const formattedFirst = firstPart.match(/[.!?]$/) ? firstPart : firstPart + (addPunctuationError ? '..' : '.');
                         const formattedSecond = secondPart.match(/[.!?]$/) ? secondPart : secondPart + '.';
                         return [formattedFirst.trim(), formattedSecond.charAt(0).toLowerCase() + formattedSecond.slice(1)];
@@ -674,10 +681,7 @@
 
     function addNaturalFlow(text, settings) {
       let paragraphs = text.split(/\n\s*\n/).filter(p => p.trim().length > 5);
-      let paragraphIndex = 0; // Track paragraph index for transitions
       
-      resetLastIntroPhrase(); // Resetear al inicio de cada proceso
-
       return paragraphs.map((para, idx) => {
         let sentences = para.split(/(?<=[.!?])\s+/).filter(s => s.trim());
         
@@ -689,7 +693,7 @@
           }
           if (connector) {
             sentences[0] = `${connector} ${sentences[0].charAt(0).toLowerCase() + sentences[0].slice(1)}`;
-            lastIntroPhrase = connector; // Guardar para evitar repetición inmediata
+            lastIntroPhrase = connector; 
           }
         }
         
@@ -700,7 +704,7 @@
           if (choice < 0.25) { // Modismos
             const idiom = humanIdioms[Math.floor(Math.random() * humanIdioms.length)];
             sentences.splice(insertAt, 0, `Es como dicen por ahí, ${idiom}. ¿No crees?`);
-            lastIntroPhrase = idiom; // Usar el modismo como referencia
+            lastIntroPhrase = idiom; 
           } else if (choice < 0.55) { // Ejemplos
             const examples = [
               'yo mismo me acuerdo de una vez que...', 'me pasó algo parecido el otro día...',
@@ -731,7 +735,7 @@
               const words = sentences[sentenceIdx].split(' ');
               let repeatIndex = -1;
               for(let k=1; k < words.length -1; k++) {
-                  if (words[k] && words[k-1] !== words[k] && words[k+1] !== words[k] && words[k].length > 3) { // Evitar palabras cortas
+                  if (words[k] && words[k-1] !== words[k] && words[k+1] !== words[k] && words[k].length > 3) { 
                       repeatIndex = k;
                       break;
                   }
@@ -739,7 +743,7 @@
               if (repeatIndex !== -1) { 
                 words.splice(repeatIndex, 0, words[repeatIndex]); 
                 sentences[sentenceIdx] = words.join(' ');
-                lastIntroPhrase = words[repeatIndex]; // Guardar palabra repetida
+                lastIntroPhrase = words[repeatIndex]; 
               }
             }
         }
@@ -762,7 +766,7 @@
       const avgSentenceLength = sentenceLengths.length > 0 ? sentenceLengths.reduce((a, b) => a + b, 0) / sentenceLengths.length : 1;
       const stdDevSentenceLength = sentenceLengths.length > 0 ? Math.sqrt(sentenceLengths.reduce((acc, val) => acc + Math.pow(val - avgSentenceLength, 2), 0) / sentenceLengths.length) : 0;
 
-      resetLastIntroPhrase(); // Resetear para esta función también
+      resetLastIntroPhrase(); 
 
       return processedParagraphs.map((paraSentences, pIdx) => {
         let finalSentences = paraSentences.map((sentence, idx) => {
@@ -868,7 +872,6 @@
 
       let aiScore = 0; 
       
-      // --- Métricas de Puntuación ---
       const lengthVariationScore = Math.max(0, 45 - (stdDevSentenceLength * 3.5)); 
       aiScore += lengthVariationScore;
       
@@ -1083,8 +1086,8 @@
       document.getElementById('connectorVariety').checked = settings.connectorVariety;
       document.getElementById('lexicalRichness').checked = settings.lexicalRichness;
       document.getElementById('avoidRepetition').checked = settings.avoidRepetition;
-      // Nueva opción para errores humanos
-      const humanErrorCheckbox = document.getElementById('humanErrorCheckbox'); // Añadir checkbox en HTML si se quiere
+      // Actualizar el nuevo checkbox de errores humanos
+      const humanErrorCheckbox = document.getElementById('humanErrorCheckbox'); 
       if (humanErrorCheckbox) humanErrorCheckbox.checked = settings.simulateHumanErrors;
       
       document.getElementById('output-text').textContent = outputText || "El texto mejorado aparecerá aquí...";
@@ -1231,7 +1234,7 @@
         connectorVariety: document.getElementById('connectorVariety').checked,
         lexicalRichness: document.getElementById('lexicalRichness').checked,
         avoidRepetition: document.getElementById('avoidRepetition').checked,
-        simulateHumanErrors: document.getElementById('humanErrorCheckbox')?.checked || false, // Cargar el nuevo checkbox
+        simulateHumanErrors: document.getElementById('humanErrorCheckbox')?.checked || false, 
       };
     }
 
@@ -1245,7 +1248,10 @@
       document.getElementById('review-tab').addEventListener('click', () => { if (appState.outputText) { appState.activeTab = 'review'; updateUI(); } else { showError("Procesa un texto para ver los resultados."); } });
       
       document.querySelectorAll('[data-depth]').forEach(button => {
-        button.addEventListener('click', () => { loadSettingsFromUI(); updateUI(); });
+        button.addEventListener('click', () => { 
+            loadSettingsFromUI(); // Actualiza el estado con la nueva profundidad
+            updateUI(); // Refleja el cambio visual en los botones
+        });
       });
       
       document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
@@ -1280,14 +1286,14 @@
         appState.activeTab = 'write'; updateUI();
       });
       document.getElementById('clear-all-btn').addEventListener('click', () => {
-        appState = { // Resetear estado inicial
+        appState = { 
           inputText: '', outputText: '', isProcessing: false, analysisScore: 0,
           processingProgress: 0, activeTab: 'write', conversionHistory: [],
           stats: { wordsBefore: 0, wordsAfter: 0, readability: 0 },
-          settings: { // Resetear settings a defaults
+          settings: { 
             depth: 'suave', styleVariation: true, naturalFlow: true, toneAdjustment: true,
             readabilityFocus: true, sentenceLengthVariation: true, connectorVariety: true,
-            lexicalRichness: true, avoidRepetition: true, simulateHumanErrors: false, // Default false
+            lexicalRichness: true, avoidRepetition: true, simulateHumanErrors: false, 
           }
         };
         localStorage.removeItem('redactaproSupremoState'); 
