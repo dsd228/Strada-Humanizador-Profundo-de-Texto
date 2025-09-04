@@ -1,0 +1,165 @@
+/* Pega aquí TODO el contenido CSS que tenías en popup.css o en el <style> tag */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@500;600;700&display=swap');
+
+:root {
+  --color-primary: #059669; /* Emerald 600 */
+  --color-secondary: #047857; /* Emerald 700 */
+  --color-bg-light: #f8fafc; /* Slate 50 */
+  --color-bg-medium: #f1f5f9; /* Slate 100 */
+  --color-text-normal: #334155; /* Slate 700 */
+  --color-text-muted: #64748b; /* Slate 500 */
+  --color-accent: #2dd4bf; /* Teal 400 */
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  background: linear-gradient(135deg, var(--color-bg-light) 0%, var(--color-bg-medium) 100%);
+  /* min-height: 100vh; /* Ajusta si es necesario */
+  width: 100%; /* Ocupa todo el ancho disponible */
+  box-sizing: border-box;
+  overflow-x: hidden; /* Evitar scroll horizontal */
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Poppins', sans-serif;
+}
+
+textarea, input, button, select {
+  font-size: 1rem; /* 16px */
+}
+
+.btn-primary {
+  background: linear-gradient(90deg, var(--color-primary), var(--color-secondary));
+  color: white;
+  border: none;
+  border-radius: 0.75rem; /* 12px */
+  padding: 0.75rem 1.5rem;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px -5px rgba(5, 150, 105, 0.3);
+}
+
+.btn-secondary {
+  background: #e2e8f0; /* Slate 200 */
+  color: var(--color-text-normal);
+  border-radius: 0.75rem;
+  padding: 0.75rem 1.5rem;
+  transition: all 0.3s ease;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+}
+
+.btn-secondary:hover {
+  background: #cbd5e1; /* Slate 300 */
+  transform: translateY(-1px);
+}
+
+.input-textarea {
+  border: 1px solid #cbd5e1; /* Slate 300 */
+  border-radius: 0.75rem;
+  transition: all 0.3s ease;
+  resize: vertical; /* Permitir redimensionamiento vertical */
+}
+.input-textarea:focus {
+  ring-2 ring-emerald-500 border-transparent;
+  box-shadow: 0 0 0 3px rgba(40, 199, 111, 0.3); /* Focus ring */
+}
+
+.progress-bar-container {
+  background-color: #e2e8f0; /* Slate 200 */
+  border-radius: 9999px; /* Full rounded */
+  overflow: hidden;
+}
+.progress-bar-fill {
+  background: linear-gradient(90deg, var(--color-primary), var(--color-secondary));
+  height: 0.75rem; /* 12px */
+  border-radius: 9999px;
+  transition: width 0.5s ease-in-out;
+}
+
+.toast-success {
+  background-color: var(--color-primary);
+  color: white;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  text-align: center;
+  opacity: 0;
+  animation: fadeInOut 2s forwards;
+  position: fixed;
+  bottom: 2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 50;
+  box-shadow: 0 4px 6px -1px rgba(0,0,0,.1), 0 2px 4px -1px rgba(0,0,0,.06);
+}
+
+@keyframes fadeInOut {
+  0% { opacity: 0; transform: translateX(-50%) translateY(20px); }
+  20% { opacity: 1; transform: translateX(-50%) translateY(-10px); }
+  80% { opacity: 1; transform: translateX(-50%) translateY(-10px); }
+  100% { opacity: 0; transform: translateX(-50%) translateY(-20px); }
+}
+
+.analysis-card {
+  background-color: white;
+  border-radius: 1rem; /* 16px */
+  box-shadow: 0 10px 15px -3px rgba(0,0,0,.05), 0 4px 6px -2px rgba(0,0,0,.05);
+  border: 1px solid #e2e8f0; /* Slate 200 */
+}
+
+.analysis-title-icon {
+  color: var(--color-accent); /* Teal 400 */
+}
+
+.tooltip {
+  position: relative;
+  display: inline-block;
+}
+.tooltip .tooltiptext {
+  visibility: hidden;
+  width: 220px;
+  background-color: #555;
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 5px 10px;
+  position: absolute;
+  z-index: 1;
+  bottom: 125%; /* Position the tooltip above the element */
+  left: 50%;
+  margin-left: -110px; /* Use half of the width to center */
+  opacity: 0;
+  transition: opacity 0.3s;
+  font-size: 0.75rem; /* Smaller font */
+  line-height: 1.2;
+}
+.tooltip:hover .tooltiptext {
+  visibility: visible;
+  opacity: 1;
+}
+.tooltip .tooltiptext::after {
+  content: "";
+  position: absolute;
+  top: 100%; /* At the bottom of the tooltip */
+  left: 50%;
+  margin-left: -5px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: #555 transparent transparent #555;
+}
+
+/* Animación para el toast */
+@keyframes toastIn {
+  0% { opacity: 0; transform: translateX(-50%) translateY(20px); }
+  20% { opacity: 1; transform: translateX(-50%) translateY(-10px); }
+  80% { opacity: 1; transform: translateX(-50%) translateY(-10px); }
+  100% { opacity: 0; transform: translateX(-50%) translateY(-20px); }
+}
+.animate-toastIn {
+  animation: toastIn 2s forwards;
+}
