@@ -376,16 +376,11 @@
         
         // Función para cambiar de pestaña
         function setActiveTab(tabName) {
-            // Actualizar estado
-            appState.activeTab = tabName;
-            
-            // Actualizar clases de pestañas
             document.querySelectorAll('.tab').forEach(tab => {
                 tab.classList.remove('active');
             });
             document.getElementById(`tab-${tabName}`).classList.add('active');
             
-            // Mostrar contenido correcto
             document.querySelectorAll('.content').forEach(content => {
                 content.classList.remove('active');
             });
@@ -414,14 +409,13 @@
             appState.isProcessing = true;
             appState.settings = getSettings();
             
-            // Cambiar a pestaña de análisis
             setActiveTab('analyze');
             
             // Simular proceso
             const steps = [
                 { message: "Limpieza profunda...", progress: 10 },
-                { message: "Reestructurando ideas...", progress: 30 },
-                { message: "Añadiendo toque humano...", progress: 50 },
+                { message: "Analizando estructura...", progress: 30 },
+                { message: "Aplicando toque humano...", progress: 50 },
                 { message: "Mejorando fluidez...", progress: 70 },
                 { message: "Optimizando legibilidad...", progress: 85 },
                 { message: "Revisión final...", progress: 100 }
@@ -440,17 +434,17 @@
                     if (step.progress === 10) {
                         appState.outputText = cleanText(text);
                     } else if (step.progress === 30) {
-                        appState.outputText = restructureText(appState.outputText, appState.settings);
+                        appState.outputText = preserveStructure(appState.outputText);
                     } else if (step.progress === 50) {
                         appState.outputText = addHumanTouch(appState.outputText, appState.settings);
                     } else if (step.progress === 70) {
-                        appState.outputText = improveFlow(appState.outputText, appState.settings);
+                        appState.outputText = improveFlow(appState.outputText);
                     } else if (step.progress === 85) {
-                        appState.outputText = optimizeReadability(appState.outputText, appState.settings);
+                        appState.outputText = optimizeReadability(appState.outputText);
                     } else if (step.progress === 100) {
                         clearInterval(interval);
-                        appState.humanScore = 85 + Math.floor(Math.random() * 15);
-                        appState.readabilityScore = 75 + Math.floor(Math.random() * 25);
+                        appState.humanScore = 90;
+                        appState.readabilityScore = 85;
                         finalizeProcess();
                     }
                     
@@ -463,130 +457,90 @@
             appState.isProcessing = false;
             setActiveTab('review');
             outputText.value = appState.outputText;
-            wordCount.textContent = appState.outputText.split(' ').length;
+            wordCount.textContent = appState.outputText.split(/\s+/).filter(w => w).length;
             humanScore.textContent = `${appState.humanScore}%`;
             readabilityScore.textContent = `${appState.readabilityScore}%`;
         }
         
-        // Funciones de transformación
+        // Limpieza sin destruir saltos de línea
         function cleanText(text) {
             return text
                 .replace(/[\u200B-\u200D\uFEFF]/g, '')
-                .replace(/[\u00A0\u1680\u2000-\u200A\u202F\u205F\u3000]/g, ' ')
                 .replace(/[\r\n]{3,}/g, '\n\n')
                 .replace(/[ \t]+/g, ' ')
-                .replace(/ +([,.!?¿¡:;])/g, '$1')
-                .replace(/([¿¡]) +/g, '$1')
-                .replace(/\.{3,}/g, '...')
-                .replace(/([.!?¿¡])\s{2,}/g, '$1 ')
-                .replace(/(\s{2,})([a-zA-Z])/g, '$1$2')
-                .replace(/(\w),(\S)/g, '$1, $2')
-                .replace(/,\s*([.!?¿¡])/g, '$1')
-                .replace(/([a-zA-Z])\1{2,}/g, '$1')
                 .trim();
         }
         
-        function restructureText(text, settings) {
-            let sentences = text.split(/(?<=[.!?])\s+/);
-            
-            if (settings.depth === 'profundo' && sentences.length > 4) {
-                // Reordenar párrafos
-                const intro = sentences.slice(0, 2);
-                const body = sentences.slice(2, -1);
-                const conclusion = sentences.slice(-1);
-                
-                // Mezclar cuerpo
-                for (let i = body.length - 1; i > 0; i--) {
-                    const j = Math.floor(Math.random() * (i + 1));
-                    [body[i], body[j]] = [body[j], body[i]];
-                }
-                
-                sentences = [...intro, ...body, ...conclusion];
-            }
-            
-            return sentences.join(' ');
+        // Mantener estructura de líneas
+        function preserveStructure(text) {
+            return text;
         }
         
+        // Añadir toque humano solo en la primera línea
         function addHumanTouch(text, settings) {
-            const humanElements = [
-                "En mi experiencia,", "Lo que he aprendido es que", 
-                "Personalmente creo que", "Desde mi punto de vista",
-                "Lo interesante es que", "Lo curioso es que",
-                "La verdad es que", "A decir verdad", "Entre tú y yo"
-            ];
+            if (!settings.naturalFlow) return text;
             
-            const sentences = text.split(/(?<=[.!?])\s+/);
-            let result = sentences.join(' ');
+            const lines = text.split('\n').map(l => l.trim()).filter(l => l);
+            if (lines.length === 0) return text;
             
-            if (settings.naturalFlow && Math.random() < 0.4 && sentences.length > 0) {
-                const element = humanElements[Math.floor(Math.random() * humanElements.length)];
-                result = element + " " + result.charAt(0).toLowerCase() + result.slice(1);
+            // Solo modificar la primera línea si es un título
+            if (lines[0].toLowerCase().includes('unidad')) {
+                const intros = ["Vamos a ver...", "La idea es...", "Básicamente,", "En esta unidad,"];
+                const intro = intros[Math.floor(Math.random() * intros.length)];
+                // Evitar repetir "unidad"
+                if (!intro.toLowerCase().includes('unidad')) {
+                    lines[0] = `${intro} ${lines[0]}`;
+                }
             }
             
-            return result;
+            return lines.join('\n');
         }
         
-        function improveFlow(text, settings) {
-            const sentences = text.split(/(?<=[.!?])\s+/);
-            let result = [];
+        // Mejorar fluidez en líneas con dos puntos
+        function improveFlow(text) {
+            const lines = text.split('\n');
+            const result = [];
             
-            for (let i = 0; i < sentences.length; i++) {
-                // Variar longitud de oraciones
-                if (i > 0 && i % 4 === 0 && sentences[i].length > 50 && Math.random() < 0.3) {
-                    // Acortar oraciones largas
-                    const midPoint = Math.floor(sentences[i].length / 2);
-                    const commaIndex = sentences[i].lastIndexOf(',', midPoint);
-                    if (commaIndex > 20) {
-                        result.push(sentences[i].substring(0, commaIndex) + '.');
-                        result.push(sentences[i].substring(commaIndex + 1).trim());
-                    } else {
-                        result.push(sentences[i]);
+            for (const line of lines) {
+                if (line.includes(':')) {
+                    const parts = line.split(':');
+                    let definition = parts[1].trim();
+                    
+                    // Añadir muletillas suaves en definiciones
+                    if (definition.length > 20 && Math.random() < 0.3) {
+                        const fillers = ["bueno", "vale", "la verdad", "en cierto modo"];
+                        const filler = fillers[Math.floor(Math.random() * fillers.length)];
+                        definition = filler + ", " + definition.charAt(0).toLowerCase() + definition.slice(1);
                     }
+                    
+                    result.push(`${parts[0]}: ${definition}`);
                 } else {
-                    result.push(sentences[i]);
+                    result.push(line);
                 }
             }
             
-            return result.join(' ');
+            return result.join('\n');
         }
         
-        function optimizeReadability(text, settings) {
-            if (!settings.readability) return text;
-            
-            const connectors = [
-                "Además,", "Por otro lado,", "En consecuencia,", 
-                "Asimismo,", "De hecho,", "En resumen,",
-                "Es decir,", "En otras palabras,", "Sin duda,"
-            ];
-            
-            const sentences = text.split(/(?<=[.!?])\s+/);
-            for (let i = 1; i < sentences.length; i++) {
-                if (i % 3 === 0 && Math.random() < 0.4) {
-                    const connector = connectors[Math.floor(Math.random() * connectors.length)];
-                    sentences[i] = connector + " " + sentences[i].charAt(0).toLowerCase() + sentences[i].slice(1);
-                }
-            }
-            
-            return sentences.join(' ');
+        // Optimizar legibilidad
+        function optimizeReadability(text) {
+            return text
+                .replace(/\.\s+/g, '. ')
+                .replace(/\s+([,.;:?!])/g, '$1');
         }
         
         // Copiar texto
         function copyText() {
             if (!outputText.value) return;
-            
             outputText.select();
             document.execCommand('copy');
-            
             toast.classList.add('show');
-            setTimeout(() => {
-                toast.classList.remove('show');
-            }, 2000);
+            setTimeout(() => toast.classList.remove('show'), 2000);
         }
         
         // Descargar como TXT
         function downloadText() {
             if (!outputText.value) return;
-            
             const blob = new Blob([outputText.value], { type: 'text/plain;charset=utf-8' });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
