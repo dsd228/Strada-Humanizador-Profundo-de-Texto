@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Humanizador Pro de Texto IA</title>
+    <title>Humanizador Pro de Texto IA - Mejorado</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
@@ -451,6 +451,29 @@
         .history-item:hover {
             background: rgba(0,0,0,0.05);
         }
+
+        .quality-indicator {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 15px;
+            font-size: 0.9rem;
+            color: var(--gray);
+        }
+
+        .quality-bar {
+            flex-grow: 1;
+            height: 6px;
+            background: #e9ecef;
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .quality-progress {
+            height: 100%;
+            background: linear-gradient(90deg, var(--success), #27ae60);
+            width: 92%;
+        }
         
         @media (max-width: 968px) {
             .panels-container {
@@ -497,29 +520,6 @@
             .settings-grid {
                 grid-template-columns: 1fr;
             }
-        }
-
-        .quality-indicator {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-top: 15px;
-            font-size: 0.9rem;
-            color: var(--gray);
-        }
-
-        .quality-bar {
-            flex-grow: 1;
-            height: 6px;
-            background: #e9ecef;
-            border-radius: 3px;
-            overflow: hidden;
-        }
-
-        .quality-progress {
-            height: 100%;
-            background: linear-gradient(90deg, var(--success), #27ae60);
-            width: 92%;
         }
     </style>
 </head>
@@ -612,23 +612,23 @@ Principios: Universalidad, igualdad, secreto, libertad, obligatoriedad.</textare
                 <div class="settings-grid">
                     <div class="setting-item">
                         <label for="intensity">Nivel de Humanización</label>
-                        <input type="range" id="intensity" class="slider" min="1" max="5" value="4">
+                        <input type="range" id="intensity" class="slider" min="1" max="5" value="3">
                         <div class="slider-value" id="intensityValue">Avanzado</div>
                     </div>
                     <div class="setting-item">
                         <label for="formality">Nivel de Formalidad</label>
-                        <input type="range" id="formality" class="slider" min="1" max="5" value="3">
-                        <div class="slider-value" id="formalityValue">Neutral</div>
+                        <input type="range" id="formality" class="slider" min="1" max="5" value="4">
+                        <div class="slider-value" id="formalityValue">Formal</div>
                     </div>
                     <div class="setting-item">
                         <label for="creativity">Nivel de Creatividad</label>
-                        <input type="range" id="creativity" class="slider" min="1" max="5" value="4">
-                        <div class="slider-value" id="creativityValue">Alto</div>
+                        <input type="range" id="creativity" class="slider" min="1" max="5" value="3">
+                        <div class="slider-value" id="creativityValue">Moderada</div>
                     </div>
                     <div class="setting-item">
                         <label for="complexity">Variación de Estructura</label>
-                        <input type="range" id="complexity" class="slider" min="1" max="5" value="4">
-                        <div class="slider-value" id="complexityValue">Complejo</div>
+                        <input type="range" id="complexity" class="slider" min="1" max="5" value="3">
+                        <div class="slider-value" id="complexityValue">Moderado</div>
                     </div>
                 </div>
 
@@ -757,34 +757,34 @@ Principios: Universalidad, igualdad, secreto, libertad, obligatoriedad.</textare
             
             // Diccionario de sinónimos y transformaciones mejorado
             const synonyms = {
-                "Democracia": ["sistema democrático", "gobierno del pueblo"],
-                "Gobierno del pueblo": ["administración ciudadana", "gestión popular"],
+                "Democracia:": ["Sistema democrático:", "Gobierno popular:"],
+                "Gobierno del pueblo": ["Administración ciudadana", "Gestión popular"],
                 "por el pueblo": ["a través de la ciudadanía", "mediante los ciudadanos"],
                 "para el pueblo": ["en beneficio de la gente", "para la ciudadanía"],
-                "Criterios": ["parámetros", "estándares", "pautas"],
-                "Participación efectiva": ["intervención activa", "implicación real"],
-                "Igualdad de votos": ["equidad en la votación", "votos con igual valor"],
-                "Electorado informado": ["votantes conocedores", "ciudadanía informada"],
-                "Control ciudadano": ["supervisión popular", "vigilancia ciudadana"],
-                "Inclusión": ["integración", "participación universal"],
-                "Derechos fundamentales": ["derechos básicos", "garantías esenciales"],
-                "Poliarquía": ["sistema de poliárquico", "gobierno plural"],
+                "Criterios": ["Parámetros", "Estándares", "Pautas"],
+                "Participación efectiva": ["Intervención activa", "Implicación real"],
+                "Igualdad de votos": ["Equidad en la votación", "Votos con igual valor"],
+                "Electorado informado": ["Votantes conocedores", "Ciudadanía informada"],
+                "Control ciudadano": ["Supervisión popular", "Vigilancia ciudadana"],
+                "Inclusión": ["Integración", "Participación universal"],
+                "Derechos fundamentales": ["Derechos básicos", "Garantías esenciales"],
+                "Poliarquía:": ["Sistema poliárquico:", "Gobierno plural:"],
                 "múltiples centros de poder": ["diversos núcleos de autoridad", "variados focos de poder"],
-                "Democracia semidirecta": ["sistema semidirecto", "democracia participativa"],
-                "Referéndum": ["consulta popular", "votación ciudadana"],
+                "Democracia semidirecta:": ["Sistema semidirecto:", "Democracia participativa:"],
+                "Referéndum:": ["Consulta popular:", "Votación ciudadana:"],
                 "Consulta sobre leyes": ["evaluación de normativas", "decisión sobre legislación"],
-                "Plebiscito": ["consulta política", "decisión popular"],
+                "Plebiscito:": ["Consulta política:", "Decisión popular:"],
                 "Consulta sobre decisiones políticas": ["evaluación de medidas gubernamentales", "decisión sobre políticas"],
-                "Sistema electoral argentino": ["modelo electoral de Argentina", "sistema de votación argentino"],
-                "Código Electoral Nacional": ["normativa electoral nacional", "reglamento de elecciones"],
-                "Regula elecciones": ["organiza los comicios", "establece las normas electorales"],
-                "Ley de Partidos Políticos": ["normativa de agrupaciones políticas", "ley de organizaciones partidarias"],
-                "Regula funcionamiento de partidos": ["establece el funcionamiento de agrupaciones", "norma la operación de organizaciones políticas"],
-                "Sistema D'Hondt": ["método D'Hondt", "fórmula de Jefferson"],
-                "Distribución proporcional": ["reparto equitativo", "asignación proporcional"],
+                "Sistema electoral argentino:": ["Modelo electoral de Argentina:", "Sistema de votación argentino:"],
+                "Código Electoral Nacional:": ["Normativa electoral nacional:", "Reglamento de elecciones:"],
+                "Regula elecciones": ["Organiza los comicios", "Establece las normas electorales"],
+                "Ley de Partidos Políticos:": ["Normativa de agrupaciones políticas:", "Ley de organizaciones partidarias:"],
+                "Regula funcionamiento de partidos": ["Establece el funcionamiento de agrupaciones", "Norma la operación de organizaciones políticas"],
+                "Sistema D'Hondt:": ["Método D'Hondt:", "Fórmula de Jefferson:"],
+                "Distribución proporcional": ["Reparto equitativo", "Asignación proporcional"],
                 "cargos legislativos": ["puestos en la legislatura", "escaños parlamentarios"],
-                "Principios": ["bases", "fundamentos", "preceptos"],
-                "Universalidad": ["aplicación general", "alcance para todos"],
+                "Principios:": ["Bases:", "Fundamentos:", "Preceptos:"],
+                "Universalidad": ["Aplicación general", "Alcance para todos"],
                 "igualdad": ["equidad", "paridad", "equivalencia"],
                 "secreto": ["carácter reservado", "privacidad", "confidencialidad"],
                 "libertad": ["libre albedrío", "autonomía", "independencia"],
@@ -816,7 +816,8 @@ Principios: Universalidad, igualdad, secreto, libertad, obligatoriedad.</textare
             
             // Términos técnicos que no deben ser alterados
             const technicalTerms = ["Robert Dahl", "D'Hondt", "Poliarquía", "Referéndum", "Plebiscito", 
-                                  "Código Electoral Nacional", "Ley de Partidos Políticos", "Universalidad"];
+                                  "Código Electoral Nacional", "Ley de Partidos Políticos", "Universalidad", 
+                                  "Democracia", "Participación efectiva", "Igualdad de votos", "Electorado informado"];
             
             processBtn.addEventListener('click', function() {
                 const text = inputText.value.trim();
@@ -992,7 +993,7 @@ Principios: Universalidad, igualdad, secreto, libertad, obligatoriedad.</textare
                 for (const phrase of sortedKeys) {
                     if (processedText.toLowerCase().includes(phrase.toLowerCase())) {
                         // Mayor intensidad = mayor probabilidad de reemplazo
-                        if (Math.random() < intensity * 0.15) {
+                        if (Math.random() < intensity * 0.12) {
                             const alternatives = synonyms[phrase];
                             const randomSynonym = alternatives[Math.floor(Math.random() * alternatives.length)];
                             
@@ -1029,14 +1030,14 @@ Principios: Universalidad, igualdad, secreto, libertad, obligatoriedad.</textare
                     // Mezclar estructuras de oraciones (más creatividad = más cambios)
                     for (let i = 0; i < sentences.length; i++) {
                         // Probabilidad basada en creatividad
-                        if (Math.random() < creativity * 0.15) {
+                        if (Math.random() < creativity * 0.12) {
                             sentences[i] = changeSentenceStructure(sentences[i], complexity);
                         }
                     }
                     
-                    // Añadir conectores alternativos
+                    // Añadir conectores alternativos (con moderación)
                     for (let i = 1; i < sentences.length; i++) {
-                        if (i % 2 === 0 && Math.random() > 0.5) {
+                        if (i % 3 === 0 && Math.random() > 0.6) {
                             const randomConnector = connectors[Math.floor(Math.random() * connectors.length)];
                             sentences[i] = randomConnector + " " + sentences[i].charAt(0).toLowerCase() + sentences[i].slice(1);
                         }
@@ -1070,7 +1071,7 @@ Principios: Universalidad, igualdad, secreto, libertad, obligatoriedad.</textare
                     // Insertar expresiones en algunas oraciones (no todas)
                     for (let i = 0; i < sentences.length; i++) {
                         // Evitar insertar en oraciones muy cortas o que contengan términos técnicos
-                        if (sentences[i].length > 20 && !sentences[i].includes('{{') && Math.random() > 0.6) {
+                        if (sentences[i].length > 20 && !sentences[i].includes('{{') && Math.random() > 0.7) {
                             const randomExpression = humanExpressions[Math.floor(Math.random() * humanExpressions.length)];
                             sentences[i] = randomExpression + " " + sentences[i].charAt(0).toLowerCase() + sentences[i].slice(1);
                         }
@@ -1091,6 +1092,7 @@ Principios: Universalidad, igualdad, secreto, libertad, obligatoriedad.</textare
                     .replace(/([.!?])([A-Z])/g, '$1 $2') // Asegurar espacios después de puntuación
                     .replace(/\s([,.;:!?])/g, '$1') // Eliminar espacios antes de puntuación
                     .replace(/(\w)([.,;:!?])(\w)/g, '$1$2 $3') // Añadir espacio después de puntuación si falta
+                    .replace(/\{\{([^}]+)\}\}/g, '$1') // Eliminar marcadores de protección
                     .trim();
                 
                 // Restaurar términos técnicos
