@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RedactaPro Supremo - V5</title>
+    <title>RedactaPro Supremo - V6</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style id="theme-style">
         :root {
@@ -195,8 +195,8 @@
             font-size: 0.95rem;
         }
 
-        /* Coautor */
-        .coauthor-suggestion {
+        /* Sugerencias en tiempo real */
+        .suggestion {
             background: rgba(13, 148, 136, 0.1);
             border: 1px solid rgba(13, 148, 136, 0.3);
             padding: 16px;
@@ -207,11 +207,11 @@
             display: none;
         }
 
-        .coauthor-suggestion p {
+        .suggestion p {
             margin: 0 0 12px 0;
         }
 
-        .coauthor-actions {
+        .suggestion-actions {
             display: flex;
             gap: 10px;
             margin-top: 12px;
@@ -321,14 +321,12 @@
             width: 100%; height: 100%;
             pointer-events: none;
             z-index: -1;
-            opacity: 0.15;
         }
 
         .particle {
             position: absolute;
             width: 4px;
             height: 4px;
-            background: white;
             border-radius: 50%;
             opacity: 0.5;
             animation: float 15s infinite linear;
@@ -351,12 +349,35 @@
             padding: 20px;
             border-radius: 12px;
             border: 1px solid var(--border);
+            animation: slideIn 0.5s ease-out;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         .slide-nav {
             display: flex;
             justify-content: space-between;
             margin-top: 20px;
+        }
+
+        /* Modo crea */
+        .crea-container {
+            display: none;
+            margin-top: 20px;
+            padding: 16px;
+            background: rgba(13, 148, 136, 0.1);
+            border-radius: 12px;
+            border: 1px solid rgba(13, 148, 136, 0.3);
+        }
+
+        .crea-idea {
+            margin: 8px 0;
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
         }
     </style>
 </head>
@@ -366,20 +387,20 @@
 
     <div class="container">
         <h1>RedactaPro Supremo</h1>
-        <p class="subtitle">🧠 V5 - Coautor Inteligente • Emociones • Diseño Vivo</p>
+        <p class="subtitle">✨ V6 - Anticipa • Crea • Evoluciona</p>
 
         <!-- Onboarding -->
         <div class="onboarding" id="onboarding">
             <h2>¿Qué necesitás hoy?</h2>
             <p>Elige cómo querés trabajar. Yo me adapto a vos.</p>
             <div class="btn-grid">
-                <button onclick="startMode('coautor')">
-                    <svg class="icon" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
-                    Coautor
+                <button onclick="startMode('anticipa')">
+                    <svg class="icon" viewBox="0 0 24 24"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
+                    Anticipa
                 </button>
-                <button onclick="startMode('inspira')">
-                    <svg class="icon" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path></svg>
-                    Inspira
+                <button onclick="startMode('crea')">
+                    <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><path d="M16 12h-4"></path><path d="M12 16h-4"></path><path d="M8 8h4"></path></svg>
+                    Crea conmigo
                 </button>
                 <button onclick="startMode('presentacion')">
                     <svg class="icon" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg>
@@ -402,7 +423,15 @@
                 </button>
             </div>
 
-            <textarea id="input" placeholder="Pega tu texto aquí..."></textarea>
+            <textarea id="input" placeholder="Pega tu texto aquí..." oninput="analizarEnTiempoReal()"></textarea>
+
+            <!-- Crea conmigo -->
+            <div class="crea-container" id="crea-container">
+                <p><strong>Ideas en tu estilo:</strong></p>
+                <div class="crea-idea" id="idea1"></div>
+                <div class="crea-idea" id="idea2"></div>
+                <div class="crea-idea" id="idea3"></div>
+            </div>
 
             <div class="controls">
                 <button onclick="humanizar()">
@@ -429,10 +458,10 @@
                 <p id="loading-msg">Analizando tu estilo...</p>
             </div>
 
-            <!-- Sugerencia de coautor -->
-            <div class="coauthor-suggestion" id="coauthor-suggestion">
-                <p><strong>Sugerencia de coautor:</strong> "Este contenido explica cómo funciona el Estado argentino, sus elementos y forma de gobierno."</p>
-                <div class="coauthor-actions">
+            <!-- Sugerencia en tiempo real -->
+            <div class="suggestion" id="suggestion">
+                <p><strong>Sugerencia:</strong> "Podrías agregar un ejemplo aquí para que suene más natural."</p>
+                <div class="suggestion-actions">
                     <button onclick="aceptarSugerencia()" class="btn-small">✅ Aceptar</button>
                     <button onclick="rechazarSugerencia()" class="btn-small">❌ Rechazar</button>
                 </div>
@@ -459,17 +488,24 @@
 
     <div class="toast" id="toast">¡Listo!</div>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
     <script>
         // Generar partículas
         const particles = document.getElementById('particles');
-        for (let i = 0; i < 50; i++) {
+        function crearParticula(color = 'white', anim = 'float') {
             const p = document.createElement('div');
             p.classList.add('particle');
             p.style.left = Math.random() * 100 + 'vw';
             p.style.top = Math.random() * 100 + 'vh';
+            p.style.width = (2 + Math.random() * 6) + 'px';
+            p.style.height = p.style.width;
+            p.style.background = color;
             p.style.animationDuration = (10 + Math.random() * 20) + 's';
             p.style.animationDelay = (Math.random() * 10) + 's';
+            p.style.animationName = anim;
             particles.appendChild(p);
+            setTimeout(() => p.remove(), 25000);
         }
 
         // Estado
@@ -479,19 +515,20 @@
         let confidencialMode = false;
         let emocionDetectada = 'neutral';
         let sugerenciaActiva = false;
-        const historialKey = 'rps_historial_v10';
+        let estiloPersonal = { formal: 0, fluidez: 0 };
+        const historialKey = 'rps_historial_v11';
         const temaKey = 'rps_tema';
         const darkKey = 'rps_dark_mode_por_color';
         const estiloKey = 'rps_estilo_personal';
 
         // Temas emocionales
         const temasEmocionales = {
-            democracia: { accent: '#0d9488', bg: 'linear-gradient(135deg, #0f172a, #020617)' },
-            justicia: { accent: '#0284c7', bg: 'linear-gradient(135deg, #0f172a, #020617)' },
-            crisis: { accent: '#7c3aed', bg: 'linear-gradient(135deg, #1a1a2e, #16213e)' },
-            logro: { accent: '#d97706', bg: 'linear-gradient(135deg, #fef3c7, #fbbf24)' },
-            tristeza: { accent: '#6b7280', bg: 'linear-gradient(135deg, #1f2937, #111827)' },
-            urgente: { accent: '#dc2626', bg: 'linear-gradient(135deg, #312e2b, #5d2a2a)' }
+            democracia: { accent: '#0d9488', bg: 'linear-gradient(135deg, #0f172a, #020617)', particles: 'white' },
+            justicia: { accent: '#0284c7', bg: 'linear-gradient(135deg, #0f172a, #020617)', particles: 'white' },
+            crisis: { accent: '#7c3aed', bg: 'linear-gradient(135deg, #1a1a2e, #16213e)', particles: 'gray' },
+            logro: { accent: '#d97706', bg: 'linear-gradient(135deg, #fef3c7, #fbbf24)', particles: 'gold' },
+            tristeza: { accent: '#6b7280', bg: 'linear-gradient(135deg, #1f2937, #111827)', particles: 'gray' },
+            urgente: { accent: '#dc2626', bg: 'linear-gradient(135deg, #312e2b, #5d2a2a)', particles: 'red' }
         };
 
         // Palabras clave emocionales
@@ -504,12 +541,23 @@
             urgente: ['urgente', 'rápido', 'ahora', 'inmediato']
         };
 
-        // Sugerencias de coautor por tema
-        const sugerencias = {
-            democracia: 'Este contenido explica cómo funciona el sistema democrático en Argentina, sus principios y desafíos.',
-            justicia: 'Este texto aborda el sistema de justicia argentino, sus instituciones y el rol de la Corte Suprema.',
-            logro: 'Este es un gran avance en tu comprensión del sistema político. Lo explicás con claridad y profundidad.',
-            default: 'Este contenido explica la organización política del Estado Nacional, sus elementos, forma de gobierno y división de poderes.'
+        // Ideas por tema
+        const ideasPorTema = {
+            democracia: [
+                'La democracia es el gobierno del pueblo, por el pueblo y para el pueblo.',
+                'En Argentina, el sistema democrático permite a los ciudadanos elegir a sus representantes.',
+                'Aunque la democracia tiene desafíos, sigue siendo la mejor forma de gobierno.'
+            ],
+            justicia: [
+                'El poder judicial es independiente y protege los derechos de todos.',
+                'La Corte Suprema es el máximo tribunal del país.',
+                'Un sistema de justicia justo es esencial para una sociedad democrática.'
+            ],
+            default: [
+                'Este contenido explica un tema importante de la organización política.',
+                'La claridad y precisión son claves para entender estos conceptos.',
+                'Tu forma de explicar es clara y efectiva.'
+            ]
         };
 
         // Detectar emoción
@@ -529,6 +577,13 @@
             document.documentElement.style.setProperty('--accent', tema.accent);
             document.documentElement.style.setProperty('--accent-light', tema.accent);
             document.body.style.background = tema.bg;
+            
+            // Limpiar partículas anteriores
+            particles.innerHTML = '';
+            // Crear nuevas partículas según emoción
+            setInterval(() => {
+                crearParticula(tema.particles, 'float');
+            }, 2000);
         }
 
         // Cargar estado
@@ -545,18 +600,48 @@
             modoUsado = mode;
 
             const feedback = document.getElementById('feedback');
-            if (mode === 'coautor') {
-                feedback.textContent = 'Pega tu texto. Te sugeriré frases que suenen como vos.';
+            if (mode === 'anticipa') {
+                feedback.textContent = 'Escribe algo. Te sugeriré mejoras en tiempo real.';
                 feedback.style.display = 'block';
-            } else if (mode === 'inspira') {
-                const input = document.getElementById('input');
-                input.placeholder = 'Escribe un tema... ej: democracia, justicia, sistema político';
-                feedback.textContent = 'Escribe un tema y te daré 3 ideas para empezar.';
+            } else if (mode === 'crea') {
+                document.getElementById('input').placeholder = 'Escribe un tema... ej: democracia, justicia';
+                document.getElementById('crea-container').style.display = 'block';
+                feedback.textContent = 'Escribe un tema y te daré 3 ideas en tu estilo.';
                 feedback.style.display = 'block';
             } else if (mode === 'presentacion') {
                 feedback.textContent = 'Pega tu contenido. Lo dividiré en diapositivas listas para exponer.';
                 feedback.style.display = 'block';
             }
+        }
+
+        // Analizar en tiempo real
+        function analizarEnTiempoReal() {
+            const input = document.getElementById('input').value.trim();
+            if (!input || modoUsado !== 'anticipa') return;
+
+            const sugerencia = document.getElementById('suggestion');
+            if (input.length > 50 && !sugerenciaActiva) {
+                sugerencia.querySelector('p').innerHTML = '<strong>Sugerencia:</strong> "Podrías agregar un ejemplo aquí para que suene más natural."';
+                sugerencia.style.display = 'block';
+                sugerenciaActiva = true;
+            }
+
+            // Modo crea
+            if (modoUsado === 'crea' && input.length > 5) {
+                generarIdeas(input);
+            }
+        }
+
+        // Generar ideas
+        function generarIdeas(tema) {
+            const temaLower = tema.toLowerCase();
+            let ideas = ideasPorTema.default;
+            if (temaLower.includes('democracia')) ideas = ideasPorTema.democracia;
+            if (temaLower.includes('justicia')) ideas = ideasPorTema.justicia;
+
+            document.getElementById('idea1').textContent = ideas[0];
+            document.getElementById('idea2').textContent = ideas[1];
+            document.getElementById('idea3').textContent = ideas[2];
         }
 
         // Alternar modo oscuro
@@ -589,67 +674,6 @@
             }
         }
 
-        // Detectar tipo de texto
-        function detectarTipo(texto) {
-            const lineas = texto.split('\n').filter(l => l.trim());
-            const tieneDosPuntos = lineas.filter(l => l.includes(':') && !l.endsWith(':')).length;
-            const esLista = lineas.filter(l => l.trim().startsWith('-') || l.trim().startsWith('*') || l.match(/^\d+\./)).length;
-            const longitudPromedio = texto.length / lineas.length;
-
-            if (esLista > 3) return 'lista';
-            if (tieneDosPuntos > 4) return 'definiciones';
-            if (longitudPromedio > 80) return 'parrafo';
-            return 'mixto';
-        }
-
-        // Elegir modo
-        function elegirModo(tipo) {
-            if (modoUsado === 'presentacion') return 'presentacion';
-            if (tipo === 'definiciones' || tipo === 'lista') return 'formal';
-            if (tipo === 'parrafo') return 'fluidez';
-            return 'formal';
-        }
-
-        // Procesar texto
-        function procesarTexto(input, modo) {
-            let lines = input
-                .replace(/\n+/g, '\n')
-                .split('\n')
-                .map(l => l.trim())
-                .filter(l => l);
-
-            let result = [];
-            let seen = new Set();
-
-            result.push(lines[0] + '.');
-            result.push('');
-            seen.add(lines[0].toLowerCase());
-
-            for (let i = 1; i < lines.length; i++) {
-                let line = lines[i];
-                if (seen.has(line.toLowerCase())) continue;
-                seen.add(line.toLowerCase());
-
-                if (modo === 'fluidez' && !line.endsWith(':') && line.length > 40 && Math.random() < 0.4) {
-                    const trans = ['Por otro lado,', 'Además,', 'Es importante destacar que'][Math.floor(Math.random() * 3)];
-                    result.push(trans + ' ' + line.charAt(0).toLowerCase() + line.slice(1));
-                } else {
-                    result.push(line);
-                }
-
-                if (line.endsWith(':') && i < lines.length - 1) {
-                    result.push('');
-                }
-            }
-
-            if (lines.length > 10) {
-                result.push('');
-                result.push('📌 **Resumen:** Este contenido explica la organización política del Estado Nacional, sus elementos, forma de gobierno y división de poderes.');
-            }
-
-            return result.join('\n');
-        }
-
         // Función principal
         function humanizar() {
             const input = document.getElementById('input').value.trim();
@@ -659,7 +683,7 @@
             }
 
             document.getElementById('feedback').style.display = 'none';
-            document.getElementById('coauthor-suggestion').style.display = 'none';
+            document.getElementById('suggestion').style.display = 'none';
             document.getElementById('loading').style.display = 'block';
             document.getElementById('loading-msg').textContent = 'Analizando tu estilo...';
 
@@ -670,18 +694,44 @@
                 emocionDetectada = detectarEmocion(input);
                 aplicarTemaEmocional(emocionDetectada);
 
-                const tipo = detectarTipo(input);
-                const modo = elegirModo(tipo);
-                modoUsado = modo;
-                textoFinal = procesarTexto(input, modo);
-                document.getElementById('output').value = textoFinal;
+                // Procesar texto
+                let lines = input
+                    .replace(/\n+/g, '\n')
+                    .split('\n')
+                    .map(l => l.trim())
+                    .filter(l => l);
 
-                // Sugerencia de coautor
-                const coauthor = document.getElementById('coauthor-suggestion');
-                const sugerencia = sugerencias[emocionDetectada] || sugerencias.default;
-                coauthor.querySelector('p').innerHTML = `<strong>Sugerencia de coautor:</strong> "${sugerencia}"`;
-                coauthor.style.display = 'block';
-                sugerenciaActiva = true;
+                let result = [];
+                let seen = new Set();
+
+                result.push(lines[0] + '.');
+                result.push('');
+                seen.add(lines[0].toLowerCase());
+
+                for (let i = 1; i < lines.length; i++) {
+                    let line = lines[i];
+                    if (seen.has(line.toLowerCase())) continue;
+                    seen.add(line.toLowerCase());
+
+                    if (!line.endsWith(':') && line.length > 40 && Math.random() < 0.4) {
+                        const trans = ['Por otro lado,', 'Además,', 'Es importante destacar que'][Math.floor(Math.random() * 3)];
+                        result.push(trans + ' ' + line.charAt(0).toLowerCase() + line.slice(1));
+                    } else {
+                        result.push(line);
+                    }
+
+                    if (line.endsWith(':') && i < lines.length - 1) {
+                        result.push('');
+                    }
+                }
+
+                if (lines.length > 10) {
+                    result.push('');
+                    result.push('📌 **Resumen:** Este contenido explica la organización política del Estado Nacional, sus elementos, forma de gobierno y división de poderes.');
+                }
+
+                textoFinal = result.join('\n');
+                document.getElementById('output').value = textoFinal;
 
                 // Feedback emocional
                 const feedback = document.getElementById('feedback');
@@ -697,7 +747,7 @@
 
                 // Guardar si no es confidencial
                 if (!confidencialMode) {
-                    guardarEnHistorial(input, textoFinal, modo);
+                    guardarEnHistorial(input, textoFinal, 'formal');
                 }
 
                 mostrarToast('✅ Listo');
@@ -707,15 +757,15 @@
         // Aceptar sugerencia
         function aceptarSugerencia() {
             const output = document.getElementById('output');
-            const sugerencia = document.getElementById('coauthor-suggestion').querySelector('p').textContent.replace('Sugerencia de coautor: ', '');
-            output.value = sugerencia + '\n\n' + output.value;
-            document.getElementById('coauthor-suggestion').style.display = 'none';
+            const sugerencia = document.getElementById('suggestion').querySelector('p').textContent.replace('Sugerencia: ', '');
+            output.value = (output.value ? output.value + '\n\n' : '') + sugerencia;
+            document.getElementById('suggestion').style.display = 'none';
             mostrarToast('Sugerencia añadida');
         }
 
         // Rechazar sugerencia
         function rechazarSugerencia() {
-            document.getElementById('coauthor-suggestion').style.display = 'none';
+            document.getElementById('suggestion').style.display = 'none';
             mostrarToast('Sugerencia rechazada');
         }
 
@@ -789,7 +839,8 @@
             document.getElementById('output').value = '';
             document.getElementById('loading').style.display = 'none';
             document.getElementById('feedback').style.display = 'none';
-            document.getElementById('coauthor-suggestion').style.display = 'none';
+            document.getElementById('suggestion').style.display = 'none';
+            document.getElementById('crea-container').style.display = 'none';
             if (confidencialMode) toggleConfidencial(); // Reset
         }
 
@@ -801,8 +852,5 @@
             setTimeout(() => t.classList.remove('show'), 2000);
         }
     </script>
-
-    <!-- Librería para PDF -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </body>
 </html>
