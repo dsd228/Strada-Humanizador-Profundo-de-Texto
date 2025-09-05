@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RedactaPro Supremo - Ultra Inteligente</title>
+    <title>RedactaPro Supremo - Paleta Elegante</title>
     <style id="theme-style">
         :root {
             --bg: #0f172a;
@@ -48,8 +48,9 @@
         .controls {
             display: flex;
             flex-wrap: wrap;
-            gap: 10px;
+            gap: 15px;
             justify-content: center;
+            align-items: center;
             margin-bottom: 15px;
         }
         button {
@@ -80,25 +81,53 @@
             font-size: 1rem;
             resize: vertical;
         }
-        .tag {
-            display: inline-block;
-            padding: 3px 8px;
-            border-radius: 12px;
-            font-size: 0.8rem;
-            margin: 2px;
-            background: var(--accent);
-            color: white;
+        /* Selector de colores elegante */
+        .color-palette {
+            display: flex;
+            gap: 12px;
+            align-items: center;
         }
-        .history-item {
-            padding: 10px;
-            margin: 5px 0;
-            background: rgba(255,255,255,0.05);
-            border-radius: 8px;
+        .color-option {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
             cursor: pointer;
-            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            border: 3px solid transparent;
+            position: relative;
         }
-        .history-item:hover {
-            background: rgba(255,255,255,0.1);
+        .color-option:hover {
+            transform: scale(1.2);
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+        }
+        .color-option.selected {
+            border-color: white;
+            transform: scale(1.1);
+            box-shadow: 0 0 0 2px var(--accent);
+        }
+        .color-option[data-color="green"] { background: #0d9488; }
+        .color-option[data-color="blue"] { background: #0284c7; }
+        .color-option[data-color="purple"] { background: #7c3aed; }
+        .color-option[data-color="red"] { background: #dc2626; }
+
+        /* Tooltip */
+        .tooltip {
+            position: absolute;
+            bottom: -30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--bg-secondary);
+            color: var(--text);
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            white-space: nowrap;
+            opacity: 0;
+            transition: opacity 0.3s;
+            pointer-events: none;
+        }
+        .color-option:hover .tooltip {
+            opacity: 1;
         }
         .progress-container {
             margin: 15px 0;
@@ -143,16 +172,28 @@
 <body>
     <div class="container">
         <h1>RedactaPro Supremo</h1>
-        <p class="subtitle">🧠 Ultra Inteligente: Detección • Adaptativo • PDF • Historial • Markdown</p>
+        <p class="subtitle">🎨 Paleta Elegante • Inteligente • Profesional</p>
 
         <div class="controls">
             <button onclick="toggleDarkMode()">🌙 / ☀️ Modo</button>
-            <select onchange="cambiarTema(this.value)" id="tema-select">
-                <option value="green">Verde</option>
-                <option value="blue">Azul</option>
-                <option value="purple">Morado</option>
-                <option value="red">Rojo</option>
-            </select>
+
+            <!-- Selector de colores elegante -->
+            <div class="color-palette">
+                <span style="color: var(--text-secondary); font-size: 0.9rem; white-space: nowrap;">🎨 Color:</span>
+                <div class="color-option selected" data-color="green" onclick="selectColor('green')" title="Verde">
+                    <div class="tooltip">Verde Clásico</div>
+                </div>
+                <div class="color-option" data-color="blue" onclick="selectColor('blue')" title="Azul">
+                    <div class="tooltip">Azul Profundo</div>
+                </div>
+                <div class="color-option" data-color="purple" onclick="selectColor('purple')" title="Morado">
+                    <div class="tooltip">Morado Real</div>
+                </div>
+                <div class="color-option" data-color="red" onclick="selectColor('red')" title="Rojo">
+                    <div class="tooltip">Rojo Energía</div>
+                </div>
+            </div>
+
             <button onclick="exportarPDF()">🖨️ Exportar PDF</button>
         </div>
 
@@ -193,7 +234,6 @@
         const historialKey = 'rps_historial_v5';
         const temaKey = 'rps_tema';
         const darkKey = 'rps_dark_mode_por_color';
-        const usoKey = 'rps_uso_modos';
 
         // Temas
         const temas = {
@@ -206,16 +246,25 @@
         // Transiciones
         const transiciones = ['Por otro lado,', 'Además,', 'Es importante destacar que', 'En este marco,', 'Asimismo,'];
 
-        // Cambiar tema
-        function cambiarTema(color) {
+        // Seleccionar color (elegante)
+        function selectColor(color) {
+            // Actualizar UI
+            document.querySelectorAll('.color-option').forEach(el => {
+                el.classList.remove('selected');
+            });
+            document.querySelector(`.color-option[data-color="${color}"]`).classList.add('selected');
+
+            // Aplicar estilo
             const t = temas[color];
             document.documentElement.style.setProperty('--accent', t.accent);
             document.documentElement.style.setProperty('--accent-light', t.accentLight);
+
+            // Guardar
             localStorage.setItem(temaKey, color);
 
-            // Aplicar modo oscuro guardado para este color
+            // Recargar modo oscuro para este color
             const modoPorColor = JSON.parse(localStorage.getItem(darkKey) || '{}');
-            const esOscuro = modoPorColor[color] !== false; // Por defecto true
+            const esOscuro = modoPorColor[color] !== false;
             document.body.classList.toggle('dark-mode', esOscuro);
             darkMode = esOscuro;
         }
@@ -223,8 +272,7 @@
         // Cargar estado
         window.addEventListener('DOMContentLoaded', () => {
             const savedTema = localStorage.getItem(temaKey) || 'green';
-            document.getElementById('tema-select').value = savedTema;
-            cambiarTema(savedTema);
+            selectColor(savedTema); // Esto actualiza UI y estilo
             cargarHistorial();
         });
 
@@ -233,8 +281,7 @@
             darkMode = !darkMode;
             document.body.classList.toggle('dark-mode', darkMode);
 
-            // Guardar por color
-            const color = document.getElementById('tema-select').value;
+            const color = localStorage.getItem(temaKey) || 'green';
             const modoPorColor = JSON.parse(localStorage.getItem(darkKey) || '{}');
             modoPorColor[color] = darkMode;
             localStorage.setItem(darkKey, JSON.stringify(modoPorColor));
@@ -256,25 +303,12 @@
             return 'mixto';
         }
 
-        // Elegir modo adaptativo
+        // Elegir modo
         function elegirModo(tipo) {
-            const uso = JSON.parse(localStorage.getItem(usoKey) || '{"formal":0,"fluidez":0,"correccion":0}');
-            let modo = '';
-
-            if (tipo === 'definiciones' || tipo === 'lista') {
-                modo = 'formal';
-            } else if (tipo === 'parrafo') {
-                modo = 'fluidez';
-            } else if (tipo === 'markdown') {
-                modo = 'markdown';
-            } else {
-                modo = 'formal';
-            }
-
-            // Guardar uso
-            uso[modo] = (uso[modo] || 0) + 1;
-            localStorage.setItem(usoKey, JSON.stringify(uso));
-            return modo;
+            if (tipo === 'definiciones' || tipo === 'lista') return 'formal';
+            if (tipo === 'parrafo') return 'fluidez';
+            if (tipo === 'markdown') return 'markdown';
+            return 'formal';
         }
 
         // Procesar según modo
@@ -288,7 +322,6 @@
             let result = [];
             let seen = new Set();
 
-            // Encabezado
             result.push(lines[0] + '.');
             result.push('');
             seen.add(lines[0].toLowerCase());
@@ -298,21 +331,15 @@
                 if (seen.has(line.toLowerCase())) continue;
                 seen.add(line.toLowerCase());
 
-                // Modo Markdown: respetar sintaxis
                 if (modo === 'markdown') {
                     result.push(line);
-                }
-                // Modo Fluidez: añadir transiciones en frases largas
-                else if (modo === 'fluidez' && !line.endsWith(':') && line.length > 40 && Math.random() < 0.4) {
+                } else if (modo === 'fluidez' && !line.endsWith(':') && line.length > 40 && Math.random() < 0.4) {
                     const trans = transiciones[Math.floor(Math.random() * transiciones.length)];
                     result.push(trans + ' ' + line.charAt(0).toLowerCase() + line.slice(1));
-                }
-                // Modo Formal o Definiciones: mantener estructura
-                else {
+                } else {
                     result.push(line);
                 }
 
-                // Salto después de ":"
                 if (line.endsWith(':') && i < lines.length - 1) {
                     result.push('');
                 }
@@ -329,7 +356,6 @@
                 return;
             }
 
-            // Mostrar progreso
             const pc = document.getElementById('progressContainer');
             const pb = document.getElementById('progressBar');
             const pm = document.getElementById('progressMessage');
@@ -386,7 +412,7 @@
                 hist.forEach(item => {
                     const div = document.createElement('div');
                     div.className = 'history-item';
-                    div.innerHTML = `<strong>${item.titulo}</strong> <span class="tag">${item.modo}</span>`;
+                    div.innerHTML = `<strong>${item.titulo}</strong> <span style="background:${temas[item.modo === 'formal' ? 'green' : item.modo === 'fluidez' ? 'blue' : item.modo === 'markdown' ? 'purple' : 'red'].accent}; padding:2px 6px; border-radius:12px; color:white; font-size:0.8rem; margin-left:8px;">${item.modo}</span>`;
                     div.onclick = () => {
                         document.getElementById('input').value = item.texto;
                         document.getElementById('output').value = item.resultado;
@@ -410,8 +436,6 @@
             if (!textoFinal) return;
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
-            const color = document.getElementById('tema-select').value;
-            const textColor = temas[color].accent;
             doc.setFontSize(12);
             doc.setTextColor(0, 0, 0);
             const lines = doc.splitTextToSize(textoFinal, 180);
