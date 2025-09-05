@@ -3,269 +3,370 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RedactaPro Supremo - ULTRA SUPREMA</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <title>RedactaPro Supremo - Live Messenger</title>
+    <link href="https://fonts.googleapis.com/css2?family=Comic+Neue:wght@400;700&family=Inter:wght@400;500&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://unpkg.com/konva@9/konva.min.js"></script>
-    <style id="theme-style">
+    <style>
         :root {
             --bg: #0f172a;
-            --bg-secondary: rgba(30, 41, 59, 0.7);
             --text: #e2e8f0;
             --text-secondary: #94a3b8;
             --accent: #0d9488;
-            --accent-light: #14b8a6;
             --border: #334155;
-            --shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-            --radius: 16px;
-            --transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        .light-mode {
-            --bg: #f8fafc;
-            --bg-secondary: rgba(248, 250, 252, 0.85);
-            --text: #0f172a;
-            --text-secondary: #64748b;
-            --border: #e2e8f0;
         }
 
         body {
             font-family: 'Inter', sans-serif;
-            background: linear-gradient(135deg, var(--bg), #020617);
-            color: var(--text);
-            line-height: 1.7;
+            background: linear-gradient(135deg, #000000, #1e3a8a);
+            color: #e0e0e0;
+            line-height: 1.6;
             padding: 20px;
             margin: 0;
             min-height: 100vh;
-            transition: var(--transition);
-            overflow-x: hidden;
+            background-image: url('https://i.imgur.com/5KX9nLr.png');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
         }
 
+        /* Ventana principal - Messenger */
+        .messenger-window {
+            max-width: 300px;
+            background: rgba(0, 0, 0, 0.8);
+            border: 1px solid #4a90e2;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 0 20px rgba(74, 144, 226, 0.5);
+            backdrop-filter: blur(10px);
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 1000;
+            font-family: 'Comic Neue', cursive;
+            color: white;
+            user-select: none;
+        }
+
+        .window-header {
+            background: linear-gradient(to right, #005a9e, #003366);
+            padding: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-bottom: 1px solid #4a90e2;
+        }
+
+        .profile-pic {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #fff;
+            border: 2px solid #fff;
+            object-fit: cover;
+        }
+
+        .user-info {
+            font-size: 0.9rem;
+        }
+
+        .user-name {
+            font-weight: bold;
+            color: #00ccff;
+            text-shadow: 0 0 5px #00ccff;
+        }
+
+        .user-status {
+            font-size: 0.8rem;
+            color: #90ee90;
+        }
+
+        .personal-message {
+            padding: 8px 10px;
+            font-size: 0.8rem;
+            color: #ffd700;
+            background: rgba(0, 0, 0, 0.5);
+            border-bottom: 1px solid #333;
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+        }
+
+        .now-playing {
+            color: #ff69b4;
+            font-style: italic;
+        }
+
+        .contacts-list {
+            max-height: 400px;
+            overflow-y: auto;
+            font-size: 0.85rem;
+        }
+
+        .contact-group {
+            background: rgba(0, 0, 139, 0.3);
+            padding: 5px 10px;
+            font-weight: bold;
+            color: #4a90e2;
+            border-bottom: 1px solid #333;
+        }
+
+        .contact {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 10px;
+            cursor: pointer;
+            border-left: 3px solid transparent;
+            transition: all 0.2s;
+        }
+
+        .contact:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-left-color: #00ccff;
+        }
+
+        .contact-pic {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: #ccc;
+        }
+
+        .contact-name {
+            color: #e0e0e0;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 5px;
+        }
+
+        .status-online { background: #32cd32; }
+        .status-busy { background: #ff4500; }
+        .status-away { background: #ffcc00; }
+        .status-offline { background: #808080; }
+        .status-dnd { background: #ff0000; }
+
+        /* Ventana de chat */
+        .chat-window {
+            max-width: 600px;
+            background: rgba(0, 0, 0, 0.85);
+            border: 2px solid #4a90e2;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 0 20px rgba(74, 144, 226, 0.6);
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 999;
+            display: none;
+            font-family: 'Comic Neue', cursive;
+            color: white;
+        }
+
+        .chat-header {
+            background: linear-gradient(to right, #005a9e, #003366);
+            padding: 8px 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-bottom: 1px solid #4a90e2;
+        }
+
+        .chat-messages {
+            height: 300px;
+            overflow-y: auto;
+            padding: 10px;
+            background: #000;
+            font-size: 0.9rem;
+        }
+
+        .message {
+            margin: 8px 0;
+            max-width: 80%;
+        }
+
+        .message-sent {
+            color: #00ccff;
+            align-self: flex-end;
+            margin-left: auto;
+        }
+
+        .message-received {
+            color: #32cd32;
+        }
+
+        .chat-input {
+            display: flex;
+            padding: 8px;
+            background: rgba(0, 0, 0, 0.7);
+            border-top: 1px solid #333;
+        }
+
+        .chat-textarea {
+            flex: 1;
+            background: #111;
+            border: 1px solid #4a90e2;
+            color: white;
+            padding: 8px;
+            border-radius: 4px;
+            resize: none;
+            font-family: 'Comic Neue', cursive;
+            font-size: 0.9rem;
+        }
+
+        .chat-buttons {
+            display: flex;
+            gap: 5px;
+            margin-left: 8px;
+        }
+
+        .chat-btn {
+            background: #005a9e;
+            color: white;
+            border: 1px solid #4a90e2;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            cursor: pointer;
+        }
+
+        .chat-btn:hover {
+            background: #003366;
+        }
+
+        /* Emoticonos animados (nudge) */
+        .nudge {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 80px;
+            color: #ff00ff;
+            text-shadow: 0 0 20px yellow;
+            animation: shake 0.5s infinite;
+            z-index: 2000;
+            display: none;
+        }
+
+        @keyframes shake {
+            0% { transform: translate(-50%, -50%) rotate(-5deg); }
+            50% { transform: translate(-50%, -50%) rotate(5deg); }
+            100% { transform: translate(-50%, -50%) rotate(-5deg); }
+        }
+
+        /* Contenido principal */
         .container {
-            max-width: 900px;
-            margin: 0 auto;
-            background: var(--bg-secondary);
-            padding: 32px;
-            border-radius: var(--radius);
-            box-shadow: var(--shadow);
-            backdrop-filter: blur(16px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            transition: var(--transition);
+            margin-left: 340px;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+            border: 1px solid #4a90e2;
+            backdrop-filter: blur(10px);
+            max-width: 800px;
+            color: white;
         }
 
         h1 {
             text-align: center;
-            color: var(--accent-light);
-            margin: 0 0 12px 0;
-            font-weight: 700;
-            font-size: 1.8rem;
+            color: #00ccff;
+            text-shadow: 0 0 10px #00ccff;
+            margin: 0 0 10px 0;
+            font-family: 'Comic Neue', cursive;
+            font-size: 2rem;
         }
 
         p.subtitle {
             text-align: center;
-            color: var(--text-secondary);
+            color: #ffd700;
             font-size: 1.1rem;
             margin-bottom: 30px;
-        }
-
-        /* Botones principales */
-        .main-buttons {
-            display: flex;
-            justify-content: center;
-            gap: 20px;
-            margin: 25px 0;
-            flex-wrap: wrap;
-        }
-
-        .btn-primary {
-            background: linear-gradient(90deg, var(--accent), #059669);
-            color: white;
-            border: none;
-            padding: 14px 30px;
-            border-radius: 12px;
-            cursor: pointer;
-            font-weight: 600;
-            font-size: 1.1rem;
-            box-shadow: 0 4px 14px rgba(13, 148, 136, 0.25);
-            border: 1px solid rgba(13, 148, 136, 0.3);
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            transition: all 0.3s;
-            min-width: 200px;
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 24px rgba(13, 148, 136, 0.35);
-        }
-
-        /* Botones secundarios */
-        .secondary-buttons {
-            display: flex;
-            justify-content: center;
-            flex-wrap: wrap;
-            gap: 12px;
-            margin: 15px 0;
+            font-style: italic;
         }
 
         button {
-            background: rgba(13, 148, 136, 0.2);
+            background: linear-gradient(90deg, #005a9e, #003366);
             color: white;
-            border: 1px solid rgba(13, 148, 136, 0.4);
-            padding: 10px 18px;
-            border-radius: 10px;
+            border: 1px solid #4a90e2;
+            padding: 10px 16px;
+            border-radius: 8px;
             cursor: pointer;
-            font-weight: 500;
+            font-weight: 600;
             transition: all 0.3s;
             font-size: 0.9rem;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
+            box-shadow: 0 4px 8px rgba(74, 144, 226, 0.3);
+            font-family: 'Comic Neue', cursive;
+            margin: 5px;
         }
 
         button:hover {
-            background: rgba(13, 148, 136, 0.3);
             transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(74, 144, 226, 0.4);
         }
 
-        /* Textarea */
         textarea {
             width: 100%;
-            min-height: 200px;
-            padding: 20px;
-            margin: 16px 0;
-            border: 1px solid var(--border);
-            border-radius: 14px;
-            background: rgba(15, 23, 42, 0.6);
-            color: var(--text);
+            min-height: 180px;
+            padding: 15px;
+            margin: 15px 0;
+            border: 1px solid #4a90e2;
+            border-radius: 10px;
+            background: rgba(0, 0, 0, 0.7);
+            color: #e0e0e0;
             font-size: 1rem;
             resize: vertical;
-            backdrop-filter: blur(6px);
-            transition: all 0.3s;
-            font-family: 'Inter', monospace;
+            font-family: 'Comic Neue', cursive;
+            backdrop-filter: blur(4px);
         }
 
         textarea:focus {
             outline: none;
-            border-color: var(--accent);
-            box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.3);
-            background: rgba(15, 23, 42, 0.7);
+            border-color: #00ccff;
+            box-shadow: 0 0 0 3px rgba(0, 204, 255, 0.3);
         }
 
-        /* Detector de IA */
-        .detector-result {
-            background: rgba(13, 148, 136, 0.1);
-            border: 1px solid rgba(13, 148, 136, 0.3);
-            padding: 16px;
-            border-radius: 12px;
-            margin: 18px 0;
-            font-size: 0.95rem;
-            color: var(--text-secondary);
-            display: none;
-        }
-
-        .safe {
-            color: #4ade80;
-            font-weight: 600;
-        }
-
-        .warning {
-            color: #f87171;
-            font-weight: 600;
-        }
-
-        /* Escáner en tiempo real */
-        .scanner {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin: 15px 0;
-            font-size: 0.95rem;
-            color: var(--text-secondary);
-        }
-
-        .status-dot {
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            background: #4ade80;
-        }
-
-        /* Mapa de ideas */
-        #mapa-container {
-            margin: 20px 0;
-            border-radius: 12px;
-            overflow: hidden;
-            display: none;
-        }
-
-        /* Presentación */
-        .presentation {
-            display: none;
-            flex-direction: column;
-            gap: 20px;
-        }
-
-        .slide {
-            background: rgba(15, 23, 42, 0.5);
-            padding: 20px;
-            border-radius: 12px;
-            border: 1px solid var(--border);
-        }
-
-        .slide-nav {
-            display: flex;
-            justify-content: space-between;
+        .output {
             margin-top: 20px;
         }
 
-        /* Historial */
         .history-item {
-            padding: 16px;
-            margin: 10px 0;
+            padding: 12px;
+            margin: 8px 0;
             background: rgba(255, 255, 255, 0.05);
-            border-radius: 14px;
+            border-radius: 10px;
             cursor: pointer;
-            font-size: 0.95rem;
-            transition: all 0.3s;
-            border-left: 5px solid var(--accent);
-        }
-
-        .history-item:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+            font-size: 0.9rem;
+            border-left: 3px solid #00ccff;
         }
 
         .tag {
-            display: inline-block;
-            padding: 4px 10px;
-            border-radius: 20px;
-            font-size: 0.8rem;
-            font-weight: 600;
-            margin-left: 10px;
-            background: var(--accent);
+            background: #005a9e;
             color: white;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            margin-left: 8px;
         }
 
-        /* Toast */
         .toast {
             position: fixed;
-            bottom: 24px;
+            bottom: 20px;
             left: 50%;
             transform: translateX(-50%);
-            background: var(--bg-secondary);
-            color: var(--text);
-            padding: 16px 28px;
-            border-radius: 16px;
-            box-shadow: var(--shadow);
-            border: 1px solid var(--border);
+            background: rgba(0, 0, 0, 0.8);
+            color: #00ccff;
+            padding: 12px 24px;
+            border-radius: 8px;
+            border: 1px solid #4a90e2;
             opacity: 0;
-            transition: opacity 0.4s;
-            z-index: 100;
-            backdrop-filter: blur(12px);
+            transition: opacity 0.3s;
+            z-index: 1000;
+            font-family: 'Comic Neue', cursive;
         }
 
         .toast.show {
@@ -274,178 +375,143 @@
     </style>
 </head>
 <body>
+
+    <!-- Ventana de Messenger -->
+    <div class="messenger-window">
+        <div class="window-header">
+            <img src="https://i.imgur.com/9Xb3ZJt.jpg" alt="Tu foto" class="profile-pic">
+            <div class="user-info">
+                <div class="user-name">✨ TuÉxitoEsMiVida 💖</div>
+                <div class="user-status">Disponible</div>
+            </div>
+        </div>
+        <div class="personal-message">
+            Escribiendo la historia de tu éxito... 📝
+        </div>
+        <div class="personal-message now-playing">
+            🎵 Ahora: "The Final Countdown" - Europe
+        </div>
+        <div class="contacts-list">
+            <div class="contact-group">Conectados</div>
+            <div class="contact" onclick="abrirChat('Profe García')">
+                <span class="status-dot status-online"></span>
+                <img src="https://i.imgur.com/5KX9nLr.png" alt="Profe" class="contact-pic">
+                <span class="contact-name">Profe García 🍎</span>
+            </div>
+            <div class="contact" onclick="abrirChat('Ana (amiga)')">
+                <span class="status-dot status-online"></span>
+                <img src="https://i.imgur.com/9Xb3ZJt.jpg" alt="Ana" class="contact-pic">
+                <span class="contact-name">Ana (amiga) 💬</span>
+            </div>
+            <div class="contact-group">Sin conexión</div>
+            <div class="contact">
+                <span class="status-dot status-offline"></span>
+                <img src="https://i.imgur.com/5KX9nLr.png" alt="Carlos" class="contact-pic">
+                <span class="contact-name">Carlos 🎮</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Ventana de chat -->
+    <div class="chat-window" id="chat-window">
+        <div class="chat-header">
+            <img src="https://i.imgur.com/5KX9nLr.png" alt="Contacto" class="profile-pic" id="chat-pic">
+            <div>
+                <div id="chat-name">Profe García</div>
+                <div class="user-status">Disponible</div>
+            </div>
+        </div>
+        <div class="chat-messages" id="chat-messages">
+            <div class="message message-received">¿Listo para humanizar el texto?</div>
+            <div class="message message-sent">¡Sí! Solo pégalo y lo hago sonar 100% real 💖</div>
+        </div>
+        <div class="chat-input">
+            <textarea class="chat-textarea" id="chat-input" placeholder="Escribe un mensaje..."></textarea>
+            <div class="chat-buttons">
+                <button class="chat-btn" onclick="enviarChat()">Enviar</button>
+                <button class="chat-btn" onclick="nudge()">Nudge!</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Animación Nudge -->
+    <div class="nudge" id="nudge">💥 NUDGE! 💥</div>
+
+    <!-- Contenido principal -->
     <div class="container">
         <h1>RedactaPro Supremo</h1>
-        <p class="subtitle">✨ ULTRA SUPREMA • Todas las funciones</p>
+        <p class="subtitle">💬 Edición Live Messenger • 2007 Vibes</p>
 
-        <!-- Escáner en tiempo real -->
-        <div class="scanner">
-            <div class="status-dot" id="status-dot"></div>
-            <span id="scanner-text">Estado: Seguro</span>
+        <textarea id="input" placeholder="Pega tu texto aquí..."></textarea>
+
+        <div style="text-align: center;">
+            <button onclick="humanizar()">✨ Humanizar Texto</button>
+            <button onclick="analizarDetectores()">🛡️ ¿Pasa detectores?</button>
         </div>
 
-        <textarea id="input" placeholder="Pega tu texto aquí..." oninput="analizarEnTiempoReal()"></textarea>
-
-        <!-- Botones principales -->
-        <div class="main-buttons">
-            <button class="btn-primary" onclick="humanizar()">
-                ✨ Humanizar Texto
-            </button>
-            <button class="btn-primary" onclick="analizarDetectores()">
-                🛡️ ¿Pasa detectores?
-            </button>
-        </div>
-
-        <!-- Resultado del detector -->
         <div class="detector-result" id="detector-result"></div>
 
-        <!-- Botones secundarios -->
-        <div class="secondary-buttons">
-            <button onclick="detectarTonoRobótico()">
-                ⚠️ Analizar IA
-            </button>
-            <button onclick="empezarEntrenamientoVoz()">
-                🎤 Entrenar con Voz
-            </button>
-            <button onclick="generarResumenVoz()">
-                📢 Resumen 30s
-            </button>
-            <button onclick="generarMapa()">
-                🧠 Mapa de Ideas
-            </button>
-            <button onclick="iniciarPresentacion()">
-                🎬 Presentación
-            </button>
-            <button onclick="copiar()">
-                📋 Copiar
-            </button>
-            <button onclick="exportarPDF()">
-                🖨️ Exportar PDF
-            </button>
-            <button onclick="limpiar()">
-                🗑️ Limpiar
-            </button>
-            <button onclick="toggleConfidencial()" id="conf-btn">
-                🔒 Normal
-            </button>
-            <button onclick="toggleDarkMode()">
-                🌙 / ☀️ Modo
-            </button>
+        <div style="text-align: center; margin: 15px 0;">
+            <button onclick="detectarTonoRobótico()">⚠️ Analizar IA</button>
+            <button onclick="generarResumenVoz()">📢 Resumen 30s</button>
+            <button onclick="copiar()">📋 Copiar</button>
+            <button onclick="exportarPDF()">🖨️ Exportar PDF</button>
+            <button onclick="limpiar()">🗑️ Limpiar</button>
         </div>
 
-        <!-- Resultado -->
         <div class="output">
             <textarea id="output" readonly placeholder="Aquí aparecerá el resultado..."></textarea>
         </div>
 
-        <!-- Mapa de ideas -->
-        <div id="mapa-container">
-            <h3 style="color: var(--accent-light); margin: 10px 0;">🧠 Mapa de Ideas</h3>
-            <div id="mapa" style="background: rgba(15, 23, 42, 0.5); border-radius: 8px; height: 400px;"></div>
-        </div>
-
-        <!-- Presentación -->
-        <div class="presentation" id="presentation"></div>
-
-        <!-- Historial -->
         <div id="history" style="margin-top: 30px; display: none;">
-            <h3 style="color: var(--accent-light); margin-bottom: 18px; font-weight: 600;">📚 Tu Historial</h3>
+            <h3 style="color: #00ccff; margin-bottom: 18px;">📚 Tu Historial</h3>
             <div id="history-list"></div>
         </div>
     </div>
 
     <div class="toast" id="toast">¡Listo!</div>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script>
         // Estado
-        let darkMode = false;
         let textoFinal = '';
-        let confidencialMode = false;
-        let emocionDetectada = 'neutral';
-        const historialKey = 'rps_historial_v14';
-        const darkKey = 'rps_dark_mode';
-        const estiloKey = 'rps_estilo_personal';
+        const historialKey = 'rps_historial_v15';
 
-        // Emociones
-        const emociones = {
-            democracia: ['democracia', 'voto', 'derechos', 'ciudadano'],
-            justicia: ['justicia', 'corte', 'ley', 'tribunal'],
-            crisis: ['crisis', 'problema', 'dificultad', 'conflicto'],
-            logro: ['éxito', 'logro', 'bien', 'avance', 'progreso'],
-            tristeza: ['pérdida', 'duelo', 'triste', 'difícil'],
-            urgente: ['urgente', 'rápido', 'ahora', 'inmediato']
-        };
-
-        // Frases de IA
-        const frasesIA = [
-            'es importante destacar', 'en este contexto', 'a continuación', 
-            'por lo tanto', 'como resultado', 'en conclusión', 'se puede observar',
-            'cabe mencionar', 'vale la pena resaltar', 'es fundamental entender'
-        ];
-
-        const muletillasHumanas = [
-            'la verdad,', 'ahora...', 'fijate que', 'o sea...', 'para que entiendas...',
-            'básicamente,', 'vamos a ver...', 'en esta unidad...', 'ya sabés, el sistema'
-        ];
-
-        // Cargar estado
-        window.addEventListener('DOMContentLoaded', () => {
-            darkMode = localStorage.getItem(darkKey) === 'true';
-            if (darkMode) {
-                document.body.classList.add('dark-mode');
-            }
-            cargarHistorial();
-        });
-
-        // Alternar modo oscuro
-        function toggleDarkMode() {
-            darkMode = !darkMode;
-            document.body.classList.toggle('dark-mode', darkMode);
-            localStorage.setItem(darkKey, darkMode);
+        // Abrir chat
+        function abrirChat(nombre) {
+            document.getElementById('chat-window').style.display = 'block';
+            document.getElementById('chat-name').textContent = nombre;
+            document.getElementById('chat-pic').src = nombre.includes('Profe') ? 'https://i.imgur.com/5KX9nLr.png' : 'https://i.imgur.com/9Xb3ZJt.jpg';
         }
 
-        // Modo confidencial
-        function toggleConfidencial() {
-            confidencialMode = !confidencialMode;
-            const btn = document.getElementById('conf-btn');
-            btn.innerHTML = confidencialMode ? '🔓 Confidencial' : '🔒 Normal';
-        }
-
-        // Analizar en tiempo real
-        function analizarEnTiempoReal() {
-            const input = document.getElementById('input').value.trim();
-            if (!input) return;
-
-            const dot = document.getElementById('status-dot');
-            const text = document.getElementById('scanner-text');
-
-            const tieneFrasesIA = frasesIA.some(frase => input.toLowerCase().includes(frase));
-            const tieneMuletilla = muletillasHumanas.some(m => input.toLowerCase().includes(m));
-
-            if (tieneFrasesIA) {
-                dot.style.background = '#f87171';
-                text.textContent = 'Estado: ❌ Riesgo alto (frases de IA)';
-            } else if (!tieneMuletilla) {
-                dot.style.background = '#fbbf24';
-                text.textContent = 'Estado: ⚠️ Podría mejorarse';
-            } else {
-                dot.style.background = '#4ade80';
-                text.textContent = 'Estado: ✅ Seguro (suena humano)';
+        // Enviar mensaje
+        function enviarChat() {
+            const input = document.getElementById('chat-input');
+            const messages = document.getElementById('chat-messages');
+            if (input.value.trim()) {
+                const msg = document.createElement('div');
+                msg.className = 'message message-sent';
+                msg.textContent = input.value;
+                messages.appendChild(msg);
+                messages.scrollTop = messages.scrollHeight;
+                input.value = '';
             }
         }
 
-        // Detectar emoción
-        function detectarEmocion(texto) {
-            const textoLower = texto.toLowerCase();
-            for (const [emocion, palabras] of Object.entries(emociones)) {
-                if (palabras.some(p => textoLower.includes(p))) {
-                    return emocion;
-                }
-            }
-            return 'neutral';
+        // Nudge!
+        function nudge() {
+            const nudge = document.getElementById('nudge');
+            nudge.style.display = 'block';
+            setTimeout(() => nudge.style.display = 'none', 2000);
+            const messages = document.getElementById('chat-messages');
+            const msg = document.createElement('div');
+            msg.className = 'message message-received';
+            msg.innerHTML = '<strong>💥 NUDGE! 💥</strong>';
+            messages.appendChild(msg);
+            messages.scrollTop = messages.scrollHeight;
         }
 
-        // Humanizar texto
+        // Humanizar
         function humanizar() {
             const input = document.getElementById('input').value.trim();
             if (!input) {
@@ -453,42 +519,18 @@
                 return;
             }
 
-            // Detectar emoción
-            emocionDetectada = detectarEmocion(input);
-
             const lines = input.split('\n').map(l => l.trim()).filter(l => l);
             let result = [];
 
-            // Intro según emoción
-            const intros = {
-                logro: '¡Excelente! ',
-                urgente: 'Rápido: ',
-                tristeza: 'Con respeto: ',
-                default: ''
-            };
-            const introKey = ['logro', 'urgente', 'tristeza'].includes(emocionDetectada) ? emocionDetectada : 'default';
-            result.push(intros[introKey] + lines[0] + '.');
+            result.push(`Ahora... ${lines[0]}.`);
             result.push('');
 
             let seen = new Set();
-            let fillerAdded = false;
-
             for (let i = 1; i < lines.length; i++) {
                 let line = lines[i];
                 if (seen.has(line.toLowerCase())) continue;
                 seen.add(line.toLowerCase());
 
-                // Añadir "la verdad," en democracia
-                if (!fillerAdded && line.toLowerCase().startsWith('democracia:') && line.includes(':')) {
-                    const parts = line.split(':');
-                    const value = parts[1].trim();
-                    if (value.length > 10) {
-                        line = `${parts[0]}: la verdad, ${value.charAt(0).toLowerCase() + value.slice(1)}`;
-                        fillerAdded = true;
-                    }
-                }
-
-                // Salto extra después de ":"
                 if (line.endsWith(':')) {
                     result.push(line);
                     result.push('');
@@ -497,29 +539,15 @@
                 }
             }
 
-            // Frase final
-            const endings = [
-                'Para que entiendas... ya sabés, el sistema.',
-                'O sea... para que suene 100% real.',
-                'Este... para que puedas usarlo siempre.'
-            ];
             result.push('');
-            result.push(endings[Math.floor(Math.random() * endings.length)]);
+            result.push('Para que entiendas... ya sabés, el sistema.');
             result.push('');
             result.push('Tu éxito es mi mayor motivación, mi vida 💖');
 
-            // Mostrar resultado
             textoFinal = result.join('\n');
             document.getElementById('output').value = textoFinal;
-
-            // Actualizar detector
             analizarDetectores();
-
-            // Guardar si no es confidencial
-            if (!confidencialMode) {
-                guardarEnHistorial(input, textoFinal);
-            }
-
+            guardarEnHistorial(input, textoFinal);
             mostrarToast('✅ Texto humanizado');
         }
 
@@ -529,218 +557,38 @@
             if (!input) return;
 
             const detector = document.getElementById('detector-result');
-            const textoLower = input.toLowerCase();
+            const tieneIA = /es importante destacar|en este contexto|a continuación/i.test(input.toLowerCase());
 
-            const encontradas = frasesIA.filter(frase => textoLower.includes(frase));
-            const tieneFrasesIA = encontradas.length > 0;
-            const tieneMuletilla = muletillasHumanas.some(m => textoLower.includes(m));
-            const tieneSaltoDespuesDeDosPuntos = (input.match(/:\s*\n/g) || []).length > 2;
-            const tieneFirma = textoLower.includes('tu éxito es mi mayor motivación');
-
-            if (tieneFrasesIA) {
-                detector.innerHTML = `
-                    <p><strong>❌ Cuidado:</strong> Se detectaron frases que suenan como IA:</p>
-                    <div style="margin: 10px 0; color: #f87171;">
-                        ${encontradas.map(f => `• "${f}"`).join('<br>')}
-                    </div>
-                    <p><strong>✅ Solución:</strong> Usa el botón <strong>"Humanizar"</strong> para convertirlo en texto humano.</p>
-                `;
-            } else if (tieneMuletilla && tieneSaltoDespuesDeDosPuntos) {
-                detector.innerHTML = `
-                    <p><strong>✅ ¡Perfecto!</strong> Este texto <span class="safe">sí pasa detectores de IA</span>.</p>
-                    <p>Razones:</p>
-                    <ul style="margin: 10px 0;">
-                        <li>Tiene muletillas naturales</li>
-                        <li>Usa saltos estratégicos</li>
-                        <li>Suena como escrito por un humano real</li>
-                    </ul>
-                `;
+            if (tieneIA) {
+                detector.innerHTML = '<p style="color:#f87171;"><strong>❌ Cuidado:</strong> Tiene frases de IA. Usa "Humanizar".</p>';
             } else {
-                detector.innerHTML = `
-                    <p><strong>⚠️ Podría ser detectado.</strong> Aunque no tiene frases obvias de IA, le faltan elementos humanos.</p>
-                    <p><strong>✅ Recomendación:</strong> Usa <strong>"Humanizar"</strong> para añadir toques naturales.</p>
-                `;
+                detector.innerHTML = '<p style="color:#4ade80;"><strong>✅ Perfecto:</strong> Suena 100% humano.</p>';
             }
-
             detector.style.display = 'block';
         }
 
         // Detectar tono robótico
         function detectarTonoRobótico() {
             const input = document.getElementById('input').value.trim();
-            if (!input) {
-                alert('Pega un texto primero');
-                return;
-            }
-
-            const encontradas = frasesIA.filter(frase => input.toLowerCase().includes(frase));
+            if (!input) return;
             const detector = document.getElementById('detector-result');
-            
-            if (encontradas.length > 0) {
-                detector.innerHTML = `
-                    <p><strong>⚠️ Frases que suenan robóticas:</strong></p>
-                    <div style="margin: 10px 0; color: #f87171;">
-                        ${encontradas.map(f => `• "${f}"`).join('<br>')}
-                    </div>
-                    <p><strong>Sugerencias:</strong> Reemplaza con "la verdad,", "ahora...", o "fijate que..."</p>
-                `;
-            } else {
-                detector.innerHTML = '<p><strong>✅ No se detectaron frases robóticas.</strong> Tu texto ya suena humano.</p>';
-            }
+            const tieneIA = /es importante destacar|en este contexto|a continuación/i.test(input.toLowerCase());
+            detector.innerHTML = tieneIA 
+                ? '<p style="color:#f87171;">⚠️ Frases robóticas detectadas. Usa "Humanizar".</p>' 
+                : '<p style="color:#4ade80;">✅ No se detectaron frases robóticas.</p>';
             detector.style.display = 'block';
-        }
-
-        // Entrenamiento con voz
-        function empezarEntrenamientoVoz() {
-            if (!('SpeechRecognition' in window || 'webkitSpeechRecognition' in window)) {
-                alert('Tu navegador no soporta reconocimiento de voz.');
-                return;
-            }
-
-            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-            const recognition = new SpeechRecognition();
-            recognition.lang = 'es-ES';
-
-            recognition.onresult = (event) => {
-                const transcript = event.results[0][0].transcript;
-                document.getElementById('input').value += '\n' + transcript;
-                mostrarToast('🎤 Voz convertida a texto');
-            };
-
-            recognition.start();
         }
 
         // Resumen de voz
         function generarResumenVoz() {
             const input = document.getElementById('input').value.trim();
-            if (!input) {
-                alert('Pega un texto primero');
-                return;
-            }
-
-            const lines = input.split('\n').filter(l => l.trim());
-            const titulo = lines[0];
-            const primeras = lines.slice(1, 4).join(' ').substring(0, 150) + '...';
-
-            const resumen = `En esta unidad: ${titulo}. ${primeras} Este es un resumen rápido para que puedas compartirlo.`;
-
+            if (!input) return;
+            const resumen = `Este texto explica ${input.split('\n')[0].toLowerCase()}. Perfecto para entregar.`;
             const utterance = new SpeechSynthesisUtterance(resumen);
             utterance.rate = 0.9;
             utterance.pitch = 1;
-            utterance.lang = 'es-ES';
             speechSynthesis.speak(utterance);
-            mostrarToast('📢 Resumen de 30s reproduciéndose');
-        }
-
-        // Mapa de ideas
-        function generarMapa() {
-            const input = document.getElementById('input').value.trim();
-            if (!input) {
-                alert('Pega un texto primero');
-                return;
-            }
-
-            document.getElementById('mapa-container').style.display = 'block';
-            const stage = new Konva.Stage({
-                container: 'mapa',
-                width: document.getElementById('mapa').offsetWidth,
-                height: 400
-            });
-
-            const layer = new Konva.Layer();
-            const lines = input.split('\n').filter(l => l.trim()).slice(0, 6);
-            const centerX = stage.width() / 2;
-            const centerY = stage.height() / 2;
-
-            // Nodo central
-            const centro = new Konva.Circle({
-                x: centerX, y: centerY, radius: 40,
-                fill: '#0d9488', stroke: '#14b8a6', strokeWidth: 3
-            });
-            const textoCentro = new Konva.Text({
-                x: centerX - 30, y: centerY - 10, text: 'Tema',
-                fontSize: 14, fontFamily: 'Inter', fill: 'white', width: 60, align: 'center'
-            });
-            layer.add(centro, textoCentro);
-
-            // Nodos secundarios
-            lines.forEach((line, i) => {
-                const angle = (i / lines.length) * 2 * Math.PI;
-                const radius = 150;
-                const x = centerX + radius * Math.cos(angle);
-                const y = centerY + radius * Math.sin(angle);
-
-                const nodo = new Konva.Rect({
-                    x: x - 60, y: y - 20, width: 120, height: 40,
-                    fill: '#1e293b', stroke: '#334155', strokeWidth: 1, cornerRadius: 8
-                });
-                const texto = new Konva.Text({
-                    x: x - 50, y: y - 10,
-                    text: line.length > 15 ? line.substring(0, 15) + '...' : line,
-                    fontSize: 12, fontFamily: 'Inter', fill: '#e2e8f0', width: 100
-                });
-                const linea = new Konva.Line({
-                    points: [centerX, centerY, x, y],
-                    stroke: '#94a3b8', strokeWidth: 1, tension: 0.2
-                });
-                layer.add(linea, nodo, texto);
-            });
-
-            stage.add(layer);
-        }
-
-        // Presentación
-        function iniciarPresentacion() {
-            const output = document.getElementById('output').value;
-            if (!output) return;
-
-            const slides = output.split('\n\n').filter(s => s.trim());
-            const presentation = document.getElementById('presentation');
-            presentation.style.display = 'block';
-            presentation.innerHTML = '';
-
-            slides.forEach((slide, i) => {
-                const slideEl = document.createElement('div');
-                slideEl.className = 'slide';
-                slideEl.textContent = slide;
-                presentation.appendChild(slideEl);
-            });
-
-            const nav = document.createElement('div');
-            nav.className = 'slide-nav';
-            nav.innerHTML = `
-                <button onclick="prevSlide()" class="small">⬅️ Anterior</button>
-                <span id="slide-counter">1 de ${slides.length}</span>
-                <button onclick="nextSlide()" class="small">Siguiente ➡️</button>
-            `;
-            presentation.appendChild(nav);
-
-            window.currentSlide = 0;
-            updateSlideCounter(slides.length);
-        }
-
-        function nextSlide() {
-            const slides = document.querySelectorAll('.slide');
-            if (currentSlide < slides.length - 1) {
-                slides[currentSlide].style.display = 'none';
-                currentSlide++;
-                slides[currentSlide].style.display = 'block';
-                updateSlideCounter(document.querySelectorAll('.slide').length);
-            }
-        }
-
-        function prevSlide() {
-            const slides = document.querySelectorAll('.slide');
-            if (currentSlide > 0) {
-                slides[currentSlide].style.display = 'none';
-                currentSlide--;
-                slides[currentSlide].style.display = 'block';
-                updateSlideCounter(document.querySelectorAll('.slide').length);
-            }
-        }
-
-        function updateSlideCounter(total) {
-            document.getElementById('slide-counter').textContent = `${currentSlide + 1} de ${total}`;
+            mostrarToast('📢 Resumen reproduciéndose');
         }
 
         // Exportar PDF
@@ -768,10 +616,6 @@
             document.getElementById('input').value = '';
             document.getElementById('output').value = '';
             document.getElementById('detector-result').style.display = 'none';
-            document.getElementById('mapa-container').style.display = 'none';
-            document.getElementById('presentation').style.display = 'none';
-            document.getElementById('status-dot').style.background = '#4ade80';
-            document.getElementById('scanner-text').textContent = 'Estado: Seguro';
         }
 
         // Guardar en historial
@@ -779,14 +623,7 @@
             const hist = JSON.parse(localStorage.getItem(historialKey) || '[]');
             const titulo = input.split('\n')[0].substring(0, 50) + '...';
             const preview = input.replace(/\n/g, ' ').substring(0, 120) + '...';
-            hist.unshift({ 
-                titulo, 
-                texto: input, 
-                resultado: output, 
-                fecha: new Date().toLocaleString(), 
-                preview,
-                emocion: emocionDetectada
-            });
+            hist.unshift({ titulo, texto: input, resultado: output, fecha: new Date().toLocaleString(), preview });
             if (hist.length > 5) hist.pop();
             localStorage.setItem(historialKey, JSON.stringify(hist));
             cargarHistorial();
@@ -804,13 +641,12 @@
                     div.className = 'history-item';
                     div.innerHTML = `
                         <strong>${item.titulo}</strong>
-                        <div style="color: var(--text-secondary); font-size: 0.85rem; margin-top: 6px;">${item.preview}</div>
+                        <div style="color: #94a3b8; font-size: 0.85rem; margin-top: 6px;">${item.preview}</div>
                         <span class="tag">texto</span>
                     `;
                     div.onclick = () => {
                         document.getElementById('input').value = item.texto;
                         document.getElementById('output').value = item.resultado;
-                        analizarEnTiempoReal();
                     };
                     list.appendChild(div);
                 });
