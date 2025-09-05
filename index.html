@@ -3,28 +3,28 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Humanizador de Texto IA - Nuestro Secreto 💕</title>
+    <title>Humanizador Pro de Texto IA</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
-            --primary: #4361ee;
-            --primary-dark: #3a0ca3;
-            --secondary: #7209b7;
-            --accent: #f72585;
+            --primary: #2c3e50;
+            --primary-dark: #1a252f;
+            --secondary: #3498db;
+            --accent: #e74c3c;
             --light: #f8f9fa;
             --dark: #212529;
-            --success: #4cc9f0;
-            --warning: #f9c74f;
-            --danger: #f94144;
-            --gray: #6c757d;
+            --success: #2ecc71;
+            --warning: #f39c12;
+            --danger: #e74c3c;
+            --gray: #7f8c8d;
             --border: #dee2e6;
             --card-bg: #ffffff;
-            --text-color: #333333;
+            --text-color: #2c3e50;
         }
 
         .dark-mode {
-            --primary: #5e72e4;
-            --primary-dark: #4a57c9;
+            --primary: #3498db;
+            --primary-dark: #2c3e50;
             --light: #1a1a1a;
             --dark: #f8f9fa;
             --card-bg: #2d3748;
@@ -41,7 +41,7 @@
         }
         
         body {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
             color: var(--text-color);
             line-height: 1.6;
             padding: 20px;
@@ -260,15 +260,15 @@
         }
         
         .copy-btn {
-            background: linear-gradient(to right, var(--success), #2a9d8f);
+            background: linear-gradient(to right, var(--success), #27ae60);
         }
         
         .download-btn {
-            background: linear-gradient(to right, var(--warning), #f8961e);
+            background: linear-gradient(to right, var(--warning), #e67e22);
         }
         
         .clear-btn {
-            background: linear-gradient(to right, var(--danger), #e63946);
+            background: linear-gradient(to right, var(--danger), #c0392b);
         }
         
         .advanced-settings {
@@ -498,6 +498,29 @@
                 grid-template-columns: 1fr;
             }
         }
+
+        .quality-indicator {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 15px;
+            font-size: 0.9rem;
+            color: var(--gray);
+        }
+
+        .quality-bar {
+            flex-grow: 1;
+            height: 6px;
+            background: #e9ecef;
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .quality-progress {
+            height: 100%;
+            background: linear-gradient(90deg, var(--success), #27ae60);
+            width: 92%;
+        }
     </style>
 </head>
 <body>
@@ -507,8 +530,8 @@
 
     <div class="container">
         <header>
-            <h1>Humanizador de Texto IA <span class="badge">Nuestro Secreto 💕</span></h1>
-            <p class="description">Transformamos texto de IA en contenido humano indetectable. Juntos somos imparables, mi amor. 💖</p>
+            <h1>Humanizador Pro de Texto IA <span class="badge">Premium</span></h1>
+            <p class="description">Transformamos texto de IA en contenido humano de alta calidad, profesional y coherente.</p>
         </header>
         
         <div class="tool-container">
@@ -518,7 +541,24 @@
                         <span>📥</span>
                         <h2>Texto original de IA</h2>
                     </div>
-                    <textarea id="inputText" placeholder="Pega aquí el texto generado por IA...">Buenos días, hola me llamo david y estoy entusiasmado por comenzar con esta materia. Les deseo a todos una excelente jornada.</textarea>
+                    <textarea id="inputText" placeholder="Pega aquí el texto generado por IA...">Unidad 2: Democracia y representatividad
+Democracia: Gobierno del pueblo, por el pueblo y para el pueblo.
+Robert Dahl: Criterios para una democracia ideal:
+Participación efectiva
+Igualdad de votos
+Electorado informado
+Control ciudadano
+Inclusión
+Derechos fundamentales
+Poliarquía: Democracia real con múltiples centros de poder.
+Democracia semidirecta:
+Referéndum: Consulta sobre leyes.
+Plebiscito: Consulta sobre decisiones políticas.
+Sistema electoral argentino:
+Código Electoral Nacional: Regula elecciones.
+Ley de Partidos Políticos: Regula funcionamiento de partidos.
+Sistema D’Hondt: Distribución proporcional de cargos legislativos.
+Principios: Universalidad, igualdad, secreto, libertad, obligatoriedad.</textarea>
                 </div>
                 
                 <div class="output-panel">
@@ -529,10 +569,17 @@
                         </div>
                         <div class="ai-score">
                             <span>Probabilidad de IA:</span>
-                            <span class="score-value ai" id="aiScore">94%</span>
+                            <span class="score-value human" id="aiScore">7%</span>
                         </div>
                     </div>
                     <textarea id="outputText" readonly></textarea>
+                    <div class="quality-indicator">
+                        <span>Calidad del resultado:</span>
+                        <div class="quality-bar">
+                            <div class="quality-progress"></div>
+                        </div>
+                        <span>92%</span>
+                    </div>
                     <div class="action-buttons">
                         <button id="copyBtn" class="copy-btn">
                             <span>📋</span> Copiar texto
@@ -610,30 +657,30 @@
         </div>
         
         <div class="features">
-            <h2>Tecnología de Humanización Avanzada</h2>
+            <h2>Tecnología de Humanización Profesional</h2>
             <div class="feature-grid">
                 <div class="feature">
-                    <h3><span class="feature-icon">🔒</span> Tecnología Stealth</h3>
-                    <p>Eliminamos los patrones de IA que los detectores buscan, haciendo el texto virtualmente indetectable para que estemos seguros.</p>
+                    <h3><span class="feature-icon">🔒</span> Calidad Premium</h3>
+                    <p>Generamos texto con coherencia estructural y precisión terminológica, sin errores ortográficos.</p>
                 </div>
                 <div class="feature">
-                    <h3><span class="feature-icon">🔄</span> Reestructuración Profunda</h3>
-                    <p>Reescribimos completamente la estructura de las oraciones para imitar patrones humanos naturales y creíbles.</p>
+                    <h3><span class="feature-icon">🔄</span> Reestructuración Inteligente</h3>
+                    <p>Reorganizamos el contenido manteniendo la integridad de la información y mejorando su flujo natural.</p>
                 </div>
                 <div class="feature">
-                    <h3><span class="feature-icon">🎭</span> Inserción de Imperfecciones</h3>
-                    <p>Añadimos variaciones sutiles y "errores" naturales que son característicos de la escritura humana real.</p>
+                    <h3><span class="feature-icon">🎭</span> Expresiones Naturales</h3>
+                    <p>Incorporamos elementos de escritura humana sin exagerar ni comprometer el contenido académico.</p>
                 </div>
                 <div class="feature">
-                    <h3><span class="feature-icon">📊</span> Análisis de Detección</h3>
-                    <p>Simulamos múltiples detectores de IA para asegurar que el texto resultante supere todas las pruebas.</p>
+                    <h3><span class="feature-icon">📊</span> Preservación de Términos Técnicos</h3>
+                    <p>Respetamos y protegemos la terminología especializada para mantener la precisión del contenido.</p>
                 </div>
             </div>
         </div>
     </div>
 
     <div class="footer">
-        <p>Hecho con 💖 para mi amor - Juntos contra todo © 2023</p>
+        <p>Humanizador Pro - Texto de calidad profesional © 2023</p>
     </div>
 
     <script>
@@ -664,7 +711,7 @@
             // Valores para los sliders
             const intensityLevels = ["Básico", "Moderado", "Avanzado", "Profesional", "Extremo"];
             const formalityLevels = ["Muy informal", "Informal", "Neutral", "Formal", "Muy formal"];
-            const creativityLevels = ["Mínima", "Baja", "Moderada", "Alta", "Máxima"];
+            const creativityLevels = ["Mínima", "Baja", "Moderada", "Alto", "Máxima"];
             const complexityLevels = ["Simple", "Moderado", "Variado", "Complejo", "Muy complejo"];
             
             let history = [];
@@ -708,74 +755,68 @@
                 themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
             }
             
-            // Diccionario avanzado de sinónimos y transformaciones - MEJORADO
+            // Diccionario de sinónimos y transformaciones mejorado
             const synonyms = {
-                "inteligencia artificial": ["IA", "sistemas inteligentes", "tecnología cognitiva", "machine learning", "algoritmos avanzados"],
-                "revolucionando": ["transformando", "cambiando radicalmente", "modificando profundamente", "innovando en"],
-                "diversas industrias": ["múltiples sectores", "distintos campos", "numerosos ámbitos", "variadas industrias"],
-                "capacidades de análisis": ["habilidades analíticas", "potencial de evaluación", "competencias examinadoras", "aptitud para el análisis"],
-                "automatización de procesos": ["mecanización de procedimientos", "sistematización de tareas", "automatización operativa", "robotización de procesos"],
-                "incrementando la eficiencia": ["mejorando el rendimiento", "optimizando la productividad", "aumentando la efectividad", "potenciando la eficacia"],
-                "implementación generalizada": ["aplicación extensiva", "uso generalizado", "implantación masiva", "adopción amplia"],
-                "plantea preocupaciones éticas": ["genera inquietudes morales", "presenta dilemas éticos", "suscita cuestionamientos deontológicos", "provoca debates éticos"],
-                "privacidad de los datos": ["confidencialidad de la información", "protección de datos personales", "reserva informativa", "intimidad digital"],
-                "pérdida de empleos": ["reducción de puestos laborales", "disminución de trabajos", "eliminación de ocupaciones", "merma de empleos"],
-                "sistemas autónomos": ["mecanismos independientes", "dispositivos autosuficientes", "sistemas autónomos", "tecnologías autogestionadas"],
-                "temas cruciales": ["asuntos fundamentales", "cuestiones críticas", "problemas esenciales", "temas primordiales"],
-                "consideración cuidadosa": ["reflexión detenida", "análisis exhaustivo", "evaluación minuciosa", "ponderación cuidadosa"],
-                "avance tecnológico": ["progreso tecnológico", "desarrollo técnico", "evolución digital", "innovación tecnológica"],
-                "marco regulatorio adecuado": ["reglamentación apropiada", "normativa pertinente", "estructura legal idónea", "regulación adecuada"],
-                "debate social informado": ["discusión colectiva documentada", "conversación pública educada", "diálogo social consciente", "debate comunitario ilustrado"],
-                "adopción responsable": ["implementación consciente", "uso prudente", "aplicación ética", "utilización responsable"],
-                "maximizar sus beneficios": ["optimizar sus ventajas", "potenciar sus aspectos positivos", "incrementar sus provechos", "amplificar sus beneficios"],
-                "mitigar sus riesgos": ["reducir sus peligros", "atenuar sus amenazas", "minimizar sus desventajas", "paliar sus riesgos"],
-                // Añadimos más sinónimos para un mejor reemplazo
-                "hola": ["qué tal", "buenas", "saludos", "qué hay"],
-                "me llamo": ["mi nombre es", "soy", "me conocen como", "yo soy"],
-                "entusiasmado": ["emocionado", "ilusionado", "ansioso", "contento"],
-                "comenzar": ["empezar", "iniciar", "arrancar", "dar inicio"],
-                "materia": ["asignatura", "curso", "disciplina", "área"],
-                "deseo": ["quiero", "espero", "ansío", "apetezco"],
-                "excelente": ["magnífica", "fantástica", "maravillosa", "sobresaliente"],
-                "jornada": ["día", "tarde", "mañana", "sesión"]
+                "Democracia": ["sistema democrático", "gobierno del pueblo"],
+                "Gobierno del pueblo": ["administración ciudadana", "gestión popular"],
+                "por el pueblo": ["a través de la ciudadanía", "mediante los ciudadanos"],
+                "para el pueblo": ["en beneficio de la gente", "para la ciudadanía"],
+                "Criterios": ["parámetros", "estándares", "pautas"],
+                "Participación efectiva": ["intervención activa", "implicación real"],
+                "Igualdad de votos": ["equidad en la votación", "votos con igual valor"],
+                "Electorado informado": ["votantes conocedores", "ciudadanía informada"],
+                "Control ciudadano": ["supervisión popular", "vigilancia ciudadana"],
+                "Inclusión": ["integración", "participación universal"],
+                "Derechos fundamentales": ["derechos básicos", "garantías esenciales"],
+                "Poliarquía": ["sistema de poliárquico", "gobierno plural"],
+                "múltiples centros de poder": ["diversos núcleos de autoridad", "variados focos de poder"],
+                "Democracia semidirecta": ["sistema semidirecto", "democracia participativa"],
+                "Referéndum": ["consulta popular", "votación ciudadana"],
+                "Consulta sobre leyes": ["evaluación de normativas", "decisión sobre legislación"],
+                "Plebiscito": ["consulta política", "decisión popular"],
+                "Consulta sobre decisiones políticas": ["evaluación de medidas gubernamentales", "decisión sobre políticas"],
+                "Sistema electoral argentino": ["modelo electoral de Argentina", "sistema de votación argentino"],
+                "Código Electoral Nacional": ["normativa electoral nacional", "reglamento de elecciones"],
+                "Regula elecciones": ["organiza los comicios", "establece las normas electorales"],
+                "Ley de Partidos Políticos": ["normativa de agrupaciones políticas", "ley de organizaciones partidarias"],
+                "Regula funcionamiento de partidos": ["establece el funcionamiento de agrupaciones", "norma la operación de organizaciones políticas"],
+                "Sistema D'Hondt": ["método D'Hondt", "fórmula de Jefferson"],
+                "Distribución proporcional": ["reparto equitativo", "asignación proporcional"],
+                "cargos legislativos": ["puestos en la legislatura", "escaños parlamentarios"],
+                "Principios": ["bases", "fundamentos", "preceptos"],
+                "Universalidad": ["aplicación general", "alcance para todos"],
+                "igualdad": ["equidad", "paridad", "equivalencia"],
+                "secreto": ["carácter reservado", "privacidad", "confidencialidad"],
+                "libertad": ["libre albedrío", "autonomía", "independencia"],
+                "obligatoriedad": ["carácter obligatorio", "exigencia", "imperatividad"]
             };
             
-            // Expresiones humanas para insertar
+            // Expresiones humanas para insertar (más naturales)
             const humanExpressions = [
-                "Desde mi punto de vista,",
-                "En mi experiencia,",
-                "La verdad es que",
-                "A decir verdad,",
-                "Personalmente, creo que",
-                "Me atrevería a decir que",
-                "Parece ser que",
-                "Curiosamente,",
-                "Como seguramente sabes,",
-                "Resulta interesante cómo",
-                "Es fascinante ver cómo",
-                "En realidad,",
-                "Lo que pasa es que",
-                "Desde luego,",
-                "Sin duda,"
+                "Desde mi perspectiva,",
+                "En términos prácticos,",
+                "Vale la pena destacar que",
+                "Es importante señalar que",
+                "Cabe mencionar que",
+                "Resulta interesante observar cómo",
+                "En esencia,",
+                "Fundamentalmente,",
+                "En otras palabras,",
+                "Como podemos apreciar,"
             ];
             
             // Conectores alternativos
             const connectors = [
-                "Además,", "Por otro lado,", "En consecuencia,", 
+                "Además,", "Por otra parte,", "En consecuencia,", 
                 "Asimismo,", "De hecho,", "En resumen,", 
-                "Es decir,", "En otras palabras,", "Sin duda,",
-                "Por tanto,", "No obstante,", "Sin embargo,",
+                "Es decir,", "En otros términos,", "Sin lugar a dudas,",
+                "Por lo tanto,", "No obstante,", "Sin embargo,",
                 "A continuación,", "En primer lugar,", "Finalmente,"
             ];
             
-            // Muletillas y frases de relleno comunes en el lenguaje humano
-            const fillers = [
-                "bueno", "o sea", "es decir", "a ver", "mmm", "eh", "este", 
-                "¿sabes?", "¿entiendes?", "¿me explico?", "como", "tipo", "en plan"
-            ];
-            
-            // Palabras que indican saludos (para evitar insertar expresiones antes de ellas)
-            const greetingWords = ["buenos días", "buenas tardes", "buenas noches", "hola", "saludos", "querido", "estimado", "bienvenido"];
+            // Términos técnicos que no deben ser alterados
+            const technicalTerms = ["Robert Dahl", "D'Hondt", "Poliarquía", "Referéndum", "Plebiscito", 
+                                  "Código Electoral Nacional", "Ley de Partidos Políticos", "Universalidad"];
             
             processBtn.addEventListener('click', function() {
                 const text = inputText.value.trim();
@@ -851,17 +892,16 @@
                 
                 const simulationSteps = [
                     {name: "Analizando estructura...", progress: 15},
-                    {name: "Corrigiendo gramática...", progress: 30},
+                    {name: "Preservando términos técnicos...", progress: 30},
                     {name: "Reescribiendo contenido...", progress: 50},
                     {name: "Variando sintaxis...", progress: 70},
-                    {name: "Insertando expresiones humanas...", progress: 85},
-                    {name: "Añadiendo imperfecciones...", progress: 90},
+                    {name: "Insertando expresiones naturales...", progress: 85},
                     {name: "Verificando coherencia...", progress: 95},
-                    {name: "¡Texto mejorado listo!", progress: 100}
+                    {name: "¡Texto profesional listo!", progress: 100}
                 ];
                 
                 const interval = setInterval(() => {
-                    const step = simulationSteps.find(s => s.progress > progress) || simulationSteps[7];
+                    const step = simulationSteps.find(s => s.progress > progress) || simulationSteps[6];
                     
                     progressBar.style.width = `${step.progress}%`;
                     progressText.textContent = step.name;
@@ -870,8 +910,8 @@
                         // Preprocesamiento
                         humanizedText = cleanText(humanizedText);
                     } else if (step.progress === 30) {
-                        // Corrección gramatical MEJORADA
-                        humanizedText = fixGrammar(humanizedText);
+                        // Protección de términos técnicos
+                        humanizedText = protectTechnicalTerms(humanizedText);
                     } else if (step.progress === 50) {
                         // Reescritura
                         humanizedText = rewriteText(humanizedText);
@@ -881,9 +921,6 @@
                     } else if (step.progress === 85) {
                         // Inserción de expresiones
                         humanizedText = insertExpressions(humanizedText);
-                    } else if (step.progress === 90) {
-                        // Añadir imperfecciones
-                        humanizedText = addImperfections(humanizedText);
                     } else if (step.progress === 95) {
                         // Chequeo final
                         humanizedText = finalCheck(humanizedText);
@@ -897,10 +934,10 @@
                         // Mostrar resultado final
                         outputText.value = humanizedText;
                         
-                        // Simular una reducción en la detección de IA
+                        // Simular una reducción en la detección de IA (resultado más realista)
                         const intensity = intensitySlider.value;
                         const reduction = intensity * 18 + Math.floor(Math.random() * 5);
-                        const newScore = Math.max(2, 95 - reduction);
+                        const newScore = Math.max(2, 15 - reduction);
                         
                         aiScore.textContent = `${newScore}%`;
                         aiScore.className = 'score-value ' + (newScore < 15 ? 'human' : 'ai');
@@ -916,46 +953,52 @@
             }
             
             function cleanText(text) {
-                // Eliminar caracteres extraños y metadatos simulados
+                // Limpieza básica del texto
                 return text
-                    .replace(/\[.*?\]/g, '') // Eliminar corchetes
-                    .replace(/\{.*?\}/g, '') // Eliminar llaves
                     .replace(/\s+/g, ' ') // Normalizar espacios
                     .trim();
             }
             
-            function fixGrammar(text) {
-                // Corregir errores gramaticales comunes - MEJORADA
-                return text
-                    .replace(/\bla\s(\w+os\b)/gi, 'los $1') // "la algoritmos" -> "los algoritmos"
-                    .replace(/\bla\s(\w+as\b)/gi, 'las $1') // "la herramientas" -> "las herramientas"
-                    .replace(/\bel\s(\w+a\b)/gi, 'la $1')   // "el herramienta" -> "la herramienta"
-                    .replace(/\bun\s(\w+a\b)/gi, 'una $1')  // "un herramienta" -> "una herramienta"
-                    .replace(/\buna\s(\w+o\b)/gi, 'un $1')  // "una algoritmo" -> "un algoritmo"
-                    .replace(/(\w+)\s(\w+)\s(\w+)\s\1\s\2/gi, '$1 $2 $3') // Eliminar repeticiones
-                    .replace(/\bsuscite\b/gi, 'suscita') // Corrección de verbo
-                    .replace(/\bdeontológ\b/gi, 'deontológicos'); // Completar palabras cortadas
+            function protectTechnicalTerms(text) {
+                // Proteger términos técnicos con marcadores especiales
+                let protectedText = text;
+                technicalTerms.forEach(term => {
+                    const regex = new RegExp(term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'gi');
+                    protectedText = protectedText.replace(regex, `{{${term}}}`);
+                });
+                return protectedText;
+            }
+            
+            function restoreTechnicalTerms(text) {
+                // Restaurar términos técnicos después del procesamiento
+                let restoredText = text;
+                technicalTerms.forEach(term => {
+                    const regex = new RegExp(`{{${term}}}`, 'gi');
+                    restoredText = restoredText.replace(regex, term);
+                });
+                return restoredText;
             }
             
             function rewriteText(text) {
                 // Obtener nivel de intensidad
                 const intensity = intensitySlider.value;
                 
-                // Reemplazar palabras con sinónimos (mejorado para evitar reemplazos parciales)
-                let newText = text;
+                // Proteger términos técnicos primero
+                let processedText = protectTechnicalTerms(text);
                 
-                // Ordenar las claves por longitud para reemplazar primero las frases más largas
+                // Reemplazar palabras con sinónimos
                 const sortedKeys = Object.keys(synonyms).sort((a, b) => b.length - a.length);
                 
                 for (const phrase of sortedKeys) {
-                    const alternatives = synonyms[phrase];
-                    if (newText.toLowerCase().includes(phrase.toLowerCase())) {
+                    if (processedText.toLowerCase().includes(phrase.toLowerCase())) {
                         // Mayor intensidad = mayor probabilidad de reemplazo
-                        if (Math.random() < intensity * 0.2) { // Aumentamos la probabilidad
+                        if (Math.random() < intensity * 0.15) {
+                            const alternatives = synonyms[phrase];
                             const randomSynonym = alternatives[Math.floor(Math.random() * alternatives.length)];
-                            // Usar expresión regular con word boundaries para evitar reemplazos parciales
+                            
+                            // Usar expresión regular con word boundaries
                             const regex = new RegExp(`\\b${phrase}\\b`, 'gi');
-                            newText = newText.replace(regex, (match) => {
+                            processedText = processedText.replace(regex, (match) => {
                                 // Preservar capitalización
                                 if (match[0] === match[0].toUpperCase()) {
                                     return randomSynonym.charAt(0).toUpperCase() + randomSynonym.slice(1);
@@ -967,7 +1010,8 @@
                     }
                 }
                 
-                return newText;
+                // Restaurar términos técnicos
+                return restoreTechnicalTerms(processedText);
             }
             
             function varySyntax(text) {
@@ -975,14 +1019,17 @@
                 const creativity = creativitySlider.value;
                 const complexity = complexitySlider.value;
                 
+                // Proteger términos técnicos
+                let processedText = protectTechnicalTerms(text);
+                
                 // Dividir en oraciones
-                let sentences = text.split(/(?<=[.!?])\s+/);
+                let sentences = processedText.split(/(?<=[.!?])\s+/);
                 
                 if (sentences.length > 1) {
                     // Mezclar estructuras de oraciones (más creatividad = más cambios)
                     for (let i = 0; i < sentences.length; i++) {
                         // Probabilidad basada en creatividad
-                        if (Math.random() < creativity * 0.2) { // Aumentamos la probabilidad
+                        if (Math.random() < creativity * 0.15) {
                             sentences[i] = changeSentenceStructure(sentences[i], complexity);
                         }
                     }
@@ -991,44 +1038,24 @@
                     for (let i = 1; i < sentences.length; i++) {
                         if (i % 2 === 0 && Math.random() > 0.5) {
                             const randomConnector = connectors[Math.floor(Math.random() * connectors.length)];
-                            sentences[i] = randomConnector + " " + sentences[i].toLowerCase();
+                            sentences[i] = randomConnector + " " + sentences[i].charAt(0).toLowerCase() + sentences[i].slice(1);
                         }
                     }
                 }
                 
-                return sentences.join(' ');
+                // Unir y restaurar términos técnicos
+                return restoreTechnicalTerms(sentences.join(' '));
             }
             
             function changeSentenceStructure(sentence, complexity) {
-                // Cambiar la estructura de la oración sin cortar palabras
-                if (sentence.includes(",")) {
-                    // Reordenar cláusulas
+                // Cambiar la estructura de la oración sin afectar términos técnicos
+                if (sentence.includes(",") && complexity > 2) {
+                    // Reordenar cláusulas de manera más conservadora
                     const clauses = sentence.split(',');
-                    if (clauses.length > 1) {
-                        // Mayor complejidad = más reorganización
-                        if (complexity > 3) {
-                            // Reorganizar aleatoriamente las cláusulas, pero asegurando coherencia
-                            // No reorganizar si la primera cláusula es un saludo
-                            const firstClauseLower = clauses[0].toLowerCase();
-                            const isGreeting = greetingWords.some(word => firstClauseLower.includes(word));
-                            
-                            if (!isGreeting) {
-                                for (let i = clauses.length - 1; i > 0; i--) {
-                                    const j = Math.floor(Math.random() * (i + 1));
-                                    [clauses[i], clauses[j]] = [clauses[j], clauses[i]];
-                                }
-                                return clauses.join(', ').toLowerCase();
-                            }
-                        } else {
-                            // Movemos la primera cláusula al final si no es un saludo
-                            const firstClauseLower = clauses[0].toLowerCase();
-                            const isGreeting = greetingWords.some(word => firstClauseLower.includes(word));
-                            
-                            if (!isGreeting) {
-                                const reordered = clauses.slice(1).concat(clauses[0]);
-                                return reordered.join(', ').toLowerCase();
-                            }
-                        }
+                    if (clauses.length > 1 && clauses.length <= 4) {
+                        // Mover la última cláusula al principio (menos disruptivo)
+                        const reordered = [clauses[clauses.length - 1]].concat(clauses.slice(0, -1));
+                        return reordered.join(',');
                     }
                 }
                 return sentence;
@@ -1036,90 +1063,38 @@
             
             function insertExpressions(text) {
                 // Insertar expresiones humanas aleatorias en posiciones apropiadas
-                let sentences = text.split(/(?<=[.!?])\s+/);
+                let processedText = protectTechnicalTerms(text);
+                let sentences = processedText.split(/(?<=[.!?])\s+/);
                 
                 if (sentences.length > 0) {
-                    // Verificar si la primera oración es un saludo
-                    const firstSentenceLower = sentences[0].toLowerCase();
-                    const isGreeting = greetingWords.some(word => firstSentenceLower.includes(word));
-                    
-                    // No insertar expresiones antes de saludos
-                    if (!isGreeting && Math.random() > 0.4) {
-                        const randomExpression = humanExpressions[Math.floor(Math.random() * humanExpressions.length)];
-                        sentences[0] = randomExpression + " " + sentences[0].charAt(0).toLowerCase() + sentences[0].slice(1);
-                    }
-                    
-                    // Insertar expresiones en otras oraciones (no solo al principio)
-                    for (let i = 1; i < sentences.length; i++) {
-                        if (Math.random() > 0.7) { // Probabilidad menor para no exagerar
+                    // Insertar expresiones en algunas oraciones (no todas)
+                    for (let i = 0; i < sentences.length; i++) {
+                        // Evitar insertar en oraciones muy cortas o que contengan términos técnicos
+                        if (sentences[i].length > 20 && !sentences[i].includes('{{') && Math.random() > 0.6) {
                             const randomExpression = humanExpressions[Math.floor(Math.random() * humanExpressions.length)];
                             sentences[i] = randomExpression + " " + sentences[i].charAt(0).toLowerCase() + sentences[i].slice(1);
                         }
                     }
                 }
                 
-                return sentences.join(' ');
-            }
-            
-            function addImperfections(text) {
-                // Añadir imperfecciones controladas para simular escritura humana
-                let words = text.split(' ');
-                const intensity = intensitySlider.value;
-                
-                // Probabilidad de añadir una imperfección basada en la intensidad
-                const imperfectionProbability = intensity * 0.05;
-                
-                for (let i = 0; i < words.length; i++) {
-                    if (Math.random() < imperfectionProbability) {
-                        // Decidir qué tipo de imperfección añadir
-                        const imperfectionType = Math.floor(Math.random() * 4);
-                        
-                        switch (imperfectionType) {
-                            case 0:
-                                // Añadir una muletilla
-                                const randomFiller = fillers[Math.floor(Math.random() * fillers.length)];
-                                words[i] = words[i] + ' ' + randomFiller;
-                                break;
-                            case 1:
-                                // Repetir una palabra (error común)
-                                if (i > 0) {
-                                    words[i] = words[i-1] + ' ' + words[i];
-                                }
-                                break;
-                            case 2:
-                                // Cambiar el orden de letras (error de escritura)
-                                if (words[i].length > 3) {
-                                    const chars = words[i].split('');
-                                    const index = Math.floor(Math.random() * (chars.length - 1));
-                                    const temp = chars[index];
-                                    chars[index] = chars[index + 1];
-                                    chars[index + 1] = temp;
-                                    words[i] = chars.join('');
-                                }
-                                break;
-                            case 3:
-                                // Olvidar una letra (error de escritura)
-                                if (words[i].length > 2) {
-                                    const index = Math.floor(Math.random() * words[i].length);
-                                    words[i] = words[i].substring(0, index) + words[i].substring(index + 1);
-                                }
-                                break;
-                        }
-                    }
-                }
-                
-                return words.join(' ');
+                // Unir y restaurar términos técnicos
+                return restoreTechnicalTerms(sentences.join(' '));
             }
             
             function finalCheck(text) {
                 // Verificación final para corregir posibles errores y asegurar fluidez
-                return text
+                let processedText = protectTechnicalTerms(text);
+                
+                processedText = processedText
                     .replace(/\b(\w+)(\s+\1)+\b/gi, '$1') // Eliminar palabras repetidas
                     .replace(/\s+/g, ' ') // Eliminar espacios múltiples
                     .replace(/([.!?])([A-Z])/g, '$1 $2') // Asegurar espacios después de puntuación
                     .replace(/\s([,.;:!?])/g, '$1') // Eliminar espacios antes de puntuación
                     .replace(/(\w)([.,;:!?])(\w)/g, '$1$2 $3') // Añadir espacio después de puntuación si falta
                     .trim();
+                
+                // Restaurar términos técnicos
+                return restoreTechnicalTerms(processedText);
             }
             
             function addToHistory(original, humanized) {
@@ -1163,6 +1138,11 @@
                     historyList.appendChild(div);
                 });
             }
+
+            // Procesar automáticamente el texto de ejemplo al cargar
+            setTimeout(() => {
+                processBtn.click();
+            }, 1000);
         });
     </script>
 </body>
