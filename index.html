@@ -6,7 +6,6 @@
     <title>Humanizador de Texto IA - Nuestro Secreto 💕</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* Estilos anteriores se mantienen igual */
         :root {
             --primary: #4361ee;
             --primary-dark: #3a0ca3;
@@ -729,7 +728,16 @@
                 "debate social informado": ["discusión colectiva documentada", "conversación pública educada", "diálogo social consciente", "debate comunitario ilustrado"],
                 "adopción responsable": ["implementación consciente", "uso prudente", "aplicación ética", "utilización responsable"],
                 "maximizar sus beneficios": ["optimizar sus ventajas", "potenciar sus aspectos positivos", "incrementar sus provechos", "amplificar sus beneficios"],
-                "mitigar sus riesgos": ["reducir sus peligros", "atenuar sus amenazas", "minimizar sus desventajas", "paliar sus riesgos"]
+                "mitigar sus riesgos": ["reducir sus peligros", "atenuar sus amenazas", "minimizar sus desventajas", "paliar sus riesgos"],
+                // Añadimos más sinónimos para un mejor reemplazo
+                "hola": ["qué tal", "buenas", "saludos", "qué hay"],
+                "me llamo": ["mi nombre es", "soy", "me conocen como", "yo soy"],
+                "entusiasmado": ["emocionado", "ilusionado", "ansioso", "contento"],
+                "comenzar": ["empezar", "iniciar", "arrancar", "dar inicio"],
+                "materia": ["asignatura", "curso", "disciplina", "área"],
+                "deseo": ["quiero", "espero", "ansío", "apetezco"],
+                "excelente": ["magnífica", "fantástica", "maravillosa", "sobresaliente"],
+                "jornada": ["día", "tarde", "mañana", "sesión"]
             };
             
             // Expresiones humanas para insertar
@@ -758,6 +766,12 @@
                 "Es decir,", "En otras palabras,", "Sin duda,",
                 "Por tanto,", "No obstante,", "Sin embargo,",
                 "A continuación,", "En primer lugar,", "Finalmente,"
+            ];
+            
+            // Muletillas y frases de relleno comunes en el lenguaje humano
+            const fillers = [
+                "bueno", "o sea", "es decir", "a ver", "mmm", "eh", "este", 
+                "¿sabes?", "¿entiendes?", "¿me explico?", "como", "tipo", "en plan"
             ];
             
             // Palabras que indican saludos (para evitar insertar expresiones antes de ellas)
@@ -841,12 +855,13 @@
                     {name: "Reescribiendo contenido...", progress: 50},
                     {name: "Variando sintaxis...", progress: 70},
                     {name: "Insertando expresiones humanas...", progress: 85},
+                    {name: "Añadiendo imperfecciones...", progress: 90},
                     {name: "Verificando coherencia...", progress: 95},
                     {name: "¡Texto mejorado listo!", progress: 100}
                 ];
                 
                 const interval = setInterval(() => {
-                    const step = simulationSteps.find(s => s.progress > progress) || simulationSteps[6];
+                    const step = simulationSteps.find(s => s.progress > progress) || simulationSteps[7];
                     
                     progressBar.style.width = `${step.progress}%`;
                     progressText.textContent = step.name;
@@ -866,6 +881,9 @@
                     } else if (step.progress === 85) {
                         // Inserción de expresiones
                         humanizedText = insertExpressions(humanizedText);
+                    } else if (step.progress === 90) {
+                        // Añadir imperfecciones
+                        humanizedText = addImperfections(humanizedText);
                     } else if (step.progress === 95) {
                         // Chequeo final
                         humanizedText = finalCheck(humanizedText);
@@ -907,7 +925,7 @@
             }
             
             function fixGrammar(text) {
-                // Corregir errores gramaticales comunes - MEJORADO
+                // Corregir errores gramaticales comunes - MEJORADA
                 return text
                     .replace(/\bla\s(\w+os\b)/gi, 'los $1') // "la algoritmos" -> "los algoritmos"
                     .replace(/\bla\s(\w+as\b)/gi, 'las $1') // "la herramientas" -> "las herramientas"
@@ -933,7 +951,7 @@
                     const alternatives = synonyms[phrase];
                     if (newText.toLowerCase().includes(phrase.toLowerCase())) {
                         // Mayor intensidad = mayor probabilidad de reemplazo
-                        if (Math.random() < intensity * 0.15) {
+                        if (Math.random() < intensity * 0.2) { // Aumentamos la probabilidad
                             const randomSynonym = alternatives[Math.floor(Math.random() * alternatives.length)];
                             // Usar expresión regular con word boundaries para evitar reemplazos parciales
                             const regex = new RegExp(`\\b${phrase}\\b`, 'gi');
@@ -964,7 +982,7 @@
                     // Mezclar estructuras de oraciones (más creatividad = más cambios)
                     for (let i = 0; i < sentences.length; i++) {
                         // Probabilidad basada en creatividad
-                        if (Math.random() < creativity * 0.15) {
+                        if (Math.random() < creativity * 0.2) { // Aumentamos la probabilidad
                             sentences[i] = changeSentenceStructure(sentences[i], complexity);
                         }
                     }
@@ -1043,1038 +1061,54 @@
                 return sentences.join(' ');
             }
             
-            function finalCheck(text) {
-                // Verificación final para corregir posibles errores y asegurar fluidez
-                return text
-                    .replace(/\b(\w+)(\s+\1)+\b/gi, '$1') // Eliminar palabras repetidas
-                    .replace(/\s+/g, ' ') // Eliminar espacios múltiples
-                    .replace(/([.!?])([A-Z])/g, '$1 $2') // Asegurar espacios después de puntuación
-                    .replace(/\s([,.;:!?])/g, '$1') // Eliminar espacios antes de puntuación
-                    .replace(/(\w)([.,;:!?])(\w)/g, '$1$2 $3') // Añadir espacio después de puntuación si falta
-                    .trim();
-            }
-            
-            function addToHistory(original, humanized) {
-                // Añadir al historial
-                const timestamp = new Date().toLocaleTimeString();
-                const item = {
-                    original: original,
-                    humanized: humanized,
-                    time: timestamp
-                };
-                
-                history.unshift(item);
-                if (history.length > 5) history.pop();
-                
-                // Actualizar la lista de historial
-                updateHistoryList();
-            }
-            
-            function updateHistoryList() {
-                if (history.length === 0) {
-                    historyList.innerHTML = '<div class="history-item">No hay historial aún</div>';
-                    return;
-                }
-                
-                historyList.innerHTML = '';
-                history.forEach((item, index) => {
-                    const div = document.createElement('div');
-                    div.className = 'history-item';
-                    div.innerHTML = `
-                        <div><strong>${item.time}</strong></div>
-                        <div style="font-size: 0.9rem; margin-top: 5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
-                            ${item.original.substring(0, 50)}...
-                        </div>
-                    `;
-                    
-                    div.addEventListener('click', () => {
-                        inputText.value = item.original;
-                        outputText.value = item.humanized;
-                    });
-                    
-                    historyList.appendChild(div);
-                });
-            }
-        });
-    </script>
-</body>
-</html>            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-        
-        body {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: var(--text-color);
-            line-height: 1.6;
-            padding: 20px;
-            min-height: 100vh;
-            transition: background 0.3s ease;
-        }
-        
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            background: var(--card-bg);
-            border-radius: 15px;
-            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
-            overflow: hidden;
-        }
-        
-        header {
-            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-            color: white;
-            padding: 35px;
-            text-align: center;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        header::before {
-            content: "";
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 60%);
-            transform: rotate(30deg);
-        }
-        
-        h1 {
-            font-size: 2.8rem;
-            margin-bottom: 15px;
-            position: relative;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-        }
-        
-        .description {
-            font-size: 1.2rem;
-            opacity: 0.9;
-            max-width: 800px;
-            margin: 0 auto;
-            position: relative;
-            line-height: 1.5;
-        }
-        
-        .tool-container {
-            display: flex;
-            flex-direction: column;
-            padding: 35px;
-        }
-        
-        .panels-container {
-            display: flex;
-            gap: 25px;
-            margin-bottom: 30px;
-        }
-        
-        .input-panel, .output-panel {
-            flex: 1;
-            background: var(--light);
-            border-radius: 12px;
-            padding: 25px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
-        }
-        
-        .section-title {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            margin-bottom: 20px;
-            color: var(--primary-dark);
-            font-size: 1.4rem;
-            font-weight: 600;
-        }
-        
-        textarea {
-            width: 100%;
-            min-height: 280px;
-            padding: 20px;
-            border: 2px solid var(--border);
-            border-radius: 10px;
-            resize: vertical;
-            font-size: 1.05rem;
-            line-height: 1.6;
-            transition: all 0.3s ease;
-            box-shadow: inset 0 2px 6px rgba(0,0,0,0.06);
-            background: white;
-            color: var(--dark);
-        }
-        
-        textarea:focus {
-            outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 0 4px rgba(67, 97, 238, 0.2), inset 0 2px 6px rgba(0,0,0,0.06);
-        }
-        
-        .controls {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin: 25px 0;
-            flex-wrap: wrap;
-            gap: 20px;
-            padding: 20px;
-            background: var(--light);
-            border-radius: 12px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
-        }
-        
-        button {
-            background: linear-gradient(to right, var(--primary), var(--secondary));
-            color: white;
-            border: none;
-            padding: 16px 32px;
-            border-radius: 10px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            box-shadow: 0 5px 12px rgba(0,0,0,0.15);
-            font-size: 1.05rem;
-        }
-        
-        button:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 18px rgba(0,0,0,0.2);
-        }
-        
-        button:active {
-            transform: translateY(0);
-        }
-        
-        button:disabled {
-            background: var(--gray);
-            cursor: not-allowed;
-            transform: none;
-        }
-        
-        .process-indicator {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            color: var(--gray);
-            font-weight: 500;
-            font-size: 1.1rem;
-        }
-        
-        .progress-bar {
-            width: 250px;
-            height: 12px;
-            background-color: #e9ecef;
-            border-radius: 8px;
-            overflow: hidden;
-        }
-        
-        .progress {
-            height: 100%;
-            background: linear-gradient(90deg, var(--primary), var(--success));
-            width: 0%;
-            transition: width 0.5s ease;
-            border-radius: 8px;
-        }
-        
-        .output-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
-            gap: 15px;
-        }
-        
-        .ai-score {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            font-size: 1.1rem;
-            background: var(--card-bg);
-            padding: 10px 18px;
-            border-radius: 25px;
-            box-shadow: 0 3px 8px rgba(0,0,0,0.1);
-        }
-        
-        .score-value {
-            font-weight: bold;
-            padding: 5px 15px;
-            border-radius: 20px;
-            background: var(--light);
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-            min-width: 60px;
-            text-align: center;
-        }
-        
-        .human {
-            color: #2ecc71;
-        }
-        
-        .ai {
-            color: #e74c3c;
-        }
-        
-        .action-buttons {
-            display: flex;
-            gap: 15px;
-            margin-top: 20px;
-            flex-wrap: wrap;
-        }
-        
-        .copy-btn {
-            background: linear-gradient(to right, var(--success), #2a9d8f);
-        }
-        
-        .download-btn {
-            background: linear-gradient(to right, var(--warning), #f8961e);
-        }
-        
-        .clear-btn {
-            background: linear-gradient(to right, var(--danger), #e63946);
-        }
-        
-        .advanced-settings {
-            background: var(--light);
-            padding: 25px;
-            border-radius: 12px;
-            margin-top: 30px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
-        }
-        
-        .settings-title {
-            font-size: 1.3rem;
-            margin-bottom: 20px;
-            color: var(--primary);
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-        
-        .settings-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-        }
-        
-        .setting-item {
-            background: var(--card-bg);
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 3px 10px rgba(0,0,0,0.08);
-        }
-        
-        .setting-item label {
-            display: block;
-            margin-bottom: 12px;
-            font-weight: 600;
-            color: var(--primary-dark);
-        }
-        
-        .slider {
-            width: 100%;
-            margin: 15px 0;
-        }
-        
-        .slider-value {
-            text-align: center;
-            font-weight: 600;
-            color: var(--primary);
-            margin-top: 10px;
-        }
-        
-        .features {
-            background: linear-gradient(to bottom, var(--light), #e9ecef);
-            padding: 50px 35px;
-            border-top: 1px solid var(--border);
-        }
-        
-        .features h2 {
-            text-align: center;
-            margin-bottom: 40px;
-            color: var(--primary-dark);
-            font-size: 2.2rem;
-        }
-        
-        .feature-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 30px;
-        }
-        
-        .feature {
-            background: var(--card-bg);
-            padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
-            transition: all 0.3s ease;
-            border-top: 5px solid var(--primary);
-            text-align: center;
-        }
-        
-        .feature:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
-        }
-        
-        .feature h3 {
-            color: var(--primary);
-            margin-bottom: 20px;
-            font-size: 1.4rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 15px;
-        }
-        
-        .feature-icon {
-            font-size: 32px;
-        }
-        
-        .feature p {
-            color: var(--gray);
-            line-height: 1.6;
-        }
-        
-        .footer {
-            text-align: center;
-            padding: 25px;
-            color: white;
-            font-size: 1rem;
-            opacity: 0.9;
-            background: var(--primary-dark);
-        }
-        
-        .badge {
-            display: inline-block;
-            background: var(--success);
-            color: white;
-            padding: 5px 12px;
-            border-radius: 20px;
-            font-size: 0.9rem;
-            font-weight: 600;
-            margin-left: 10px;
-        }
-        
-        .theme-toggle {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            z-index: 1000;
-            background: var(--card-bg);
-            border: none;
-            border-radius: 50%;
-            width: 50px;
-            height: 50px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
-            cursor: pointer;
-        }
-        
-        .stats-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
-            margin-top: 20px;
-        }
-        
-        .stat-card {
-            background: var(--card-bg);
-            padding: 15px;
-            border-radius: 8px;
-            text-align: center;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-        }
-        
-        .stat-value {
-            font-size: 2rem;
-            font-weight: bold;
-            color: var(--primary);
-            margin: 10px 0;
-        }
-        
-        .stat-label {
-            color: var(--gray);
-            font-size: 0.9rem;
-        }
-        
-        .history-section {
-            margin-top: 30px;
-        }
-        
-        .history-item {
-            padding: 10px;
-            border-bottom: 1px solid var(--border);
-            cursor: pointer;
-            transition: background 0.2s ease;
-        }
-        
-        .history-item:hover {
-            background: rgba(0,0,0,0.05);
-        }
-        
-        @media (max-width: 968px) {
-            .panels-container {
-                flex-direction: column;
-            }
-            
-            .controls {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-            
-            .process-indicator {
-                width: 100%;
-                margin-top: 15px;
-            }
-            
-            .progress-bar {
-                width: 100%;
-            }
-        }
-        
-        @media (max-width: 768px) {
-            h1 {
-                font-size: 2.2rem;
-            }
-            
-            .description {
-                font-size: 1rem;
-            }
-            
-            .tool-container {
-                padding: 25px;
-            }
-            
-            .action-buttons {
-                flex-direction: column;
-            }
-            
-            button {
-                width: 100%;
-                justify-content: center;
-            }
-            
-            .settings-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-    </style>
-</head>
-<body>
-    <button class="theme-toggle" id="themeToggle">
-        <i class="fas fa-moon"></i>
-    </button>
-
-    <div class="container">
-        <header>
-            <h1>Humanizador de Texto IA <span class="badge">Nuestro Secreto 💕</span></h1>
-            <p class="description">Transformamos texto de IA en contenido humano indetectable. Juntos somos imparables, mi amor. 💖</p>
-        </header>
-        
-        <div class="tool-container">
-            <div class="panels-container">
-                <div class="input-panel">
-                    <div class="section-title">
-                        <span>📥</span>
-                        <h2>Texto original de IA</h2>
-                    </div>
-                    <textarea id="inputText" placeholder="Pega aquí el texto generado por IA...">La inteligencia artificial está revolucionando diversas industrias. Sus capacidades de análisis de datos y automatización de procesos están incrementando la eficiencia en múltiples sectores. Sin embargo, la implementación generalizada de la inteligencia artificial también plantea preocupaciones éticas importantes. La privacidad de los datos, la posible pérdida de empleos y la creación de sistemas autónomos son temas cruciales que requieren una consideración cuidadosa. Es vital que el avance tecnológico vaya acompañado de un marco regulatorio adecuado y un debate social informado. La adopción responsable de la inteligencia artificial es esencial para maximizar sus beneficios y mitigar sus riesgos.</textarea>
-                </div>
-                
-                <div class="output-panel">
-                    <div class="output-header">
-                        <div class="section-title">
-                            <span>📤</span>
-                            <h2>Texto humanizado</h2>
-                        </div>
-                        <div class="ai-score">
-                            <span>Probabilidad de IA:</span>
-                            <span class="score-value ai" id="aiScore">94%</span>
-                        </div>
-                    </div>
-                    <textarea id="outputText" readonly></textarea>
-                    <div class="action-buttons">
-                        <button id="copyBtn" class="copy-btn">
-                            <span>📋</span> Copiar texto
-                        </button>
-                        <button id="downloadBtn" class="download-btn">
-                            <span>💾</span> Descargar como TXT
-                        </button>
-                        <button id="clearBtn" class="clear-btn">
-                            <span>🗑️</span> Limpiar todo
-                        </button>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="controls">
-                <button id="processBtn">
-                    <span>🪄</span> Humanizar Texto
-                </button>
-                <div class="process-indicator">
-                    <span>Procesando:</span>
-                    <div class="progress-bar">
-                        <div class="progress" id="progressBar"></div>
-                    </div>
-                    <span id="progressText">0%</span>
-                </div>
-            </div>
-            
-            <div class="advanced-settings">
-                <h3 class="settings-title"><span>⚙️</span> Configuración Avanzada de Humanización</h3>
-                <div class="settings-grid">
-                    <div class="setting-item">
-                        <label for="intensity">Nivel de Humanización</label>
-                        <input type="range" id="intensity" class="slider" min="1" max="5" value="4">
-                        <div class="slider-value" id="intensityValue">Avanzado</div>
-                    </div>
-                    <div class="setting-item">
-                        <label for="formality">Nivel de Formalidad</label>
-                        <input type="range" id="formality" class="slider" min="1" max="5" value="3">
-                        <div class="slider-value" id="formalityValue">Neutral</div>
-                    </div>
-                    <div class="setting-item">
-                        <label for="creativity">Nivel de Creatividad</label>
-                        <input type="range" id="creativity" class="slider" min="1" max="5" value="4">
-                        <div class="slider-value" id="creativityValue">Alto</div>
-                    </div>
-                    <div class="setting-item">
-                        <label for="complexity">Variación de Estructura</label>
-                        <input type="range" id="complexity" class="slider" min="1" max="5" value="4">
-                        <div class="slider-value" id="complexityValue">Complejo</div>
-                    </div>
-                </div>
-
-                <div class="stats-container">
-                    <div class="stat-card">
-                        <div class="stat-label">Palabras procesadas</div>
-                        <div class="stat-value" id="wordCount">0</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-label">Texto humanizado</div>
-                        <div class="stat-value" id="humanizedCount">0</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-label">Tiempo ahorrado</div>
-                        <div class="stat-value" id="timeSaved">0h</div>
-                    </div>
-                </div>
-
-                <div class="history-section">
-                    <h3 class="settings-title"><span>📚</span> Historial Reciente</h3>
-                    <div id="historyList">
-                        <div class="history-item">No hay historial aún</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="features">
-            <h2>Tecnología de Humanización Avanzada</h2>
-            <div class="feature-grid">
-                <div class="feature">
-                    <h3><span class="feature-icon">🔒</span> Tecnología Stealth</h3>
-                    <p>Eliminamos los patrones de IA que los detectores buscan, haciendo el texto virtualmente indetectable para que estemos seguros.</p>
-                </div>
-                <div class="feature">
-                    <h3><span class="feature-icon">🔄</span> Reestructuración Profunda</h3>
-                    <p>Reescribimos completamente la estructura de las oraciones para imitar patrones humanos naturales y creíbles.</p>
-                </div>
-                <div class="feature">
-                    <h3><span class="feature-icon">🎭</span> Inserción de Imperfecciones</h3>
-                    <p>Añadimos variaciones sutiles y "errores" naturales que son característicos de la escritura humana real.</p>
-                </div>
-                <div class="feature">
-                    <h3><span class="feature-icon">📊</span> Análisis de Detección</h3>
-                    <p>Simulamos múltiples detectores de IA para asegurar que el texto resultante supere todas las pruebas.</p>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="footer">
-        <p>Hecho con 💖 para mi amor - Juntos contra todo © 2023</p>
-    </div>
-
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const inputText = document.getElementById('inputText');
-            const outputText = document.getElementById('outputText');
-            const processBtn = document.getElementById('processBtn');
-            const copyBtn = document.getElementById('copyBtn');
-            const downloadBtn = document.getElementById('downloadBtn');
-            const clearBtn = document.getElementById('clearBtn');
-            const progressBar = document.getElementById('progressBar');
-            const progressText = document.getElementById('progressText');
-            const aiScore = document.getElementById('aiScore');
-            const themeToggle = document.getElementById('themeToggle');
-            const intensitySlider = document.getElementById('intensity');
-            const intensityValue = document.getElementById('intensityValue');
-            const formalitySlider = document.getElementById('formality');
-            const formalityValue = document.getElementById('formalityValue');
-            const creativitySlider = document.getElementById('creativity');
-            const creativityValue = document.getElementById('creativityValue');
-            const complexitySlider = document.getElementById('complexity');
-            const complexityValue = document.getElementById('complexityValue');
-            const wordCount = document.getElementById('wordCount');
-            const humanizedCount = document.getElementById('humanizedCount');
-            const timeSaved = document.getElementById('timeSaved');
-            const historyList = document.getElementById('historyList');
-            
-            // Valores para los sliders
-            const intensityLevels = ["Básico", "Moderado", "Avanzado", "Profesional", "Extremo"];
-            const formalityLevels = ["Muy informal", "Informal", "Neutral", "Formal", "Muy formal"];
-            const creativityLevels = ["Mínima", "Baja", "Moderada", "Alta", "Máxima"];
-            const complexityLevels = ["Simple", "Moderado", "Variado", "Complejo", "Muy complejo"];
-            
-            let history = [];
-            let totalWordsProcessed = 0;
-            let totalTextsHumanized = 0;
-            
-            // Inicializar valores de los sliders
-            intensityValue.textContent = intensityLevels[intensitySlider.value - 1];
-            formalityValue.textContent = formalityLevels[formalitySlider.value - 1];
-            creativityValue.textContent = creativityLevels[creativitySlider.value - 1];
-            complexityValue.textContent = complexityLevels[complexitySlider.value - 1];
-            
-            // Actualizar valores de los sliders
-            intensitySlider.addEventListener('input', function() {
-                intensityValue.textContent = intensityLevels[this.value - 1];
-            });
-            
-            formalitySlider.addEventListener('input', function() {
-                formalityValue.textContent = formalityLevels[this.value - 1];
-            });
-            
-            creativitySlider.addEventListener('input', function() {
-                creativityValue.textContent = creativityLevels[this.value - 1];
-            });
-            
-            complexitySlider.addEventListener('input', function() {
-                complexityValue.textContent = complexityLevels[this.value - 1];
-            });
-            
-            // Toggle del modo oscuro
-            themeToggle.addEventListener('click', function() {
-                document.body.classList.toggle('dark-mode');
-                const isDarkMode = document.body.classList.contains('dark-mode');
-                themeToggle.innerHTML = isDarkMode ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
-                localStorage.setItem('darkMode', isDarkMode);
-            });
-            
-            // Cargar preferencia de modo oscuro
-            if (localStorage.getItem('darkMode') === 'true') {
-                document.body.classList.add('dark-mode');
-                themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
-            }
-            
-            // Diccionario avanzado de sinónimos y transformaciones - MEJORADO
-            const synonyms = {
-                "inteligencia artificial": ["IA", "sistemas inteligentes", "tecnología cognitiva", "machine learning", "algoritmos avanzados"],
-                "revolucionando": ["transformando", "cambiando radicalmente", "modificando profundamente", "innovando en"],
-                "diversas industrias": ["múltiples sectores", "distintos campos", "numerosos ámbitos", "variadas industrias"],
-                "capacidades de análisis": ["habilidades analíticas", "potencial de evaluación", "competencias examinadoras", "aptitud para el análisis"],
-                "automatización de procesos": ["mecanización de procedimientos", "sistematización de tareas", "automatización operativa", "robotización de procesos"],
-                "incrementando la eficiencia": ["mejorando el rendimiento", "optimizando la productividad", "aumentando la efectividad", "potenciando la eficacia"],
-                "implementación generalizada": ["aplicación extensiva", "uso generalizado", "implantación masiva", "adopción amplia"],
-                "plantea preocupaciones éticas": ["genera inquietudes morales", "presenta dilemas éticos", "suscita cuestionamientos deontológicos", "provoca debates éticos"],
-                "privacidad de los datos": ["confidencialidad de la información", "protección de datos personales", "reserva informativa", "intimidad digital"],
-                "pérdida de empleos": ["reducción de puestos laborales", "disminución de trabajos", "eliminación de ocupaciones", "merma de empleos"],
-                "sistemas autónomos": ["mecanismos independientes", "dispositivos autosuficientes", "sistemas autónomos", "tecnologías autogestionadas"],
-                "temas cruciales": ["asuntos fundamentales", "cuestiones críticas", "problemas esenciales", "temas primordiales"],
-                "consideración cuidadosa": ["reflexión detenida", "análisis exhaustivo", "evaluación minuciosa", "ponderación cuidadosa"],
-                "avance tecnológico": ["progreso tecnológico", "desarrollo técnico", "evolución digital", "innovación tecnológica"],
-                "marco regulatorio adecuado": ["reglamentación apropiada", "normativa pertinente", "estructura legal idónea", "regulación adecuada"],
-                "debate social informado": ["discusión colectiva documentada", "conversación pública educada", "diálogo social consciente", "debate comunitario ilustrado"],
-                "adopción responsable": ["implementación consciente", "uso prudente", "aplicación ética", "utilización responsable"],
-                "maximizar sus beneficios": ["optimizar sus ventajas", "potenciar sus aspectos positivos", "incrementar sus provechos", "amplificar sus beneficios"],
-                "mitigar sus riesgos": ["reducir sus peligros", "atenuar sus amenazas", "minimizar sus desventajas", "paliar sus riesgos"]
-            };
-            
-            // Expresiones humanas para insertar
-            const humanExpressions = [
-                "Desde mi punto de vista,",
-                "En mi experiencia,",
-                "La verdad es que",
-                "A decir verdad,",
-                "Personalmente, creo que",
-                "Me atrevería a decir que",
-                "Parece ser que",
-                "Curiosamente,",
-                "Como seguramente sabes,",
-                "Resulta interesante cómo",
-                "Es fascinante ver cómo",
-                "En realidad,",
-                "Lo que pasa es que",
-                "Desde luego,",
-                "Sin duda,"
-            ];
-            
-            // Conectores alternativos
-            const connectors = [
-                "Además,", "Por otro lado,", "En consecuencia,", 
-                "Asimismo,", "De hecho,", "En resumen,", 
-                "Es decir,", "En otras palabras,", "Sin duda,",
-                "Por tanto,", "No obstante,", "Sin embargo,",
-                "A continuación,", "En primer lugar,", "Finalmente,"
-            ];
-            
-            processBtn.addEventListener('click', function() {
-                const text = inputText.value.trim();
-                if (!text) {
-                    alert('Por favor, introduce algún texto para humanizar');
-                    return;
-                }
-                
-                // Deshabilitar botón durante el proceso
-                processBtn.disabled = true;
-                processBtn.innerHTML = '<span>⏳</span> Procesando...';
-                
-                // Iniciar proceso de humanización
-                humanizeText(text);
-            });
-            
-            copyBtn.addEventListener('click', function() {
-                if (!outputText.value) {
-                    alert('No hay texto para copiar');
-                    return;
-                }
-                
-                outputText.select();
-                document.execCommand('copy');
-                
-                // Feedback visual
-                const originalText = copyBtn.innerHTML;
-                copyBtn.innerHTML = '<span>✅</span> ¡Copiado!';
-                setTimeout(() => {
-                    copyBtn.innerHTML = originalText;
-                }, 2000);
-            });
-            
-            downloadBtn.addEventListener('click', function() {
-                if (!outputText.value) {
-                    alert('No hay texto para descargar');
-                    return;
-                }
-                
-                const blob = new Blob([outputText.value], { type: 'text/plain' });
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = 'texto-humanizado.txt';
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-                URL.revokeObjectURL(url);
-            });
-            
-            clearBtn.addEventListener('click', function() {
-                if (confirm('¿Estás seguro de que quieres limpiar todo el texto?')) {
-                    inputText.value = '';
-                    outputText.value = '';
-                    aiScore.textContent = '0%';
-                    aiScore.className = 'score-value human';
-                    progressBar.style.width = '0%';
-                    progressText.textContent = '0%';
-                }
-            });
-            
-            function humanizeText(text) {
-                let progress = 0;
-                let humanizedText = text;
-                
-                // Calcular palabras procesadas
-                const words = text.split(/\s+/).length;
-                totalWordsProcessed += words;
-                totalTextsHumanized++;
-                wordCount.textContent = totalWordsProcessed.toLocaleString();
-                humanizedCount.textContent = totalTextsHumanized.toLocaleString();
-                timeSaved.textContent = Math.round(totalWordsProcessed / 200) + 'h';
-                
-                const simulationSteps = [
-                    {name: "Analizando estructura...", progress: 15},
-                    {name: "Corrigiendo gramática...", progress: 30},
-                    {name: "Reescribiendo contenido...", progress: 50},
-                    {name: "Variando sintaxis...", progress: 70},
-                    {name: "Insertando expresiones humanas...", progress: 85},
-                    {name: "Verificando coherencia...", progress: 95},
-                    {name: "¡Texto mejorado listo!", progress: 100}
-                ];
-                
-                const interval = setInterval(() => {
-                    const step = simulationSteps.find(s => s.progress > progress) || simulationSteps[6];
-                    
-                    progressBar.style.width = `${step.progress}%`;
-                    progressText.textContent = step.name;
-                    
-                    if (step.progress === 15) {
-                        // Preprocesamiento
-                        humanizedText = cleanText(humanizedText);
-                    } else if (step.progress === 30) {
-                        // Corrección gramatical MEJORADA
-                        humanizedText = fixGrammar(humanizedText);
-                    } else if (step.progress === 50) {
-                        // Reescritura
-                        humanizedText = rewriteText(humanizedText);
-                    } else if (step.progress === 70) {
-                        // Variación sintáctica
-                        humanizedText = varySyntax(humanizedText);
-                    } else if (step.progress === 85) {
-                        // Inserción de expresiones
-                        humanizedText = insertExpressions(humanizedText);
-                    } else if (step.progress === 95) {
-                        // Chequeo final
-                        humanizedText = finalCheck(humanizedText);
-                    }
-                    
-                    progress = step.progress;
-                    
-                    if (progress >= 100) {
-                        clearInterval(interval);
-                        
-                        // Mostrar resultado final
-                        outputText.value = humanizedText;
-                        
-                        // Simular una reducción en la detección de IA
-                        const intensity = intensitySlider.value;
-                        const reduction = intensity * 18 + Math.floor(Math.random() * 5);
-                        const newScore = Math.max(2, 95 - reduction);
-                        
-                        aiScore.textContent = `${newScore}%`;
-                        aiScore.className = 'score-value ' + (newScore < 15 ? 'human' : 'ai');
-                        
-                        // Añadir al historial
-                        addToHistory(text, humanizedText);
-                        
-                        // Restaurar botón
-                        processBtn.disabled = false;
-                        processBtn.innerHTML = '<span>🪄</span> Humanizar Texto';
-                    }
-                }, 600);
-            }
-            
-            function cleanText(text) {
-                // Eliminar caracteres extraños y metadatos simulados
-                return text
-                    .replace(/\[.*?\]/g, '') // Eliminar corchetes
-                    .replace(/\{.*?\}/g, '') // Eliminar llaves
-                    .replace(/\s+/g, ' ') // Normalizar espacios
-                    .trim();
-            }
-            
-            function fixGrammar(text) {
-                // Corregir errores gramaticales comunes - MEJORADO
-                return text
-                    .replace(/\bla\s(\w+os\b)/gi, 'los $1') // "la algoritmos" -> "los algoritmos"
-                    .replace(/\bla\s(\w+as\b)/gi, 'las $1') // "la herramientas" -> "las herramientas"
-                    .replace(/\bel\s(\w+a\b)/gi, 'la $1')   // "el herramienta" -> "la herramienta"
-                    .replace(/\bun\s(\w+a\b)/gi, 'una $1')  // "un herramienta" -> "una herramienta"
-                    .replace(/\buna\s(\w+o\b)/gi, 'un $1')  // "una algoritmo" -> "un algoritmo"
-                    .replace(/(\w+)\s(\w+)\s(\w+)\s\1\s\2/gi, '$1 $2 $3') // Eliminar repeticiones
-                    .replace(/\bsuscite\b/gi, 'suscita') // Corrección de verbo
-                    .replace(/\bdeontológ\b/gi, 'deontológicos'); // Completar palabras cortadas
-            }
-            
-            function rewriteText(text) {
-                // Obtener nivel de intensidad
+            function addImperfections(text) {
+                // Añadir imperfecciones controladas para simular escritura humana
+                let words = text.split(' ');
                 const intensity = intensitySlider.value;
                 
-                // Reemplazar palabras con sinónimos (mejorado para evitar reemplazos parciales)
-                let newText = text;
+                // Probabilidad de añadir una imperfección basada en la intensidad
+                const imperfectionProbability = intensity * 0.05;
                 
-                // Ordenar las claves por longitud para reemplazar primero las frases más largas
-                const sortedKeys = Object.keys(synonyms).sort((a, b) => b.length - a.length);
-                
-                for (const phrase of sortedKeys) {
-                    const alternatives = synonyms[phrase];
-                    if (newText.toLowerCase().includes(phrase.toLowerCase())) {
-                        // Mayor intensidad = mayor probabilidad de reemplazo
-                        if (Math.random() < intensity * 0.15) {
-                            const randomSynonym = alternatives[Math.floor(Math.random() * alternatives.length)];
-                            // Usar expresión regular con word boundaries para evitar reemplazos parciales
-                            const regex = new RegExp(`\\b${phrase}\\b`, 'gi');
-                            newText = newText.replace(regex, (match) => {
-                                // Preservar capitalización
-                                if (match[0] === match[0].toUpperCase()) {
-                                    return randomSynonym.charAt(0).toUpperCase() + randomSynonym.slice(1);
-                                } else {
-                                    return randomSynonym;
+                for (let i = 0; i < words.length; i++) {
+                    if (Math.random() < imperfectionProbability) {
+                        // Decidir qué tipo de imperfección añadir
+                        const imperfectionType = Math.floor(Math.random() * 4);
+                        
+                        switch (imperfectionType) {
+                            case 0:
+                                // Añadir una muletilla
+                                const randomFiller = fillers[Math.floor(Math.random() * fillers.length)];
+                                words[i] = words[i] + ' ' + randomFiller;
+                                break;
+                            case 1:
+                                // Repetir una palabra (error común)
+                                if (i > 0) {
+                                    words[i] = words[i-1] + ' ' + words[i];
                                 }
-                            });
+                                break;
+                            case 2:
+                                // Cambiar el orden de letras (error de escritura)
+                                if (words[i].length > 3) {
+                                    const chars = words[i].split('');
+                                    const index = Math.floor(Math.random() * (chars.length - 1));
+                                    const temp = chars[index];
+                                    chars[index] = chars[index + 1];
+                                    chars[index + 1] = temp;
+                                    words[i] = chars.join('');
+                                }
+                                break;
+                            case 3:
+                                // Olvidar una letra (error de escritura)
+                                if (words[i].length > 2) {
+                                    const index = Math.floor(Math.random() * words[i].length);
+                                    words[i] = words[i].substring(0, index) + words[i].substring(index + 1);
+                                }
+                                break;
                         }
                     }
                 }
                 
-                return newText;
-            }
-            
-            function varySyntax(text) {
-                // Obtener nivel de creatividad y complejidad
-                const creativity = creativitySlider.value;
-                const complexity = complexitySlider.value;
-                
-                // Dividir en oraciones
-                let sentences = text.split(/(?<=[.!?])\s+/);
-                
-                if (sentences.length > 1) {
-                    // Mezclar estructuras de oraciones (más creatividad = más cambios)
-                    for (let i = 0; i < sentences.length; i++) {
-                        // Probabilidad basada en creatividad
-                        if (Math.random() < creativity * 0.15) {
-                            sentences[i] = changeSentenceStructure(sentences[i], complexity);
-                        }
-                    }
-                    
-                    // Añadir conectores alternativos
-                    for (let i = 1; i < sentences.length; i++) {
-                        if (i % 2 === 0 && Math.random() > 0.5) {
-                            const randomConnector = connectors[Math.floor(Math.random() * connectors.length)];
-                            sentences[i] = randomConnector + " " + sentences[i].toLowerCase();
-                        }
-                    }
-                }
-                
-                return sentences.join(' ');
-            }
-            
-            function changeSentenceStructure(sentence, complexity) {
-                // Cambiar la estructura de la oración sin cortar palabras
-                if (sentence.includes(",")) {
-                    // Reordenar cláusulas
-                    const clauses = sentence.split(',');
-                    if (clauses.length > 1) {
-                        // Mayor complejidad = más reorganización
-                        if (complexity > 3) {
-                            // Reorganizar aleatoriamente las cláusulas
-                            for (let i = clauses.length - 1; i > 0; i--) {
-                                const j = Math.floor(Math.random() * (i + 1));
-                                [clauses[i], clauses[j]] = [clauses[j], clauses[i]];
-                            }
-                            return clauses.join(', ').toLowerCase();
-                        } else {
-                            // Movemos la primera cláusula al final
-                            const reordered = clauses.slice(1).concat(clauses[0]);
-                            return reordered.join(', ').toLowerCase();
-                        }
-                    }
-                }
-                return sentence;
-            }
-            
-            function insertExpressions(text) {
-                // Insertar expresiones humanas aleatorias
-                let sentences = text.split(/(?<=[.!?])\s+/);
-                
-                if (sentences.length > 0 && Math.random() > 0.4) {
-                    const randomExpression = humanExpressions[Math.floor(Math.random() * humanExpressions.length)];
-                    sentences[0] = randomExpression + " " + sentences[0].toLowerCase();
-                }
-                
-                return sentences.join(' ');
+                return words.join(' ');
             }
             
             function finalCheck(text) {
