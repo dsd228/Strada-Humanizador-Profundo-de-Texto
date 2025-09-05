@@ -397,4 +397,412 @@
                 </button>
 
                 <button onclick="toggleConfidencial()" id="conf-btn">
-                    <svg class="icon" viewBox="0 0 24 24"><path d="M12 22
+                    <svg class="icon" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+                    Normal
+                </button>
+            </div>
+
+            <textarea id="input" placeholder="Pega tu texto aquí..."></textarea>
+
+            <div class="controls">
+                <button onclick="humanizar()">
+                    <svg class="icon" viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path></svg>
+                    Procesar
+                </button>
+                <button onclick="copiar()">
+                    <svg class="icon" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                    Copiar
+                </button>
+                <button onclick="exportarPDF()">
+                    <svg class="icon" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                    PDF
+                </button>
+                <button onclick="limpiar()">
+                    <svg class="icon" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
+                    Limpiar
+                </button>
+            </div>
+
+            <!-- Carga -->
+            <div class="loading" id="loading">
+                <div class="spinner"></div>
+                <p id="loading-msg">Analizando tu estilo...</p>
+            </div>
+
+            <!-- Sugerencia de coautor -->
+            <div class="coauthor-suggestion" id="coauthor-suggestion">
+                <p><strong>Sugerencia de coautor:</strong> "Este contenido explica cómo funciona el Estado argentino, sus elementos y forma de gobierno."</p>
+                <div class="coauthor-actions">
+                    <button onclick="aceptarSugerencia()" class="btn-small">✅ Aceptar</button>
+                    <button onclick="rechazarSugerencia()" class="btn-small">❌ Rechazar</button>
+                </div>
+            </div>
+
+            <!-- Feedback emocional -->
+            <div class="emotional-feedback" id="feedback"></div>
+
+            <!-- Resultado -->
+            <div class="output">
+                <textarea id="output" readonly placeholder="Aquí aparecerá el resultado..."></textarea>
+            </div>
+
+            <!-- Presentación -->
+            <div class="presentation" id="presentation"></div>
+
+            <!-- Historial -->
+            <div id="history" style="margin-top: 30px; display: none;">
+                <h3 style="color: var(--accent-light); margin-bottom: 18px; font-weight: 600;">📚 Tu Historial</h3>
+                <div id="history-list"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="toast" id="toast">¡Listo!</div>
+
+    <script>
+        // Generar partículas
+        const particles = document.getElementById('particles');
+        for (let i = 0; i < 50; i++) {
+            const p = document.createElement('div');
+            p.classList.add('particle');
+            p.style.left = Math.random() * 100 + 'vw';
+            p.style.top = Math.random() * 100 + 'vh';
+            p.style.animationDuration = (10 + Math.random() * 20) + 's';
+            p.style.animationDelay = (Math.random() * 10) + 's';
+            particles.appendChild(p);
+        }
+
+        // Estado
+        let darkMode = false;
+        let textoFinal = '';
+        let modoUsado = '';
+        let confidencialMode = false;
+        let emocionDetectada = 'neutral';
+        let sugerenciaActiva = false;
+        const historialKey = 'rps_historial_v10';
+        const temaKey = 'rps_tema';
+        const darkKey = 'rps_dark_mode_por_color';
+        const estiloKey = 'rps_estilo_personal';
+
+        // Temas emocionales
+        const temasEmocionales = {
+            democracia: { accent: '#0d9488', bg: 'linear-gradient(135deg, #0f172a, #020617)' },
+            justicia: { accent: '#0284c7', bg: 'linear-gradient(135deg, #0f172a, #020617)' },
+            crisis: { accent: '#7c3aed', bg: 'linear-gradient(135deg, #1a1a2e, #16213e)' },
+            logro: { accent: '#d97706', bg: 'linear-gradient(135deg, #fef3c7, #fbbf24)' },
+            tristeza: { accent: '#6b7280', bg: 'linear-gradient(135deg, #1f2937, #111827)' },
+            urgente: { accent: '#dc2626', bg: 'linear-gradient(135deg, #312e2b, #5d2a2a)' }
+        };
+
+        // Palabras clave emocionales
+        const emociones = {
+            democracia: ['democracia', 'voto', 'derechos', 'ciudadano'],
+            justicia: ['justicia', 'corte', 'ley', 'tribunal'],
+            crisis: ['crisis', 'problema', 'dificultad', 'conflicto'],
+            logro: ['éxito', 'logro', 'bien', 'avance', 'progreso'],
+            tristeza: ['pérdida', 'duelo', 'triste', 'difícil'],
+            urgente: ['urgente', 'rápido', 'ahora', 'inmediato']
+        };
+
+        // Sugerencias de coautor por tema
+        const sugerencias = {
+            democracia: 'Este contenido explica cómo funciona el sistema democrático en Argentina, sus principios y desafíos.',
+            justicia: 'Este texto aborda el sistema de justicia argentino, sus instituciones y el rol de la Corte Suprema.',
+            logro: 'Este es un gran avance en tu comprensión del sistema político. Lo explicás con claridad y profundidad.',
+            default: 'Este contenido explica la organización política del Estado Nacional, sus elementos, forma de gobierno y división de poderes.'
+        };
+
+        // Detectar emoción
+        function detectarEmocion(texto) {
+            const textoLower = texto.toLowerCase();
+            for (const [emocion, palabras] of Object.entries(emociones)) {
+                if (palabras.some(p => textoLower.includes(p))) {
+                    return emocion;
+                }
+            }
+            return 'neutral';
+        }
+
+        // Aplicar tema emocional
+        function aplicarTemaEmocional(emocion) {
+            const tema = temasEmocionales[emocion] || temasEmocionales.democracia;
+            document.documentElement.style.setProperty('--accent', tema.accent);
+            document.documentElement.style.setProperty('--accent-light', tema.accent);
+            document.body.style.background = tema.bg;
+        }
+
+        // Cargar estado
+        window.addEventListener('DOMContentLoaded', () => {
+            const savedTema = localStorage.getItem(temaKey) || 'green';
+            selectColor(savedTema);
+            cargarHistorial();
+        });
+
+        // Iniciar modo
+        function startMode(mode) {
+            document.getElementById('onboarding').style.display = 'none';
+            document.getElementById('main-content').style.display = 'block';
+            modoUsado = mode;
+
+            const feedback = document.getElementById('feedback');
+            if (mode === 'coautor') {
+                feedback.textContent = 'Pega tu texto. Te sugeriré frases que suenen como vos.';
+                feedback.style.display = 'block';
+            } else if (mode === 'inspira') {
+                const input = document.getElementById('input');
+                input.placeholder = 'Escribe un tema... ej: democracia, justicia, sistema político';
+                feedback.textContent = 'Escribe un tema y te daré 3 ideas para empezar.';
+                feedback.style.display = 'block';
+            } else if (mode === 'presentacion') {
+                feedback.textContent = 'Pega tu contenido. Lo dividiré en diapositivas listas para exponer.';
+                feedback.style.display = 'block';
+            }
+        }
+
+        // Alternar modo oscuro
+        function toggleDarkMode() {
+            darkMode = !darkMode;
+            document.body.classList.toggle('dark-mode', darkMode);
+            const color = localStorage.getItem(temaKey) || 'green';
+            const modoPorColor = JSON.parse(localStorage.getItem(darkKey) || '{}');
+            modoPorColor[color] = darkMode;
+            localStorage.setItem(darkKey, JSON.stringify(modoPorColor));
+
+            const btn = document.getElementById('mode-btn');
+            btn.innerHTML = darkMode 
+                ? '<svg class="icon" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg> Modo Claro' 
+                : '<svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg> Modo Oscuro';
+        }
+
+        // Modo confidencial
+        function toggleConfidencial() {
+            confidencialMode = !confidencialMode;
+            const container = document.querySelector('.container');
+            const btn = document.getElementById('conf-btn');
+            
+            if (confidencialMode) {
+                container.classList.add('confidential-active');
+                btn.innerHTML = '<svg class="icon" viewBox="0 0 24 24"><path d="M12 15v3m-3-3h6M12 6v3m-3-3h6"></path><circle cx="12" cy="12" r="9"></circle></svg> Confidencial';
+            } else {
+                container.classList.remove('confidential-active');
+                btn.innerHTML = '<svg class="icon" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg> Normal';
+            }
+        }
+
+        // Detectar tipo de texto
+        function detectarTipo(texto) {
+            const lineas = texto.split('\n').filter(l => l.trim());
+            const tieneDosPuntos = lineas.filter(l => l.includes(':') && !l.endsWith(':')).length;
+            const esLista = lineas.filter(l => l.trim().startsWith('-') || l.trim().startsWith('*') || l.match(/^\d+\./)).length;
+            const longitudPromedio = texto.length / lineas.length;
+
+            if (esLista > 3) return 'lista';
+            if (tieneDosPuntos > 4) return 'definiciones';
+            if (longitudPromedio > 80) return 'parrafo';
+            return 'mixto';
+        }
+
+        // Elegir modo
+        function elegirModo(tipo) {
+            if (modoUsado === 'presentacion') return 'presentacion';
+            if (tipo === 'definiciones' || tipo === 'lista') return 'formal';
+            if (tipo === 'parrafo') return 'fluidez';
+            return 'formal';
+        }
+
+        // Procesar texto
+        function procesarTexto(input, modo) {
+            let lines = input
+                .replace(/\n+/g, '\n')
+                .split('\n')
+                .map(l => l.trim())
+                .filter(l => l);
+
+            let result = [];
+            let seen = new Set();
+
+            result.push(lines[0] + '.');
+            result.push('');
+            seen.add(lines[0].toLowerCase());
+
+            for (let i = 1; i < lines.length; i++) {
+                let line = lines[i];
+                if (seen.has(line.toLowerCase())) continue;
+                seen.add(line.toLowerCase());
+
+                if (modo === 'fluidez' && !line.endsWith(':') && line.length > 40 && Math.random() < 0.4) {
+                    const trans = ['Por otro lado,', 'Además,', 'Es importante destacar que'][Math.floor(Math.random() * 3)];
+                    result.push(trans + ' ' + line.charAt(0).toLowerCase() + line.slice(1));
+                } else {
+                    result.push(line);
+                }
+
+                if (line.endsWith(':') && i < lines.length - 1) {
+                    result.push('');
+                }
+            }
+
+            if (lines.length > 10) {
+                result.push('');
+                result.push('📌 **Resumen:** Este contenido explica la organización política del Estado Nacional, sus elementos, forma de gobierno y división de poderes.');
+            }
+
+            return result.join('\n');
+        }
+
+        // Función principal
+        function humanizar() {
+            const input = document.getElementById('input').value.trim();
+            if (!input) {
+                alert('Pega un texto primero');
+                return;
+            }
+
+            document.getElementById('feedback').style.display = 'none';
+            document.getElementById('coauthor-suggestion').style.display = 'none';
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('loading-msg').textContent = 'Analizando tu estilo...';
+
+            setTimeout(() => {
+                document.getElementById('loading').style.display = 'none';
+
+                // Detectar emoción
+                emocionDetectada = detectarEmocion(input);
+                aplicarTemaEmocional(emocionDetectada);
+
+                const tipo = detectarTipo(input);
+                const modo = elegirModo(tipo);
+                modoUsado = modo;
+                textoFinal = procesarTexto(input, modo);
+                document.getElementById('output').value = textoFinal;
+
+                // Sugerencia de coautor
+                const coauthor = document.getElementById('coauthor-suggestion');
+                const sugerencia = sugerencias[emocionDetectada] || sugerencias.default;
+                coauthor.querySelector('p').innerHTML = `<strong>Sugerencia de coautor:</strong> "${sugerencia}"`;
+                coauthor.style.display = 'block';
+                sugerenciaActiva = true;
+
+                // Feedback emocional
+                const feedback = document.getElementById('feedback');
+                const mensajes = {
+                    democracia: 'Tu explicación sobre democracia es clara y justa.',
+                    justicia: 'Este texto transmite equilibrio y precisión.',
+                    crisis: 'Abordaste el tema con seriedad y empatía.',
+                    logro: 'Se nota tu entusiasmo. ¡Este es un gran avance!',
+                    neutral: 'Este texto suena como vos. Natural y preciso.'
+                };
+                feedback.textContent = mensajes[emocionDetectada] || mensajes.neutral;
+                feedback.style.display = 'block';
+
+                // Guardar si no es confidencial
+                if (!confidencialMode) {
+                    guardarEnHistorial(input, textoFinal, modo);
+                }
+
+                mostrarToast('✅ Listo');
+            }, 2000);
+        }
+
+        // Aceptar sugerencia
+        function aceptarSugerencia() {
+            const output = document.getElementById('output');
+            const sugerencia = document.getElementById('coauthor-suggestion').querySelector('p').textContent.replace('Sugerencia de coautor: ', '');
+            output.value = sugerencia + '\n\n' + output.value;
+            document.getElementById('coauthor-suggestion').style.display = 'none';
+            mostrarToast('Sugerencia añadida');
+        }
+
+        // Rechazar sugerencia
+        function rechazarSugerencia() {
+            document.getElementById('coauthor-suggestion').style.display = 'none';
+            mostrarToast('Sugerencia rechazada');
+        }
+
+        // Guardar en historial
+        function guardarEnHistorial(input, output, modo) {
+            const hist = JSON.parse(localStorage.getItem(historialKey) || '[]');
+            const titulo = input.split('\n')[0].substring(0, 50) + '...';
+            const preview = input.replace(/\n/g, ' ').substring(0, 120) + '...';
+            hist.unshift({ 
+                titulo, 
+                texto: input, 
+                resultado: output, 
+                modo, 
+                fecha: new Date().toLocaleString(), 
+                preview,
+                emocion: emocionDetectada
+            });
+            if (hist.length > 5) hist.pop();
+            localStorage.setItem(historialKey, JSON.stringify(hist));
+            cargarHistorial();
+        }
+
+        // Cargar historial
+        function cargarHistorial() {
+            const hist = JSON.parse(localStorage.getItem(historialKey) || '[]');
+            const list = document.getElementById('history-list');
+            if (hist.length > 0) {
+                document.getElementById('history').style.display = 'block';
+                list.innerHTML = '';
+                hist.forEach(item => {
+                    const div = document.createElement('div');
+                    div.className = 'history-item';
+                    div.innerHTML = `
+                        <strong>${item.titulo}</strong>
+                        <div class="history-preview">${item.preview}</div>
+                        <span class="tag">${item.modo}</span>
+                    `;
+                    div.onclick = () => {
+                        document.getElementById('input').value = item.texto;
+                        document.getElementById('output').value = item.resultado;
+                        aplicarTemaEmocional(item.emocion);
+                    };
+                    list.appendChild(div);
+                });
+            }
+        }
+
+        // Exportar PDF
+        function exportarPDF() {
+            if (!textoFinal) return;
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            doc.setFontSize(12);
+            const lines = doc.splitTextToSize(textoFinal, 180);
+            doc.text(lines, 15, 20);
+            doc.save('redactapro-supremo.pdf');
+        }
+
+        // Copiar
+        function copiar() {
+            const out = document.getElementById('output');
+            if (!out.value) return;
+            out.select();
+            document.execCommand('copy');
+            mostrarToast('📋 Copiado');
+        }
+
+        // Limpiar
+        function limpiar() {
+            document.getElementById('input').value = '';
+            document.getElementById('output').value = '';
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('feedback').style.display = 'none';
+            document.getElementById('coauthor-suggestion').style.display = 'none';
+            if (confidencialMode) toggleConfidencial(); // Reset
+        }
+
+        // Mostrar toast
+        function mostrarToast(msg) {
+            const t = document.getElementById('toast');
+            t.textContent = msg;
+            t.classList.add('show');
+            setTimeout(() => t.classList.remove('show'), 2000);
+        }
+    </script>
+
+    <!-- Librería para PDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+</body>
+</html>
