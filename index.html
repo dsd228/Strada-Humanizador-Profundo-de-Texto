@@ -1,4 +1,4 @@
-1111<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
@@ -476,7 +476,7 @@
             return text;
         }
         
-        // Añadir toque humano con criterio
+        // Añadir toque humano con inteligencia
         function addHumanTouch(text, settings) {
             if (!settings.naturalFlow) return text;
             
@@ -485,28 +485,13 @@
             const fillers = ["bueno", "vale", "la verdad", "en cierto modo"];
             const intros = ["Vamos a ver...", "La idea es...", "Básicamente,", "En esta unidad"];
             
-            // Palabras clave que no deben alterarse
-            const protectedLines = [
-                'Participación efectiva',
-                'Igualdad de votos',
-                'Electorado informado',
-                'Control ciudadano',
-                'Inclusión',
-                'Derechos fundamentales',
-                'Referéndum',
-                'Plebiscito',
-                'Código Electoral Nacional',
-                'Ley de Partidos Políticos',
-                'Sistema D’Hondt',
-                'Principios:'
-            ];
-            
             let introAdded = false;
+            let touchCount = 0; // Máximo 1 toque humano para textos técnicos
             
             for (let i = 0; i < lines.length; i++) {
                 let line = lines[i];
                 
-                // Intro en el título
+                // Añadir intro solo en título
                 if (!introAdded && line.toLowerCase().includes('unidad') && Math.random() < 0.7) {
                     const intro = intros[Math.floor(Math.random() * intros.length)];
                     if (!intro.toLowerCase().includes('unidad')) {
@@ -515,13 +500,26 @@
                     introAdded = true;
                 }
                 
-                // Añadir muletilla en definiciones simples
-                if (line.includes(':') && !protectedLines.some(p => line.startsWith(p))) {
+                // Aplicar toque humano SOLO en definiciones generales, no en términos técnicos
+                else if (touchCount < 1 && line.includes(':') && !line.endsWith(':')) {
                     const parts = line.split(':');
-                    const definition = parts[1].trim();
-                    if (definition.length > 10 && definition.length < 100 && Math.random() < 0.5) {
+                    const key = parts[0].trim();
+                    const value = parts[1].trim();
+                    
+                    // Términos que NUNCA deben tener muletillas
+                    const protectedTerms = [
+                        'Referéndum', 'Plebiscito', 'Código Electoral Nacional',
+                        'Ley de Partidos Políticos', 'Sistema D’Hondt', 'Principios',
+                        'Poliarquía', 'Robert Dahl', 'Democracia semidirecta'
+                    ];
+                    
+                    const isProtected = protectedTerms.some(term => key.includes(term));
+                    
+                    // Solo aplicar en definiciones simples y generales
+                    if (!isProtected && key === 'Democracia' && value.length > 10) {
                         const filler = fillers[Math.floor(Math.random() * fillers.length)];
-                        line = `${parts[0]}: ${filler}, ${definition.charAt(0).toLowerCase() + definition.slice(1)}`;
+                        line = `${key}: ${filler}, ${value.charAt(0).toLowerCase() + value.slice(1)}`;
+                        touchCount++;
                     }
                 }
                 
