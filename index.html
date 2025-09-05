@@ -3,1149 +3,571 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Humanizador Pro de Texto IA - Mejorado</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
+    <title>RedactaPro Supremo - V7</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/konva@9/konva.min.js"></script>
+    <style id="theme-style">
         :root {
-            --primary: #2c3e50;
-            --primary-dark: #1a252f;
-            --secondary: #3498db;
-            --accent: #e74c3c;
-            --light: #f8f9fa;
-            --dark: #212529;
-            --success: #2ecc71;
-            --warning: #f39c12;
-            --danger: #e74c3c;
-            --gray: #7f8c8d;
-            --border: #dee2e6;
-            --card-bg: #ffffff;
-            --text-color: #2c3e50;
+            --bg: #0f172a;
+            --bg-secondary: rgba(30, 41, 59, 0.7);
+            --text: #e2e8f0;
+            --text-secondary: #94a3b8;
+            --accent: #0d9488;
+            --accent-light: #14b8a6;
+            --border: #334155;
+            --shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            --radius: 16px;
+            --transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        .dark-mode {
-            --primary: #3498db;
-            --primary-dark: #2c3e50;
-            --light: #1a1a1a;
-            --dark: #f8f9fa;
-            --card-bg: #2d3748;
-            --text-color: #e2e8f0;
-            --border: #4a5568;
-            --gray: #a0aec0;
+        .light-mode {
+            --bg: #f8fafc;
+            --bg-secondary: rgba(248, 250, 252, 0.85);
+            --text: #0f172a;
+            --text-secondary: #64748b;
+            --border: #e2e8f0;
         }
-        
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-        
+
         body {
-            background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
-            color: var(--text-color);
-            line-height: 1.6;
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, var(--bg), #020617);
+            color: var(--text);
+            line-height: 1.7;
             padding: 20px;
+            margin: 0;
             min-height: 100vh;
-            transition: background 0.3s ease;
+            transition: var(--transition);
+            overflow-x: hidden;
         }
-        
+
         .container {
-            max-width: 1200px;
+            max-width: 900px;
             margin: 0 auto;
-            background: var(--card-bg);
-            border-radius: 15px;
-            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
-            overflow: hidden;
+            background: var(--bg-secondary);
+            padding: 32px;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: var(--transition);
         }
-        
-        header {
-            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-            color: white;
-            padding: 35px;
-            text-align: center;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        header::before {
-            content: "";
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 60%);
-            transform: rotate(30deg);
-        }
-        
+
         h1 {
-            font-size: 2.8rem;
-            margin-bottom: 15px;
-            position: relative;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            text-align: center;
+            color: var(--accent-light);
+            margin: 0 0 12px 0;
+            font-weight: 700;
+            font-size: 1.8rem;
         }
-        
-        .description {
-            font-size: 1.2rem;
-            opacity: 0.9;
-            max-width: 800px;
-            margin: 0 auto;
-            position: relative;
-            line-height: 1.5;
-        }
-        
-        .tool-container {
-            display: flex;
-            flex-direction: column;
-            padding: 35px;
-        }
-        
-        .panels-container {
-            display: flex;
-            gap: 25px;
+
+        p.subtitle {
+            text-align: center;
+            color: var(--text-secondary);
+            font-size: 1.1rem;
             margin-bottom: 30px;
         }
-        
-        .input-panel, .output-panel {
-            flex: 1;
-            background: var(--light);
-            border-radius: 12px;
-            padding: 25px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
-        }
-        
-        .section-title {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            margin-bottom: 20px;
-            color: var(--primary-dark);
-            font-size: 1.4rem;
-            font-weight: 600;
-        }
-        
-        textarea {
-            width: 100%;
-            min-height: 280px;
-            padding: 20px;
-            border: 2px solid var(--border);
-            border-radius: 10px;
-            resize: vertical;
-            font-size: 1.05rem;
-            line-height: 1.6;
-            transition: all 0.3s ease;
-            box-shadow: inset 0 2px 6px rgba(0,0,0,0.06);
-            background: white;
-            color: var(--dark);
-        }
-        
-        textarea:focus {
-            outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 0 4px rgba(67, 97, 238, 0.2), inset 0 2px 6px rgba(0,0,0,0.06);
-        }
-        
-        .controls {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin: 25px 0;
-            flex-wrap: wrap;
-            gap: 20px;
-            padding: 20px;
-            background: var(--light);
-            border-radius: 12px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
-        }
-        
+
+        /* Botones */
         button {
-            background: linear-gradient(to right, var(--primary), var(--secondary));
+            background: linear-gradient(90deg, var(--accent), #059669);
             color: white;
             border: none;
-            padding: 16px 32px;
-            border-radius: 10px;
+            padding: 12px 20px;
+            border-radius: 12px;
             cursor: pointer;
             font-weight: 600;
-            transition: all 0.3s ease;
-            display: flex;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            font-size: 0.95rem;
+            box-shadow: 0 4px 14px rgba(13, 148, 136, 0.25);
+            border: 1px solid rgba(13, 148, 136, 0.3);
+            display: inline-flex;
             align-items: center;
-            gap: 12px;
-            box-shadow: 0 5px 12px rgba(0,0,0,0.15);
-            font-size: 1.05rem;
+            justify-content: center;
+            gap: 8px;
+            margin: 5px;
         }
-        
+
         button:hover {
             transform: translateY(-3px);
-            box-shadow: 0 8px 18px rgba(0,0,0,0.2);
+            box-shadow: 0 8px 24px rgba(13, 148, 136, 0.35);
         }
-        
+
         button:active {
-            transform: translateY(0);
+            transform: translateY(-1px);
         }
-        
-        button:disabled {
-            background: var(--gray);
-            cursor: not-allowed;
-            transform: none;
-        }
-        
-        .process-indicator {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            color: var(--gray);
-            font-weight: 500;
-            font-size: 1.1rem;
-        }
-        
-        .progress-bar {
-            width: 250px;
-            height: 12px;
-            background-color: #e9ecef;
-            border-radius: 8px;
-            overflow: hidden;
-        }
-        
-        .progress {
-            height: 100%;
-            background: linear-gradient(90deg, var(--primary), var(--success));
-            width: 0%;
-            transition: width 0.5s ease;
-            border-radius: 8px;
-        }
-        
-        .output-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
-            gap: 15px;
-        }
-        
-        .ai-score {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            font-size: 1.1rem;
-            background: var(--card-bg);
-            padding: 10px 18px;
-            border-radius: 25px;
-            box-shadow: 0 3px 8px rgba(0,0,0,0.1);
-        }
-        
-        .score-value {
-            font-weight: bold;
-            padding: 5px 15px;
-            border-radius: 20px;
-            background: var(--light);
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-            min-width: 60px;
-            text-align: center;
-        }
-        
-        .human {
-            color: #2ecc71;
-        }
-        
-        .ai {
-            color: #e74c3c;
-        }
-        
-        .action-buttons {
-            display: flex;
-            gap: 15px;
-            margin-top: 20px;
-            flex-wrap: wrap;
-        }
-        
-        .copy-btn {
-            background: linear-gradient(to right, var(--success), #27ae60);
-        }
-        
-        .download-btn {
-            background: linear-gradient(to right, var(--warning), #e67e22);
-        }
-        
-        .clear-btn {
-            background: linear-gradient(to right, var(--danger), #c0392b);
-        }
-        
-        .advanced-settings {
-            background: var(--light);
-            padding: 25px;
-            border-radius: 12px;
-            margin-top: 30px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
-        }
-        
-        .settings-title {
-            font-size: 1.3rem;
-            margin-bottom: 20px;
-            color: var(--primary);
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-        
-        .settings-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-        }
-        
-        .setting-item {
-            background: var(--card-bg);
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 3px 10px rgba(0,0,0,0.08);
-        }
-        
-        .setting-item label {
-            display: block;
-            margin-bottom: 12px;
-            font-weight: 600;
-            color: var(--primary-dark);
-        }
-        
-        .slider {
+
+        /* Textarea */
+        textarea {
             width: 100%;
-            margin: 15px 0;
-        }
-        
-        .slider-value {
-            text-align: center;
-            font-weight: 600;
-            color: var(--primary);
-            margin-top: 10px;
-        }
-        
-        .features {
-            background: linear-gradient(to bottom, var(--light), #e9ecef);
-            padding: 50px 35px;
-            border-top: 1px solid var(--border);
-        }
-        
-        .features h2 {
-            text-align: center;
-            margin-bottom: 40px;
-            color: var(--primary-dark);
-            font-size: 2.2rem;
-        }
-        
-        .feature-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 30px;
-        }
-        
-        .feature {
-            background: var(--card-bg);
-            padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
-            transition: all 0.3s ease;
-            border-top: 5px solid var(--primary);
-            text-align: center;
-        }
-        
-        .feature:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
-        }
-        
-        .feature h3 {
-            color: var(--primary);
-            margin-bottom: 20px;
-            font-size: 1.4rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 15px;
-        }
-        
-        .feature-icon {
-            font-size: 32px;
-        }
-        
-        .feature p {
-            color: var(--gray);
-            line-height: 1.6;
-        }
-        
-        .footer {
-            text-align: center;
-            padding: 25px;
-            color: white;
+            min-height: 200px;
+            padding: 20px;
+            margin: 16px 0;
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            background: rgba(15, 23, 42, 0.6);
+            color: var(--text);
             font-size: 1rem;
-            opacity: 0.9;
-            background: var(--primary-dark);
+            resize: vertical;
+            backdrop-filter: blur(6px);
+            transition: all 0.3s;
+            font-family: 'Inter', monospace;
         }
-        
-        .badge {
-            display: inline-block;
-            background: var(--success);
-            color: white;
-            padding: 5px 12px;
-            border-radius: 20px;
+
+        textarea:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.3);
+            background: rgba(15, 23, 42, 0.7);
+        }
+
+        /* Detector de IA */
+        .ia-detector {
+            background: rgba(220, 38, 38, 0.1);
+            border: 1px solid rgba(220, 38, 38, 0.3);
+            padding: 16px;
+            border-radius: 12px;
+            margin: 18px 0;
+            font-size: 0.95rem;
+            color: #fca5a5;
+            display: none;
+        }
+
+        .ia-suggestion {
+            background: rgba(13, 148, 136, 0.1);
+            border: 1px solid rgba(13, 148, 136, 0.3);
+            padding: 12px;
+            border-radius: 8px;
+            margin: 10px 0;
             font-size: 0.9rem;
+        }
+
+        /* Mapa de ideas */
+        #mapa-container {
+            margin: 20px 0;
+            border-radius: 12px;
+            overflow: hidden;
+            display: none;
+        }
+
+        /* Resumen de voz */
+        .voz-controls {
+            display: flex;
+            gap: 10px;
+            margin: 15px 0;
+            flex-wrap: wrap;
+        }
+
+        /* Historial */
+        .history-item {
+            padding: 16px;
+            margin: 10px 0;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 14px;
+            cursor: pointer;
+            font-size: 0.95rem;
+            transition: all 0.3s;
+            border-left: 5px solid var(--accent);
+        }
+
+        .history-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .tag {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
             font-weight: 600;
             margin-left: 10px;
+            background: var(--accent);
+            color: white;
         }
-        
-        .theme-toggle {
+
+        /* Toast */
+        .toast {
             position: fixed;
-            top: 20px;
-            right: 20px;
-            z-index: 1000;
-            background: var(--card-bg);
-            border: none;
-            border-radius: 50%;
-            width: 50px;
-            height: 50px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
-            cursor: pointer;
-        }
-        
-        .stats-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
-            margin-top: 20px;
-        }
-        
-        .stat-card {
-            background: var(--card-bg);
-            padding: 15px;
-            border-radius: 8px;
-            text-align: center;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-        }
-        
-        .stat-value {
-            font-size: 2rem;
-            font-weight: bold;
-            color: var(--primary);
-            margin: 10px 0;
-        }
-        
-        .stat-label {
-            color: var(--gray);
-            font-size: 0.9rem;
-        }
-        
-        .history-section {
-            margin-top: 30px;
-        }
-        
-        .history-item {
-            padding: 10px;
-            border-bottom: 1px solid var(--border);
-            cursor: pointer;
-            transition: background 0.2s ease;
-        }
-        
-        .history-item:hover {
-            background: rgba(0,0,0,0.05);
+            bottom: 24px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--bg-secondary);
+            color: var(--text);
+            padding: 16px 28px;
+            border-radius: 16px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
+            opacity: 0;
+            transition: opacity 0.4s;
+            z-index: 100;
+            backdrop-filter: blur(12px);
         }
 
-        .quality-indicator {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-top: 15px;
-            font-size: 0.9rem;
-            color: var(--gray);
-        }
-
-        .quality-bar {
-            flex-grow: 1;
-            height: 6px;
-            background: #e9ecef;
-            border-radius: 3px;
-            overflow: hidden;
-        }
-
-        .quality-progress {
-            height: 100%;
-            background: linear-gradient(90deg, var(--success), #27ae60);
-            width: 92%;
-        }
-        
-        @media (max-width: 968px) {
-            .panels-container {
-                flex-direction: column;
-            }
-            
-            .controls {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-            
-            .process-indicator {
-                width: 100%;
-                margin-top: 15px;
-            }
-            
-            .progress-bar {
-                width: 100%;
-            }
-        }
-        
-        @media (max-width: 768px) {
-            h1 {
-                font-size: 2.2rem;
-            }
-            
-            .description {
-                font-size: 1rem;
-            }
-            
-            .tool-container {
-                padding: 25px;
-            }
-            
-            .action-buttons {
-                flex-direction: column;
-            }
-            
-            button {
-                width: 100%;
-                justify-content: center;
-            }
-            
-            .settings-grid {
-                grid-template-columns: 1fr;
-            }
+        .toast.show {
+            opacity: 1;
         }
     </style>
 </head>
 <body>
-    <button class="theme-toggle" id="themeToggle">
-        <i class="fas fa-moon"></i>
-    </button>
-
     <div class="container">
-        <header>
-            <h1>Humanizador Pro de Texto IA <span class="badge">Premium</span></h1>
-            <p class="description">Transformamos texto de IA en contenido humano de alta calidad, profesional y coherente.</p>
-        </header>
-        
-        <div class="tool-container">
-            <div class="panels-container">
-                <div class="input-panel">
-                    <div class="section-title">
-                        <span>📥</span>
-                        <h2>Texto original de IA</h2>
-                    </div>
-                    <textarea id="inputText" placeholder="Pega aquí el texto generado por IA...">Unidad 2: Democracia y representatividad
-Democracia: Gobierno del pueblo, por el pueblo y para el pueblo.
-Robert Dahl: Criterios para una democracia ideal:
-Participación efectiva
-Igualdad de votos
-Electorado informado
-Control ciudadano
-Inclusión
-Derechos fundamentales
-Poliarquía: Democracia real con múltiples centros de poder.
-Democracia semidirecta:
-Referéndum: Consulta sobre leyes.
-Plebiscito: Consulta sobre decisiones políticas.
-Sistema electoral argentino:
-Código Electoral Nacional: Regula elecciones.
-Ley de Partidos Políticos: Regula funcionamiento de partidos.
-Sistema D’Hondt: Distribución proporcional de cargos legislativos.
-Principios: Universalidad, igualdad, secreto, libertad, obligatoriedad.</textarea>
-                </div>
-                
-                <div class="output-panel">
-                    <div class="output-header">
-                        <div class="section-title">
-                            <span>📤</span>
-                            <h2>Texto humanizado</h2>
-                        </div>
-                        <div class="ai-score">
-                            <span>Probabilidad de IA:</span>
-                            <span class="score-value human" id="aiScore">7%</span>
-                        </div>
-                    </div>
-                    <textarea id="outputText" readonly></textarea>
-                    <div class="quality-indicator">
-                        <span>Calidad del resultado:</span>
-                        <div class="quality-bar">
-                            <div class="quality-progress"></div>
-                        </div>
-                        <span>92%</span>
-                    </div>
-                    <div class="action-buttons">
-                        <button id="copyBtn" class="copy-btn">
-                            <span>📋</span> Copiar texto
-                        </button>
-                        <button id="downloadBtn" class="download-btn">
-                            <span>💾</span> Descargar como TXT
-                        </button>
-                        <button id="clearBtn" class="clear-btn">
-                            <span>🗑️</span> Limpiar todo
-                        </button>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="controls">
-                <button id="processBtn">
-                    <span>🪄</span> Humanizar Texto
-                </button>
-                <div class="process-indicator">
-                    <span>Procesando:</span>
-                    <div class="progress-bar">
-                        <div class="progress" id="progressBar"></div>
-                    </div>
-                    <span id="progressText">0%</span>
-                </div>
-            </div>
-            
-            <div class="advanced-settings">
-                <h3 class="settings-title"><span>⚙️</span> Configuración Avanzada de Humanización</h3>
-                <div class="settings-grid">
-                    <div class="setting-item">
-                        <label for="intensity">Nivel de Humanización</label>
-                        <input type="range" id="intensity" class="slider" min="1" max="5" value="3">
-                        <div class="slider-value" id="intensityValue">Avanzado</div>
-                    </div>
-                    <div class="setting-item">
-                        <label for="formality">Nivel de Formalidad</label>
-                        <input type="range" id="formality" class="slider" min="1" max="5" value="4">
-                        <div class="slider-value" id="formalityValue">Formal</div>
-                    </div>
-                    <div class="setting-item">
-                        <label for="creativity">Nivel de Creatividad</label>
-                        <input type="range" id="creativity" class="slider" min="1" max="5" value="3">
-                        <div class="slider-value" id="creativityValue">Moderada</div>
-                    </div>
-                    <div class="setting-item">
-                        <label for="complexity">Variación de Estructura</label>
-                        <input type="range" id="complexity" class="slider" min="1" max="5" value="3">
-                        <div class="slider-value" id="complexityValue">Moderado</div>
-                    </div>
-                </div>
+        <h1>RedactaPro Supremo</h1>
+        <p class="subtitle">🎙️ V7 - Voz • Mapa • Detector IA • Resumen</p>
 
-                <div class="stats-container">
-                    <div class="stat-card">
-                        <div class="stat-label">Palabras procesadas</div>
-                        <div class="stat-value" id="wordCount">0</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-label">Texto humanizado</div>
-                        <div class="stat-value" id="humanizedCount">0</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-label">Tiempo ahorrado</div>
-                        <div class="stat-value" id="timeSaved">0h</div>
-                    </div>
-                </div>
+        <textarea id="input" placeholder="Pega tu texto aquí..."></textarea>
 
-                <div class="history-section">
-                    <h3 class="settings-title"><span>📚</span> Historial Reciente</h3>
-                    <div id="historyList">
-                        <div class="history-item">No hay historial aún</div>
-                    </div>
-                </div>
-            </div>
+        <div class="controls">
+            <button onclick="detectarTonoRobótico()">
+                <svg class="icon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <line x1="12" y1="8" x2="12" y2="12"></line>
+                    <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                </svg>
+                Analizar IA
+            </button>
+            <button onclick="empezarEntrenamientoVoz()">
+                <svg class="icon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path>
+                    <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+                    <line x1="12" y1="19" x2="12" y2="23"></line>
+                    <line x1="8" y1="23" x2="16" y2="23"></line>
+                </svg>
+                Entrenar con Voz
+            </button>
+            <button onclick="generarResumenVoz()">
+                <svg class="icon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+                    <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                    <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+                    <path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>
+                </svg>
+                Resumen 30s
+            </button>
+            <button onclick="generarMapa()">
+                <svg class="icon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <path d="M8 12h8"></path>
+                    <path d="M12 8v8"></path>
+                </svg>
+                Mapa de Ideas
+            </button>
+            <button onclick="copiar()">
+                <svg class="icon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                </svg>
+                Copiar
+            </button>
+            <button onclick="limpiar()">
+                <svg class="icon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="3 6 5 6 21 6"></polyline>
+                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                </svg>
+                Limpiar
+            </button>
         </div>
-        
-        <div class="features">
-            <h2>Tecnología de Humanización Profesional</h2>
-            <div class="feature-grid">
-                <div class="feature">
-                    <h3><span class="feature-icon">🔒</span> Calidad Premium</h3>
-                    <p>Generamos texto con coherencia estructural y precisión terminológica, sin errores ortográficos.</p>
-                </div>
-                <div class="feature">
-                    <h3><span class="feature-icon">🔄</span> Reestructuración Inteligente</h3>
-                    <p>Reorganizamos el contenido manteniendo la integridad de la información y mejorando su flujo natural.</p>
-                </div>
-                <div class="feature">
-                    <h3><span class="feature-icon">🎭</span> Expresiones Naturales</h3>
-                    <p>Incorporamos elementos de escritura humana sin exagerar ni comprometer el contenido académico.</p>
-                </div>
-                <div class="feature">
-                    <h3><span class="feature-icon">📊</span> Preservación de Términos Técnicos</h3>
-                    <p>Respetamos y protegemos la terminología especializada para mantener la precisión del contenido.</p>
-                </div>
-            </div>
+
+        <!-- Detector de IA -->
+        <div class="ia-detector" id="ia-detector">
+            <p><strong>⚠️ Frases que suenan robóticas:</strong></p>
+            <div id="ia-list"></div>
+            <p><strong>Sugerencias para humanizar:</strong></p>
+            <div id="suggestions"></div>
+        </div>
+
+        <!-- Mapa de ideas -->
+        <div id="mapa-container">
+            <h3 style="color: var(--accent-light); margin: 10px 0;">🧠 Mapa de Ideas</h3>
+            <div id="mapa" style="background: rgba(15, 23, 42, 0.5); border-radius: 8px; height: 400px;"></div>
+        </div>
+
+        <!-- Controles de voz -->
+        <div class="voz-controls" id="voz-controls" style="display: none;">
+            <button onclick="reproducirResumen()">▶️ Reproducir</button>
+            <button onclick="pausarResumen()">⏸️ Pausar</button>
+            <button onclick="detenerResumen()">⏹️ Detener</button>
+        </div>
+
+        <!-- Resultado -->
+        <div class="output">
+            <textarea id="output" readonly placeholder="Aquí aparecerá el resultado..."></textarea>
+        </div>
+
+        <!-- Historial -->
+        <div id="history" style="margin-top: 30px; display: none;">
+            <h3 style="color: var(--accent-light); margin-bottom: 18px; font-weight: 600;">📚 Tu Historial</h3>
+            <div id="history-list"></div>
         </div>
     </div>
 
-    <div class="footer">
-        <p>Humanizador Pro - Texto de calidad profesional © 2023</p>
-    </div>
+    <div class="toast" id="toast">¡Listo!</div>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const inputText = document.getElementById('inputText');
-            const outputText = document.getElementById('outputText');
-            const processBtn = document.getElementById('processBtn');
-            const copyBtn = document.getElementById('copyBtn');
-            const downloadBtn = document.getElementById('downloadBtn');
-            const clearBtn = document.getElementById('clearBtn');
-            const progressBar = document.getElementById('progressBar');
-            const progressText = document.getElementById('progressText');
-            const aiScore = document.getElementById('aiScore');
-            const themeToggle = document.getElementById('themeToggle');
-            const intensitySlider = document.getElementById('intensity');
-            const intensityValue = document.getElementById('intensityValue');
-            const formalitySlider = document.getElementById('formality');
-            const formalityValue = document.getElementById('formalityValue');
-            const creativitySlider = document.getElementById('creativity');
-            const creativityValue = document.getElementById('creativityValue');
-            const complexitySlider = document.getElementById('complexity');
-            const complexityValue = document.getElementById('complexityValue');
-            const wordCount = document.getElementById('wordCount');
-            const humanizedCount = document.getElementById('humanizedCount');
-            const timeSaved = document.getElementById('timeSaved');
-            const historyList = document.getElementById('historyList');
-            
-            // Valores para los sliders
-            const intensityLevels = ["Básico", "Moderado", "Avanzado", "Profesional", "Extremo"];
-            const formalityLevels = ["Muy informal", "Informal", "Neutral", "Formal", "Muy formal"];
-            const creativityLevels = ["Mínima", "Baja", "Moderada", "Alto", "Máxima"];
-            const complexityLevels = ["Simple", "Moderado", "Variado", "Complejo", "Muy complejo"];
-            
-            let history = [];
-            let totalWordsProcessed = 0;
-            let totalTextsHumanized = 0;
-            
-            // Inicializar valores de los sliders
-            intensityValue.textContent = intensityLevels[intensitySlider.value - 1];
-            formalityValue.textContent = formalityLevels[formalitySlider.value - 1];
-            creativityValue.textContent = creativityLevels[creativitySlider.value - 1];
-            complexityValue.textContent = complexityLevels[complexitySlider.value - 1];
-            
-            // Actualizar valores de los sliders
-            intensitySlider.addEventListener('input', function() {
-                intensityValue.textContent = intensityLevels[this.value - 1];
-            });
-            
-            formalitySlider.addEventListener('input', function() {
-                formalityValue.textContent = formalityLevels[this.value - 1];
-            });
-            
-            creativitySlider.addEventListener('input', function() {
-                creativityValue.textContent = creativityLevels[this.value - 1];
-            });
-            
-            complexitySlider.addEventListener('input', function() {
-                complexityValue.textContent = complexityLevels[this.value - 1];
-            });
-            
-            // Toggle del modo oscuro
-            themeToggle.addEventListener('click', function() {
-                document.body.classList.toggle('dark-mode');
-                const isDarkMode = document.body.classList.contains('dark-mode');
-                themeToggle.innerHTML = isDarkMode ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
-                localStorage.setItem('darkMode', isDarkMode);
-            });
-            
-            // Cargar preferencia de modo oscuro
-            if (localStorage.getItem('darkMode') === 'true') {
-                document.body.classList.add('dark-mode');
-                themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+        // Estado
+        let textoFinal = '';
+        let recognition;
+        let utterance;
+        let resumenAudio;
+        const historialKey = 'rps_historial_v12';
+
+        // Cargar historial
+        window.addEventListener('DOMContentLoaded', () => {
+            cargarHistorial();
+            // Cargar Web Speech API
+            if ('SpeechRecognition' in window || 'webkitSpeechRecognition' in window) {
+                const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+                recognition = new SpeechRecognition();
+                recognition.continuous = false;
+                recognition.lang = 'es-ES';
             }
-            
-            // Diccionario de sinónimos y transformaciones mejorado
-            const synonyms = {
-                "Democracia:": ["Sistema democrático:", "Gobierno popular:"],
-                "Gobierno del pueblo": ["Administración ciudadana", "Gestión popular"],
-                "por el pueblo": ["a través de la ciudadanía", "mediante los ciudadanos"],
-                "para el pueblo": ["en beneficio de la gente", "para la ciudadanía"],
-                "Criterios": ["Parámetros", "Estándares", "Pautas"],
-                "Participación efectiva": ["Intervención activa", "Implicación real"],
-                "Igualdad de votos": ["Equidad en la votación", "Votos con igual valor"],
-                "Electorado informado": ["Votantes conocedores", "Ciudadanía informada"],
-                "Control ciudadano": ["Supervisión popular", "Vigilancia ciudadana"],
-                "Inclusión": ["Integración", "Participación universal"],
-                "Derechos fundamentales": ["Derechos básicos", "Garantías esenciales"],
-                "Poliarquía:": ["Sistema poliárquico:", "Gobierno plural:"],
-                "múltiples centros de poder": ["diversos núcleos de autoridad", "variados focos de poder"],
-                "Democracia semidirecta:": ["Sistema semidirecto:", "Democracia participativa:"],
-                "Referéndum:": ["Consulta popular:", "Votación ciudadana:"],
-                "Consulta sobre leyes": ["evaluación de normativas", "decisión sobre legislación"],
-                "Plebiscito:": ["Consulta política:", "Decisión popular:"],
-                "Consulta sobre decisiones políticas": ["evaluación de medidas gubernamentales", "decisión sobre políticas"],
-                "Sistema electoral argentino:": ["Modelo electoral de Argentina:", "Sistema de votación argentino:"],
-                "Código Electoral Nacional:": ["Normativa electoral nacional:", "Reglamento de elecciones:"],
-                "Regula elecciones": ["Organiza los comicios", "Establece las normas electorales"],
-                "Ley de Partidos Políticos:": ["Normativa de agrupaciones políticas:", "Ley de organizaciones partidarias:"],
-                "Regula funcionamiento de partidos": ["Establece el funcionamiento de agrupaciones", "Norma la operación de organizaciones políticas"],
-                "Sistema D'Hondt:": ["Método D'Hondt:", "Fórmula de Jefferson:"],
-                "Distribución proporcional": ["Reparto equitativo", "Asignación proporcional"],
-                "cargos legislativos": ["puestos en la legislatura", "escaños parlamentarios"],
-                "Principios:": ["Bases:", "Fundamentos:", "Preceptos:"],
-                "Universalidad": ["Aplicación general", "Alcance para todos"],
-                "igualdad": ["equidad", "paridad", "equivalencia"],
-                "secreto": ["carácter reservado", "privacidad", "confidencialidad"],
-                "libertad": ["libre albedrío", "autonomía", "independencia"],
-                "obligatoriedad": ["carácter obligatorio", "exigencia", "imperatividad"]
+        });
+
+        // Detectar tono robótico
+        function detectarTonoRobótico() {
+            const input = document.getElementById('input').value.trim();
+            if (!input) {
+                alert('Pega un texto primero');
+                return;
+            }
+
+            const frasesRoboticas = [
+                'a continuación', 'es importante destacar', 'en este contexto', 
+                'por lo tanto', 'como resultado', 'en conclusión', 'se puede observar'
+            ];
+
+            const palabras = input.toLowerCase();
+            const encontradas = frasesRoboticas.filter(frase => palabras.includes(frase));
+
+            const detector = document.getElementById('ia-detector');
+            const lista = document.getElementById('ia-list');
+            const sugerencias = document.getElementById('suggestions');
+
+            if (encontradas.length > 0) {
+                lista.innerHTML = encontradas.map(f => `<div style="color: #f87171; margin: 4px 0;">"${f}"</div>`).join('');
+                sugerencias.innerHTML = `
+                    <div class="ia-suggestion">👉 Cambia "en este contexto" por "la verdad," o "ahora..."</div>
+                    <div class="ia-suggestion">👉 Reemplaza "es importante destacar" por "fijate que..."</div>
+                    <div class="ia-suggestion">👉 Usa pausas: "O sea... para que suene 100% real."</div>
+                `;
+                detector.style.display = 'block';
+            } else {
+                lista.innerHTML = '<div style="color: #4ade80;">No se detectaron frases robóticas.</div>';
+                sugerencias.innerHTML = '<div class="ia-suggestion">Tu texto ya suena humano. ¡Bien hecho!</div>';
+                detector.style.display = 'block';
+            }
+        }
+
+        // Entrenamiento con voz
+        function empezarEntrenamientoVoz() {
+            if (!recognition) {
+                alert('Tu navegador no soporta reconocimiento de voz.');
+                return;
+            }
+
+            const toast = document.getElementById('toast');
+            toast.textContent = '🗣️ Habla ahora...';
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 2000);
+
+            recognition.onresult = (event) => {
+                const transcript = event.results[0][0].transcript;
+                document.getElementById('input').value += '\n' + transcript;
+                mostrarToast('🎤 Voz convertida a texto');
             };
-            
-            // Expresiones humanas para insertar (más naturales)
-            const humanExpressions = [
-                "Desde mi perspectiva,",
-                "En términos prácticos,",
-                "Vale la pena destacar que",
-                "Es importante señalar que",
-                "Cabe mencionar que",
-                "Resulta interesante observar cómo",
-                "En esencia,",
-                "Fundamentalmente,",
-                "En otras palabras,",
-                "Como podemos apreciar,"
-            ];
-            
-            // Conectores alternativos
-            const connectors = [
-                "Además,", "Por otra parte,", "En consecuencia,", 
-                "Asimismo,", "De hecho,", "En resumen,", 
-                "Es decir,", "En otros términos,", "Sin lugar a dudas,",
-                "Por lo tanto,", "No obstante,", "Sin embargo,",
-                "A continuación,", "En primer lugar,", "Finalmente,"
-            ];
-            
-            // Términos técnicos que no deben ser alterados
-            const technicalTerms = ["Robert Dahl", "D'Hondt", "Poliarquía", "Referéndum", "Plebiscito", 
-                                  "Código Electoral Nacional", "Ley de Partidos Políticos", "Universalidad", 
-                                  "Democracia", "Participación efectiva", "Igualdad de votos", "Electorado informado"];
-            
-            processBtn.addEventListener('click', function() {
-                const text = inputText.value.trim();
-                if (!text) {
-                    alert('Por favor, introduce algún texto para humanizar');
-                    return;
-                }
-                
-                // Deshabilitar botón durante el proceso
-                processBtn.disabled = true;
-                processBtn.innerHTML = '<span>⏳</span> Procesando...';
-                
-                // Iniciar proceso de humanización
-                humanizeText(text);
-            });
-            
-            copyBtn.addEventListener('click', function() {
-                if (!outputText.value) {
-                    alert('No hay texto para copiar');
-                    return;
-                }
-                
-                outputText.select();
-                document.execCommand('copy');
-                
-                // Feedback visual
-                const originalText = copyBtn.innerHTML;
-                copyBtn.innerHTML = '<span>✅</span> ¡Copiado!';
-                setTimeout(() => {
-                    copyBtn.innerHTML = originalText;
-                }, 2000);
-            });
-            
-            downloadBtn.addEventListener('click', function() {
-                if (!outputText.value) {
-                    alert('No hay texto para descargar');
-                    return;
-                }
-                
-                const blob = new Blob([outputText.value], { type: 'text/plain' });
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = 'texto-humanizado.txt';
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-                URL.revokeObjectURL(url);
-            });
-            
-            clearBtn.addEventListener('click', function() {
-                if (confirm('¿Estás seguro de que quieres limpiar todo el texto?')) {
-                    inputText.value = '';
-                    outputText.value = '';
-                    aiScore.textContent = '0%';
-                    aiScore.className = 'score-value human';
-                    progressBar.style.width = '0%';
-                    progressText.textContent = '0%';
-                }
-            });
-            
-            function humanizeText(text) {
-                let progress = 0;
-                let humanizedText = text;
-                
-                // Calcular palabras procesadas
-                const words = text.split(/\s+/).length;
-                totalWordsProcessed += words;
-                totalTextsHumanized++;
-                wordCount.textContent = totalWordsProcessed.toLocaleString();
-                humanizedCount.textContent = totalTextsHumanized.toLocaleString();
-                timeSaved.textContent = Math.round(totalWordsProcessed / 200) + 'h';
-                
-                const simulationSteps = [
-                    {name: "Analizando estructura...", progress: 15},
-                    {name: "Preservando términos técnicos...", progress: 30},
-                    {name: "Reescribiendo contenido...", progress: 50},
-                    {name: "Variando sintaxis...", progress: 70},
-                    {name: "Insertando expresiones naturales...", progress: 85},
-                    {name: "Verificando coherencia...", progress: 95},
-                    {name: "¡Texto profesional listo!", progress: 100}
-                ];
-                
-                const interval = setInterval(() => {
-                    const step = simulationSteps.find(s => s.progress > progress) || simulationSteps[6];
-                    
-                    progressBar.style.width = `${step.progress}%`;
-                    progressText.textContent = step.name;
-                    
-                    if (step.progress === 15) {
-                        // Preprocesamiento
-                        humanizedText = cleanText(humanizedText);
-                    } else if (step.progress === 30) {
-                        // Protección de términos técnicos
-                        humanizedText = protectTechnicalTerms(humanizedText);
-                    } else if (step.progress === 50) {
-                        // Reescritura
-                        humanizedText = rewriteText(humanizedText);
-                    } else if (step.progress === 70) {
-                        // Variación sintáctica
-                        humanizedText = varySyntax(humanizedText);
-                    } else if (step.progress === 85) {
-                        // Inserción de expresiones
-                        humanizedText = insertExpressions(humanizedText);
-                    } else if (step.progress === 95) {
-                        // Chequeo final
-                        humanizedText = finalCheck(humanizedText);
-                    }
-                    
-                    progress = step.progress;
-                    
-                    if (progress >= 100) {
-                        clearInterval(interval);
-                        
-                        // Mostrar resultado final
-                        outputText.value = humanizedText;
-                        
-                        // Simular una reducción en la detección de IA (resultado más realista)
-                        const intensity = intensitySlider.value;
-                        const reduction = intensity * 18 + Math.floor(Math.random() * 5);
-                        const newScore = Math.max(2, 15 - reduction);
-                        
-                        aiScore.textContent = `${newScore}%`;
-                        aiScore.className = 'score-value ' + (newScore < 15 ? 'human' : 'ai');
-                        
-                        // Añadir al historial
-                        addToHistory(text, humanizedText);
-                        
-                        // Restaurar botón
-                        processBtn.disabled = false;
-                        processBtn.innerHTML = '<span>🪄</span> Humanizar Texto';
-                    }
-                }, 600);
+
+            recognition.start();
+        }
+
+        // Generar resumen de 30 segundos
+        function generarResumenVoz() {
+            const input = document.getElementById('input').value.trim();
+            if (!input) {
+                alert('Pega un texto primero');
+                return;
             }
-            
-            function cleanText(text) {
-                // Limpieza básica del texto
-                return text
-                    .replace(/\s+/g, ' ') // Normalizar espacios
-                    .trim();
+
+            const lines = input.split('\n').filter(l => l.trim());
+            const titulo = lines[0];
+            const primeras = lines.slice(1, 4).join(' ').substring(0, 150) + '...';
+
+            const resumen = `En esta unidad: ${titulo}. ${primeras} Este es un resumen rápido para que puedas compartirlo.`;
+
+            utterance = new SpeechSynthesisUtterance(resumen);
+            utterance.rate = 0.9;
+            utterance.pitch = 1;
+            utterance.lang = 'es-ES';
+
+            document.getElementById('voz-controls').style.display = 'flex';
+            mostrarToast('✅ Resumen de 30s listo');
+        }
+
+        // Reproducir resumen
+        function reproducirResumen() {
+            if (utterance) speechSynthesis.speak(utterance);
+        }
+
+        // Pausar
+        function pausarResumen() {
+            speechSynthesis.pause();
+        }
+
+        // Detener
+        function detenerResumen() {
+            speechSynthesis.cancel();
+            document.getElementById('voz-controls').style.display = 'none';
+        }
+
+        // Generar mapa de ideas
+        function generarMapa() {
+            const input = document.getElementById('input').value.trim();
+            if (!input) {
+                alert('Pega un texto primero');
+                return;
             }
-            
-            function protectTechnicalTerms(text) {
-                // Proteger términos técnicos con marcadores especiales
-                let protectedText = text;
-                technicalTerms.forEach(term => {
-                    const regex = new RegExp(term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'gi');
-                    protectedText = protectedText.replace(regex, `{{${term}}}`);
+
+            document.getElementById('mapa-container').style.display = 'block';
+
+            const stage = new Konva.Stage({
+                container: 'mapa',
+                width: document.getElementById('mapa').offsetWidth,
+                height: 400
+            });
+
+            const layer = new Konva.Layer();
+            const lines = input.split('\n').filter(l => l.trim()).slice(0, 6);
+
+            const centerX = stage.width() / 2;
+            const centerY = stage.height() / 2;
+
+            // Nodo central
+            const centro = new Konva.Circle({
+                x: centerX,
+                y: centerY,
+                radius: 40,
+                fill: '#0d9488',
+                stroke: '#14b8a6',
+                strokeWidth: 3
+            });
+
+            const textoCentro = new Konva.Text({
+                x: centerX - 30,
+                y: centerY - 10,
+                text: 'Tema',
+                fontSize: 14,
+                fontFamily: 'Inter',
+                fill: 'white',
+                width: 60,
+                align: 'center'
+            });
+
+            layer.add(centro, textoCentro);
+
+            // Nodos secundarios
+            lines.forEach((line, i) => {
+                const angle = (i / lines.length) * 2 * Math.PI;
+                const radius = 150;
+                const x = centerX + radius * Math.cos(angle);
+                const y = centerY + radius * Math.sin(angle);
+
+                const nodo = new Konva.Rect({
+                    x: x - 60,
+                    y: y - 20,
+                    width: 120,
+                    height: 40,
+                    fill: '#1e293b',
+                    stroke: '#334155',
+                    strokeWidth: 1,
+                    cornerRadius: 8
                 });
-                return protectedText;
-            }
-            
-            function restoreTechnicalTerms(text) {
-                // Restaurar términos técnicos después del procesamiento
-                let restoredText = text;
-                technicalTerms.forEach(term => {
-                    const regex = new RegExp(`{{${term}}}`, 'gi');
-                    restoredText = restoredText.replace(regex, term);
+
+                const texto = new Konva.Text({
+                    x: x - 50,
+                    y: y - 10,
+                    text: line.length > 15 ? line.substring(0, 15) + '...' : line,
+                    fontSize: 12,
+                    fontFamily: 'Inter',
+                    fill: '#e2e8f0',
+                    width: 100
                 });
-                return restoredText;
-            }
-            
-            function rewriteText(text) {
-                // Obtener nivel de intensidad
-                const intensity = intensitySlider.value;
-                
-                // Proteger términos técnicos primero
-                let processedText = protectTechnicalTerms(text);
-                
-                // Reemplazar palabras con sinónimos
-                const sortedKeys = Object.keys(synonyms).sort((a, b) => b.length - a.length);
-                
-                for (const phrase of sortedKeys) {
-                    if (processedText.toLowerCase().includes(phrase.toLowerCase())) {
-                        // Mayor intensidad = mayor probabilidad de reemplazo
-                        if (Math.random() < intensity * 0.12) {
-                            const alternatives = synonyms[phrase];
-                            const randomSynonym = alternatives[Math.floor(Math.random() * alternatives.length)];
-                            
-                            // Usar expresión regular con word boundaries
-                            const regex = new RegExp(`\\b${phrase}\\b`, 'gi');
-                            processedText = processedText.replace(regex, (match) => {
-                                // Preservar capitalización
-                                if (match[0] === match[0].toUpperCase()) {
-                                    return randomSynonym.charAt(0).toUpperCase() + randomSynonym.slice(1);
-                                } else {
-                                    return randomSynonym;
-                                }
-                            });
-                        }
-                    }
-                }
-                
-                // Restaurar términos técnicos
-                return restoreTechnicalTerms(processedText);
-            }
-            
-            function varySyntax(text) {
-                // Obtener nivel de creatividad y complejidad
-                const creativity = creativitySlider.value;
-                const complexity = complexitySlider.value;
-                
-                // Proteger términos técnicos
-                let processedText = protectTechnicalTerms(text);
-                
-                // Dividir en oraciones
-                let sentences = processedText.split(/(?<=[.!?])\s+/);
-                
-                if (sentences.length > 1) {
-                    // Mezclar estructuras de oraciones (más creatividad = más cambios)
-                    for (let i = 0; i < sentences.length; i++) {
-                        // Probabilidad basada en creatividad
-                        if (Math.random() < creativity * 0.12) {
-                            sentences[i] = changeSentenceStructure(sentences[i], complexity);
-                        }
-                    }
-                    
-                    // Añadir conectores alternativos (con moderación)
-                    for (let i = 1; i < sentences.length; i++) {
-                        if (i % 3 === 0 && Math.random() > 0.6) {
-                            const randomConnector = connectors[Math.floor(Math.random() * connectors.length)];
-                            sentences[i] = randomConnector + " " + sentences[i].charAt(0).toLowerCase() + sentences[i].slice(1);
-                        }
-                    }
-                }
-                
-                // Unir y restaurar términos técnicos
-                return restoreTechnicalTerms(sentences.join(' '));
-            }
-            
-            function changeSentenceStructure(sentence, complexity) {
-                // Cambiar la estructura de la oración sin afectar términos técnicos
-                if (sentence.includes(",") && complexity > 2) {
-                    // Reordenar cláusulas de manera más conservadora
-                    const clauses = sentence.split(',');
-                    if (clauses.length > 1 && clauses.length <= 4) {
-                        // Mover la última cláusula al principio (menos disruptivo)
-                        const reordered = [clauses[clauses.length - 1]].concat(clauses.slice(0, -1));
-                        return reordered.join(',');
-                    }
-                }
-                return sentence;
-            }
-            
-            function insertExpressions(text) {
-                // Insertar expresiones humanas aleatorias en posiciones apropiadas
-                let processedText = protectTechnicalTerms(text);
-                let sentences = processedText.split(/(?<=[.!?])\s+/);
-                
-                if (sentences.length > 0) {
-                    // Insertar expresiones en algunas oraciones (no todas)
-                    for (let i = 0; i < sentences.length; i++) {
-                        // Evitar insertar en oraciones muy cortas o que contengan términos técnicos
-                        if (sentences[i].length > 20 && !sentences[i].includes('{{') && Math.random() > 0.7) {
-                            const randomExpression = humanExpressions[Math.floor(Math.random() * humanExpressions.length)];
-                            sentences[i] = randomExpression + " " + sentences[i].charAt(0).toLowerCase() + sentences[i].slice(1);
-                        }
-                    }
-                }
-                
-                // Unir y restaurar términos técnicos
-                return restoreTechnicalTerms(sentences.join(' '));
-            }
-            
-            function finalCheck(text) {
-                // Verificación final para corregir posibles errores y asegurar fluidez
-                let processedText = protectTechnicalTerms(text);
-                
-                processedText = processedText
-                    .replace(/\b(\w+)(\s+\1)+\b/gi, '$1') // Eliminar palabras repetidas
-                    .replace(/\s+/g, ' ') // Eliminar espacios múltiples
-                    .replace(/([.!?])([A-Z])/g, '$1 $2') // Asegurar espacios después de puntuación
-                    .replace(/\s([,.;:!?])/g, '$1') // Eliminar espacios antes de puntuación
-                    .replace(/(\w)([.,;:!?])(\w)/g, '$1$2 $3') // Añadir espacio después de puntuación si falta
-                    .replace(/\{\{([^}]+)\}\}/g, '$1') // Eliminar marcadores de protección
-                    .trim();
-                
-                // Restaurar términos técnicos
-                return restoreTechnicalTerms(processedText);
-            }
-            
-            function addToHistory(original, humanized) {
-                // Añadir al historial
-                const timestamp = new Date().toLocaleTimeString();
-                const item = {
-                    original: original,
-                    humanized: humanized,
-                    time: timestamp
-                };
-                
-                history.unshift(item);
-                if (history.length > 5) history.pop();
-                
-                // Actualizar la lista de historial
-                updateHistoryList();
-            }
-            
-            function updateHistoryList() {
-                if (history.length === 0) {
-                    historyList.innerHTML = '<div class="history-item">No hay historial aún</div>';
-                    return;
-                }
-                
-                historyList.innerHTML = '';
-                history.forEach((item, index) => {
+
+                const linea = new Konva.Line({
+                    points: [centerX, centerY, x, y],
+                    stroke: '#94a3b8',
+                    strokeWidth: 1,
+                    tension: 0.2
+                });
+
+                layer.add(linea, nodo, texto);
+            });
+
+            stage.add(layer);
+        }
+
+        // Copiar
+        function copiar() {
+            const out = document.getElementById('output');
+            if (!out.value) return;
+            out.select();
+            document.execCommand('copy');
+            mostrarToast('📋 Copiado');
+        }
+
+        // Limpiar
+        function limpiar() {
+            document.getElementById('input').value = '';
+            document.getElementById('output').value = '';
+            document.getElementById('ia-detector').style.display = 'none';
+            document.getElementById('mapa-container').style.display = 'none';
+            document.getElementById('voz-controls').style.display = 'none';
+            speechSynthesis.cancel();
+        }
+
+        // Guardar en historial
+        function guardarEnHistorial(input, output) {
+            const hist = JSON.parse(localStorage.getItem(historialKey) || '[]');
+            const titulo = input.split('\n')[0].substring(0, 50) + '...';
+            const preview = input.replace(/\n/g, ' ').substring(0, 120) + '...';
+            hist.unshift({ 
+                titulo, 
+                texto: input, 
+                resultado: output, 
+                fecha: new Date().toLocaleString(), 
+                preview
+            });
+            if (hist.length > 5) hist.pop();
+            localStorage.setItem(historialKey, JSON.stringify(hist));
+            cargarHistorial();
+        }
+
+        // Cargar historial
+        function cargarHistorial() {
+            const hist = JSON.parse(localStorage.getItem(historialKey) || '[]');
+            const list = document.getElementById('history-list');
+            if (hist.length > 0) {
+                document.getElementById('history').style.display = 'block';
+                list.innerHTML = '';
+                hist.forEach(item => {
                     const div = document.createElement('div');
                     div.className = 'history-item';
                     div.innerHTML = `
-                        <div><strong>${item.time}</strong></div>
-                        <div style="font-size: 0.9rem; margin-top: 5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
-                            ${item.original.substring(0, 50)}...
-                        </div>
+                        <strong>${item.titulo}</strong>
+                        <div style="color: var(--text-secondary); font-size: 0.85rem; margin-top: 6px;">${item.preview}</div>
+                        <span class="tag">texto</span>
                     `;
-                    
-                    div.addEventListener('click', () => {
-                        inputText.value = item.original;
-                        outputText.value = item.humanized;
-                    });
-                    
-                    historyList.appendChild(div);
+                    div.onclick = () => {
+                        document.getElementById('input').value = item.texto;
+                        document.getElementById('output').value = item.resultado;
+                    };
+                    list.appendChild(div);
                 });
             }
+        }
 
-            // Procesar automáticamente el texto de ejemplo al cargar
-            setTimeout(() => {
-                processBtn.click();
-            }, 1000);
-        });
+        // Mostrar toast
+        function mostrarToast(msg) {
+            const t = document.getElementById('toast');
+            t.textContent = msg;
+            t.classList.add('show');
+            setTimeout(() => t.classList.remove('show'), 2000);
+        }
     </script>
 </body>
 </html>
