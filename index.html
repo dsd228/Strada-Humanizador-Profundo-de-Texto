@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RedactaPro Supremo - V3</title>
+    <title>RedactaPro Supremo - V4</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style id="theme-style">
         :root {
@@ -16,6 +16,7 @@
             --border: #334155;
             --shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
             --radius: 16px;
+            --transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .light-mode {
@@ -34,7 +35,7 @@
             padding: 20px;
             margin: 0;
             min-height: 100vh;
-            transition: all 0.5s ease;
+            transition: var(--transition);
             overflow-x: hidden;
         }
 
@@ -47,7 +48,7 @@
             box-shadow: var(--shadow);
             backdrop-filter: blur(16px);
             border: 1px solid rgba(255, 255, 255, 0.1);
-            transition: all 0.4s ease;
+            transition: var(--transition);
         }
 
         h1 {
@@ -56,6 +57,7 @@
             margin: 0 0 12px 0;
             font-weight: 700;
             font-size: 1.8rem;
+            transition: var(--transition);
         }
 
         p.subtitle {
@@ -63,12 +65,19 @@
             color: var(--text-secondary);
             font-size: 1.1rem;
             margin-bottom: 30px;
+            transition: var(--transition);
         }
 
-        /* Onboarding */
+        /* Onboarding emocional */
         .onboarding {
             text-align: center;
             padding: 40px 20px;
+            opacity: 0;
+            animation: fadeIn 0.8s forwards;
+        }
+
+        @keyframes fadeIn {
+            to { opacity: 1; }
         }
 
         .onboarding h2 {
@@ -100,6 +109,11 @@
             vertical-align: middle;
             margin-right: 8px;
             fill: currentColor;
+            transition: transform 0.3s;
+        }
+
+        button:hover .icon {
+            transform: scale(1.1);
         }
 
         /* Botones modernos */
@@ -181,8 +195,8 @@
             font-size: 0.95rem;
         }
 
-        /* Sugerencias */
-        .suggestion {
+        /* Feedback emocional */
+        .emotional-feedback {
             background: rgba(13, 148, 136, 0.1);
             border: 1px solid rgba(13, 148, 136, 0.3);
             padding: 16px;
@@ -192,11 +206,8 @@
             color: var(--text-secondary);
             display: none;
             animation: fadeIn 0.5s;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
+            text-align: center;
+            font-style: italic;
         }
 
         /* Historial */
@@ -300,6 +311,12 @@
             0% { transform: translateY(0) translateX(0); opacity: 0.5; }
             100% { transform: translateY(-100vh) translateX(100vw); opacity: 0; }
         }
+
+        /* Modo confidencial */
+        .confidential-active {
+            filter: blur(8px);
+            pointer-events: none;
+        }
     </style>
 </head>
 <body>
@@ -308,24 +325,24 @@
 
     <div class="container">
         <h1>RedactaPro Supremo</h1>
-        <p class="subtitle">✨ V3 - Estética Avanzada • Vidrio • Emoción • Inteligencia</p>
+        <p class="subtitle">💖 V4 - Inteligencia Emocional • Diseño Vivo • Empatía</p>
 
         <!-- Onboarding -->
         <div class="onboarding" id="onboarding">
             <h2>¿Qué necesitás hoy?</h2>
-            <p>Elige cómo querés trabajar. Yo me adapto a vos.</p>
+            <p>Elige cómo querés trabajar. Yo me adapto a vos y a tu estado.</p>
             <div class="btn-grid">
                 <button onclick="startMode('humanizar')">
                     <svg class="icon" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
                     Humanizar texto
                 </button>
-                <button onclick="startMode('presentacion')">
-                    <svg class="icon" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg>
-                    Preparar presentación
+                <button onclick="startMode('urgente')">
+                    <svg class="icon" viewBox="0 0 24 24"><polygon points="7.86 2 16.14 2 22 7.86 22 16.14 16.14 22 7.86 22 2 16.14 2 7.86 7.86 2"></polygon><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+                    Urgente
                 </button>
-                <button onclick="startMode('exposicion')">
-                    <svg class="icon" viewBox="0 0 24 24"><path d="M9 9h2v6H9V9zm4 0h2v6h-2V9zm-7 1h14v2H6v-2z"></path><circle cx="12" cy="5" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 5.5 19a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 11a1.65 1.65 0 0 0 .33-1.82l-.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0 1.82.33H9a2 2 0 0 1 2 2 2 2 0 0 1-2 2H6.91a1.65 1.65 0 0 0-1.31.69l-.09.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.6 14.5H5a2 2 0 0 1 2 2 2 2 0 0 1-2 2H4.5"></path></svg>
-                    Practicar exposición
+                <button onclick="startMode('confidencial')">
+                    <svg class="icon" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                    Confidencial
                 </button>
             </div>
         </div>
@@ -338,17 +355,9 @@
                     Modo Oscuro
                 </button>
 
-                <div class="color-palette">
-                    <span style="color: var(--text-secondary); font-size: 0.9rem; margin-right: 8px;">🎨</span>
-                    <div class="color-option selected" data-color="green" onclick="selectColor('green')"></div>
-                    <div class="color-option" data-color="blue" onclick="selectColor('blue')"></div>
-                    <div class="color-option" data-color="purple" onclick="selectColor('purple')"></div>
-                    <div class="color-option" data-color="red" onclick="selectColor('red')"></div>
-                </div>
-
-                <button onclick="toggleSilentMode()" id="silent-btn">
-                    <svg class="icon" viewBox="0 0 24 24"><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="15.5" x2="19" y2="17"></line><circle cx="12" cy="12" r="10"></circle></svg>
-                    Rápido
+                <button onclick="toggleConfidencial()" id="conf-btn">
+                    <svg class="icon" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+                    Normal
                 </button>
             </div>
 
@@ -380,11 +389,11 @@
             <!-- Carga -->
             <div class="loading" id="loading">
                 <div class="spinner"></div>
-                <p>Analizando tu estilo... esto tomará un segundo.</p>
+                <p id="loading-msg">Analizando tu estilo...</p>
             </div>
 
-            <!-- Sugerencia -->
-            <div class="suggestion" id="suggestion"></div>
+            <!-- Feedback emocional -->
+            <div class="emotional-feedback" id="feedback"></div>
 
             <!-- Resultado -->
             <div class="output">
@@ -419,31 +428,56 @@
         let textoFinal = '';
         let modoUsado = '';
         let silentMode = false;
-        let estiloPersonal = { formal: 0, fluidez: 0, markdown: 0 };
-        const historialKey = 'rps_historial_v8';
+        let confidencialMode = false;
+        let emocionDetectada = 'neutral';
+        const historialKey = 'rps_historial_v9';
         const temaKey = 'rps_tema';
         const darkKey = 'rps_dark_mode_por_color';
         const estiloKey = 'rps_estilo_personal';
 
-        // Temas
-        const temas = {
-            green: { accent: '#0d9488', accentLight: '#14b8a6' },
-            blue: { accent: '#0284c7', accentLight: '#0ea5e9' },
-            purple: { accent: '#7c3aed', accentLight: '#8b5cf6' },
-            red: { accent: '#dc2626', accentLight: '#ef4444' }
+        // Temas emocionales
+        const temasEmocionales = {
+            democracia: { accent: '#0d9488', bg: 'linear-gradient(135deg, #0f172a, #020617)' },
+            justicia: { accent: '#0284c7', bg: 'linear-gradient(135deg, #0f172a, #020617)' },
+            crisis: { accent: '#7c3aed', bg: 'linear-gradient(135deg, #1a1a2e, #16213e)' },
+            logro: { accent: '#d97706', bg: 'linear-gradient(135deg, #fef3c7, #fbbf24)' },
+            tristeza: { accent: '#6b7280', bg: 'linear-gradient(135deg, #1f2937, #111827)' },
+            urgente: { accent: '#dc2626', bg: 'linear-gradient(135deg, #312e2b, #5d2a2a)' }
         };
 
-        // Transiciones
-        const transiciones = ['Por otro lado,', 'Además,', 'Es importante destacar que', 'En este marco,', 'Asimismo,'];
+        // Palabras clave emocionales
+        const emociones = {
+            democracia: ['democracia', 'voto', 'derechos', 'ciudadano'],
+            justicia: ['justicia', 'corte', 'ley', 'tribunal'],
+            crisis: ['crisis', 'problema', 'dificultad', 'conflicto'],
+            logro: ['éxito', 'logro', 'bien', 'avance', 'progreso'],
+            tristeza: ['pérdida', 'duelo', 'triste', 'difícil'],
+            urgente: ['urgente', 'rápido', 'ahora', 'inmediato']
+        };
+
+        // Detectar emoción
+        function detectarEmocion(texto) {
+            const textoLower = texto.toLowerCase();
+            for (const [emocion, palabras] of Object.entries(emociones)) {
+                if (palabras.some(p => textoLower.includes(p))) {
+                    return emocion;
+                }
+            }
+            return 'neutral';
+        }
+
+        // Aplicar tema emocional
+        function aplicarTemaEmocional(emocion) {
+            const tema = temasEmocionales[emocion] || temasEmocionales.democracia;
+            document.documentElement.style.setProperty('--accent', tema.accent);
+            document.documentElement.style.setProperty('--accent-light', tema.accent);
+            document.body.style.background = tema.bg;
+        }
 
         // Cargar estado
         window.addEventListener('DOMContentLoaded', () => {
             const savedTema = localStorage.getItem(temaKey) || 'green';
             selectColor(savedTema);
-
-            const savedEstilo = JSON.parse(localStorage.getItem(estiloKey) || '{}');
-            Object.assign(estiloPersonal, savedEstilo);
-
             cargarHistorial();
         });
 
@@ -453,38 +487,25 @@
             document.getElementById('main-content').style.display = 'block';
             modoUsado = mode;
 
-            const suggestion = document.getElementById('suggestion');
-            if (mode === 'humanizar') {
-                suggestion.textContent = '💡 Pega tu texto. Ajustaré el estilo según tu forma de escribir.';
-            } else if (mode === 'presentacion') {
-                suggestion.textContent = '💡 Pega tu contenido. Lo dividiré en secciones listas para presentar.';
-            } else if (mode === 'exposicion') {
-                suggestion.textContent = '💡 Usa "Escuchar" para practicar tu exposición con entonación natural.';
+            // Cambiar interfaz según modo
+            if (mode === 'urgente') {
+                document.body.style.background = temasEmocionales.urgente.bg;
+                document.documentElement.style.setProperty('--accent', temasEmocionales.urgente.accent);
+                document.documentElement.style.setProperty('--accent-light', temasEmocionales.urgente.accent);
+            } else if (mode === 'confidencial') {
+                toggleConfidencial();
             }
-            suggestion.style.display = 'block';
-        }
 
-        // Seleccionar color
-        function selectColor(color) {
-            document.querySelectorAll('.color-option').forEach(el => el.classList.remove('selected'));
-            document.querySelector(`.color-option[data-color="${color}"]`).classList.add('selected');
-
-            const t = temas[color];
-            document.documentElement.style.setProperty('--accent', t.accent);
-            document.documentElement.style.setProperty('--accent-light', t.accentLight);
-
-            localStorage.setItem(temaKey, color);
-
-            const modoPorColor = JSON.parse(localStorage.getItem(darkKey) || '{}');
-            const esOscuro = modoPorColor[color] !== false;
-            document.body.classList.toggle('dark-mode', esOscuro);
-            darkMode = esOscuro;
-
-            // Actualizar botón de modo
-            const btn = document.getElementById('mode-btn');
-            btn.innerHTML = darkMode 
-                ? '<svg class="icon" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg> Modo Claro' 
-                : '<svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg> Modo Oscuro';
+            const feedback = document.getElementById('feedback');
+            if (mode === 'humanizar') {
+                feedback.textContent = 'Pega tu texto. Ajustaré el estilo según tu voz.';
+            } else if (mode === 'urgente') {
+                feedback.textContent = 'Voy rápido. Pega tu texto y lo humanizaré en segundos.';
+                silentMode = true;
+            } else if (mode === 'confidencial') {
+                feedback.textContent = 'Todo se procesa en memoria. Nada se guarda.';
+            }
+            feedback.style.display = 'block';
         }
 
         // Alternar modo oscuro
@@ -495,16 +516,26 @@
             const modoPorColor = JSON.parse(localStorage.getItem(darkKey) || '{}');
             modoPorColor[color] = darkMode;
             localStorage.setItem(darkKey, JSON.stringify(modoPorColor));
-            selectColor(color); // Actualiza UI
+
+            const btn = document.getElementById('mode-btn');
+            btn.innerHTML = darkMode 
+                ? '<svg class="icon" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg> Modo Claro' 
+                : '<svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg> Modo Oscuro';
         }
 
-        // Modo silencio total
-        function toggleSilentMode() {
-            silentMode = !silentMode;
-            const btn = document.getElementById('silent-btn');
-            btn.innerHTML = silentMode 
-                ? '<svg class="icon" viewBox="0 0 24 24"><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="15.5" x2="19" y2="17"></line><circle cx="12" cy="12" r="10"></circle></svg> Normal' 
-                : '<svg class="icon" viewBox="0 0 24 24"><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="15.5" x2="19" y2="17"></line><circle cx="12" cy="12" r="10"></circle></svg> Rápido';
+        // Modo confidencial
+        function toggleConfidencial() {
+            confidencialMode = !confidencialMode;
+            const container = document.querySelector('.container');
+            const btn = document.getElementById('conf-btn');
+            
+            if (confidencialMode) {
+                container.classList.add('confidential-active');
+                btn.innerHTML = '<svg class="icon" viewBox="0 0 24 24"><path d="M12 15v3m-3-3h6M12 6v3m-3-3h6"></path><circle cx="12" cy="12" r="9"></circle></svg> Confidencial';
+            } else {
+                container.classList.remove('confidential-active');
+                btn.innerHTML = '<svg class="icon" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg> Normal';
+            }
         }
 
         // Detectar tipo de texto
@@ -522,11 +553,7 @@
 
         // Elegir modo
         function elegirModo(tipo) {
-            const total = Object.values(estiloPersonal).reduce((a, b) => a + b, 0);
-            if (total > 3) {
-                const sorted = Object.entries(estiloPersonal).sort((a, b) => b[1] - a[1]);
-                return sorted[0][0];
-            }
+            if (modoUsado === 'urgente') return 'formal';
             if (tipo === 'definiciones' || tipo === 'lista') return 'formal';
             if (tipo === 'parrafo') return 'fluidez';
             return 'formal';
@@ -553,7 +580,7 @@
                 seen.add(line.toLowerCase());
 
                 if (modo === 'fluidez' && !line.endsWith(':') && line.length > 40 && Math.random() < 0.4) {
-                    const trans = transiciones[Math.floor(Math.random() * transiciones.length)];
+                    const trans = ['Por otro lado,', 'Además,', 'Es importante destacar que'][Math.floor(Math.random() * 3)];
                     result.push(trans + ' ' + line.charAt(0).toLowerCase() + line.slice(1));
                 } else {
                     result.push(line);
@@ -580,11 +607,18 @@
                 return;
             }
 
-            document.getElementById('suggestion').style.display = 'none';
+            document.getElementById('feedback').style.display = 'none';
             document.getElementById('loading').style.display = 'block';
+            document.getElementById('loading-msg').textContent = modoUsado === 'urgente' 
+                ? 'Procesando rápido...' 
+                : 'Analizando tu estilo...';
 
             setTimeout(() => {
                 document.getElementById('loading').style.display = 'none';
+
+                // Detectar emoción
+                emocionDetectada = detectarEmocion(input);
+                aplicarTemaEmocional(emocionDetectada);
 
                 const tipo = detectarTipo(input);
                 const modo = elegirModo(tipo);
@@ -592,16 +626,26 @@
                 textoFinal = procesarTexto(input, modo);
                 document.getElementById('output').value = textoFinal;
 
-                estiloPersonal[modo] = (estiloPersonal[modo] || 0) + 1;
-                localStorage.setItem(estiloKey, JSON.stringify(estiloPersonal));
-                guardarEnHistorial(input, textoFinal, modo);
+                // Feedback emocional
+                const feedback = document.getElementById('feedback');
+                const mensajes = {
+                    democracia: 'Tu explicación sobre democracia es clara y justa.',
+                    justicia: 'Este texto transmite equilibrio y precisión.',
+                    crisis: 'Abordaste el tema con seriedad y empatía.',
+                    logro: 'Se nota tu entusiasmo. ¡Este es un gran avance!',
+                    urgente: 'Listo. Rápido y claro, como necesitabas.',
+                    neutral: 'Este texto suena como vos. Natural y preciso.'
+                };
+                feedback.textContent = mensajes[emocionDetectada] || mensajes.neutral;
+                feedback.style.display = 'block';
+
+                // Guardar si no es confidencial
+                if (!confidencialMode) {
+                    guardarEnHistorial(input, textoFinal, modo);
+                }
 
                 mostrarToast('✅ Listo');
-
-                const suggestion = document.getElementById('suggestion');
-                suggestion.textContent = '¿Querés escucharlo o exportarlo como HTML? Te queda genial.';
-                suggestion.style.display = 'block';
-            }, silentMode ? 100 : 2000);
+            }, modoUsado === 'urgente' || silentMode ? 800 : 2000);
         }
 
         // Guardar en historial
@@ -609,7 +653,15 @@
             const hist = JSON.parse(localStorage.getItem(historialKey) || '[]');
             const titulo = input.split('\n')[0].substring(0, 50) + '...';
             const preview = input.replace(/\n/g, ' ').substring(0, 120) + '...';
-            hist.unshift({ titulo, texto: input, resultado: output, modo, fecha: new Date().toLocaleString(), preview });
+            hist.unshift({ 
+                titulo, 
+                texto: input, 
+                resultado: output, 
+                modo, 
+                fecha: new Date().toLocaleString(), 
+                preview,
+                emocion: emocionDetectada
+            });
             if (hist.length > 5) hist.pop();
             localStorage.setItem(historialKey, JSON.stringify(hist));
             cargarHistorial();
@@ -633,6 +685,7 @@
                     div.onclick = () => {
                         document.getElementById('input').value = item.texto;
                         document.getElementById('output').value = item.resultado;
+                        aplicarTemaEmocional(item.emocion);
                     };
                     list.appendChild(div);
                 });
@@ -723,7 +776,8 @@
             document.getElementById('input').value = '';
             document.getElementById('output').value = '';
             document.getElementById('loading').style.display = 'none';
-            document.getElementById('suggestion').style.display = 'none';
+            document.getElementById('feedback').style.display = 'none';
+            if (confidencialMode) toggleConfidencial(); // Reset
         }
 
         // Mostrar toast
