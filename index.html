@@ -3,8 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RedactaPro Supremo - Detector IA</title>
+    <title>RedactaPro Supremo - ULTRA SUPREMA</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://unpkg.com/konva@9/konva.min.js"></script>
     <style id="theme-style">
         :root {
             --bg: #0f172a;
@@ -19,6 +21,14 @@
             --transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
+        .light-mode {
+            --bg: #f8fafc;
+            --bg-secondary: rgba(248, 250, 252, 0.85);
+            --text: #0f172a;
+            --text-secondary: #64748b;
+            --border: #e2e8f0;
+        }
+
         body {
             font-family: 'Inter', sans-serif;
             background: linear-gradient(135deg, var(--bg), #020617);
@@ -28,6 +38,7 @@
             margin: 0;
             min-height: 100vh;
             transition: var(--transition);
+            overflow-x: hidden;
         }
 
         .container {
@@ -166,6 +177,51 @@
             font-weight: 600;
         }
 
+        /* Escáner en tiempo real */
+        .scanner {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 15px 0;
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+        }
+
+        .status-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #4ade80;
+        }
+
+        /* Mapa de ideas */
+        #mapa-container {
+            margin: 20px 0;
+            border-radius: 12px;
+            overflow: hidden;
+            display: none;
+        }
+
+        /* Presentación */
+        .presentation {
+            display: none;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .slide {
+            background: rgba(15, 23, 42, 0.5);
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+        }
+
+        .slide-nav {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+
         /* Historial */
         .history-item {
             padding: 16px;
@@ -220,19 +276,21 @@
 <body>
     <div class="container">
         <h1>RedactaPro Supremo</h1>
-        <p class="subtitle">🛡️ Detector de IA • Humanización Profesional</p>
+        <p class="subtitle">✨ ULTRA SUPREMA • Todas las funciones</p>
 
-        <textarea id="input" placeholder="Pega tu texto aquí..."></textarea>
+        <!-- Escáner en tiempo real -->
+        <div class="scanner">
+            <div class="status-dot" id="status-dot"></div>
+            <span id="scanner-text">Estado: Seguro</span>
+        </div>
 
-        <!-- Botón principal "Humanizar" -->
+        <textarea id="input" placeholder="Pega tu texto aquí..." oninput="analizarEnTiempoReal()"></textarea>
+
+        <!-- Botones principales -->
         <div class="main-buttons">
             <button class="btn-primary" onclick="humanizar()">
                 ✨ Humanizar Texto
             </button>
-        </div>
-
-        <!-- Detector de IA -->
-        <div class="main-buttons">
             <button class="btn-primary" onclick="analizarDetectores()">
                 🛡️ ¿Pasa detectores?
             </button>
@@ -243,6 +301,21 @@
 
         <!-- Botones secundarios -->
         <div class="secondary-buttons">
+            <button onclick="detectarTonoRobótico()">
+                ⚠️ Analizar IA
+            </button>
+            <button onclick="empezarEntrenamientoVoz()">
+                🎤 Entrenar con Voz
+            </button>
+            <button onclick="generarResumenVoz()">
+                📢 Resumen 30s
+            </button>
+            <button onclick="generarMapa()">
+                🧠 Mapa de Ideas
+            </button>
+            <button onclick="iniciarPresentacion()">
+                🎬 Presentación
+            </button>
             <button onclick="copiar()">
                 📋 Copiar
             </button>
@@ -251,6 +324,9 @@
             </button>
             <button onclick="limpiar()">
                 🗑️ Limpiar
+            </button>
+            <button onclick="toggleConfidencial()" id="conf-btn">
+                🔒 Normal
             </button>
             <button onclick="toggleDarkMode()">
                 🌙 / ☀️ Modo
@@ -262,6 +338,15 @@
             <textarea id="output" readonly placeholder="Aquí aparecerá el resultado..."></textarea>
         </div>
 
+        <!-- Mapa de ideas -->
+        <div id="mapa-container">
+            <h3 style="color: var(--accent-light); margin: 10px 0;">🧠 Mapa de Ideas</h3>
+            <div id="mapa" style="background: rgba(15, 23, 42, 0.5); border-radius: 8px; height: 400px;"></div>
+        </div>
+
+        <!-- Presentación -->
+        <div class="presentation" id="presentation"></div>
+
         <!-- Historial -->
         <div id="history" style="margin-top: 30px; display: none;">
             <h3 style="color: var(--accent-light); margin-bottom: 18px; font-weight: 600;">📚 Tu Historial</h3>
@@ -271,13 +356,37 @@
 
     <div class="toast" id="toast">¡Listo!</div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script>
         // Estado
         let darkMode = false;
         let textoFinal = '';
-        const historialKey = 'rps_historial_v13';
+        let confidencialMode = false;
+        let emocionDetectada = 'neutral';
+        const historialKey = 'rps_historial_v14';
         const darkKey = 'rps_dark_mode';
+        const estiloKey = 'rps_estilo_personal';
+
+        // Emociones
+        const emociones = {
+            democracia: ['democracia', 'voto', 'derechos', 'ciudadano'],
+            justicia: ['justicia', 'corte', 'ley', 'tribunal'],
+            crisis: ['crisis', 'problema', 'dificultad', 'conflicto'],
+            logro: ['éxito', 'logro', 'bien', 'avance', 'progreso'],
+            tristeza: ['pérdida', 'duelo', 'triste', 'difícil'],
+            urgente: ['urgente', 'rápido', 'ahora', 'inmediato']
+        };
+
+        // Frases de IA
+        const frasesIA = [
+            'es importante destacar', 'en este contexto', 'a continuación', 
+            'por lo tanto', 'como resultado', 'en conclusión', 'se puede observar',
+            'cabe mencionar', 'vale la pena resaltar', 'es fundamental entender'
+        ];
+
+        const muletillasHumanas = [
+            'la verdad,', 'ahora...', 'fijate que', 'o sea...', 'para que entiendas...',
+            'básicamente,', 'vamos a ver...', 'en esta unidad...', 'ya sabés, el sistema'
+        ];
 
         // Cargar estado
         window.addEventListener('DOMContentLoaded', () => {
@@ -295,65 +404,45 @@
             localStorage.setItem(darkKey, darkMode);
         }
 
-        // Palabras y frases típicas de IA
-        const frasesIA = [
-            'es importante destacar', 'en este contexto', 'a continuación', 
-            'por lo tanto', 'como resultado', 'en conclusión', 'se puede observar',
-            'cabe mencionar', 'vale la pena resaltar', 'es fundamental entender',
-            'en virtud de', 'dicho de otro modo', 'en otras palabras'
-        ];
+        // Modo confidencial
+        function toggleConfidencial() {
+            confidencialMode = !confidencialMode;
+            const btn = document.getElementById('conf-btn');
+            btn.innerHTML = confidencialMode ? '🔓 Confidencial' : '🔒 Normal';
+        }
 
-        const muletillasHumanas = [
-            'la verdad,', 'ahora...', 'fijate que', 'o sea...', 'para que entiendas...',
-            'básicamente,', 'vamos a ver...', 'en esta unidad...', 'ya sabés, el sistema'
-        ];
-
-        // Analizar si pasa detectores
-        function analizarDetectores() {
+        // Analizar en tiempo real
+        function analizarEnTiempoReal() {
             const input = document.getElementById('input').value.trim();
-            if (!input) {
-                alert('Pega un texto primero');
-                return;
-            }
+            if (!input) return;
 
-            const detector = document.getElementById('detector-result');
-            const textoLower = input.toLowerCase();
+            const dot = document.getElementById('status-dot');
+            const text = document.getElementById('scanner-text');
 
-            // Contar frases de IA
-            const encontradas = frasesIA.filter(frase => textoLower.includes(frase));
-            const tieneFrasesIA = encontradas.length > 0;
-
-            // Ver si tiene elementos humanos
-            const tieneMuletilla = muletillasHumanas.some(m => textoLower.includes(m));
-            const tieneSaltoDespuesDeDosPuntos = (input.match(/:\s*\n/g) || []).length > 2;
-            const tieneFirma = textoLower.includes('tu éxito es mi mayor motivación');
+            const tieneFrasesIA = frasesIA.some(frase => input.toLowerCase().includes(frase));
+            const tieneMuletilla = muletillasHumanas.some(m => input.toLowerCase().includes(m));
 
             if (tieneFrasesIA) {
-                detector.innerHTML = `
-                    <p><strong>❌ Cuidado:</strong> Se detectaron frases que suenan como IA:</p>
-                    <div style="margin: 10px 0; color: #f87171;">
-                        ${encontradas.map(f => `• "${f}"`).join('<br>')}
-                    </div>
-                    <p><strong>✅ Solución:</strong> Usa el botón <strong>"Humanizar"</strong> para convertirlo en texto humano.</p>
-                `;
-            } else if (tieneMuletilla && tieneSaltoDespuesDeDosPuntos) {
-                detector.innerHTML = `
-                    <p><strong>✅ ¡Perfecto!</strong> Este texto <span class="safe">sí pasa detectores de IA</span>.</p>
-                    <p>Razones:</p>
-                    <ul style="margin: 10px 0;">
-                        <li>Tiene muletillas naturales como "${muletillasHumanas.find(m => textoLower.includes(m))}"</li>
-                        <li>Usa saltos estratégicos después de ":"</li>
-                        <li>Suena como escrito por un humano real</li>
-                    </ul>
-                `;
+                dot.style.background = '#f87171';
+                text.textContent = 'Estado: ❌ Riesgo alto (frases de IA)';
+            } else if (!tieneMuletilla) {
+                dot.style.background = '#fbbf24';
+                text.textContent = 'Estado: ⚠️ Podría mejorarse';
             } else {
-                detector.innerHTML = `
-                    <p><strong>⚠️ Podría ser detectado.</strong> Aunque no tiene frases obvias de IA, le faltan elementos humanos.</p>
-                    <p><strong>✅ Recomendación:</strong> Usa <strong>"Humanizar"</strong> para añadir toques naturales.</p>
-                `;
+                dot.style.background = '#4ade80';
+                text.textContent = 'Estado: ✅ Seguro (suena humano)';
             }
+        }
 
-            detector.style.display = 'block';
+        // Detectar emoción
+        function detectarEmocion(texto) {
+            const textoLower = texto.toLowerCase();
+            for (const [emocion, palabras] of Object.entries(emociones)) {
+                if (palabras.some(p => textoLower.includes(p))) {
+                    return emocion;
+                }
+            }
+            return 'neutral';
         }
 
         // Humanizar texto
@@ -364,14 +453,21 @@
                 return;
             }
 
-            // Detectar si ya tiene estructura
+            // Detectar emoción
+            emocionDetectada = detectarEmocion(input);
+
             const lines = input.split('\n').map(l => l.trim()).filter(l => l);
             let result = [];
 
-            // Intro natural
-            const intros = ['Ahora...', 'En esta unidad...', 'Básicamente,', 'Vamos a ver...'];
-            const intro = intros[Math.floor(Math.random() * intros.length)];
-            result.push(`${intro} ${lines[0]}.`);
+            // Intro según emoción
+            const intros = {
+                logro: '¡Excelente! ',
+                urgente: 'Rápido: ',
+                tristeza: 'Con respeto: ',
+                default: ''
+            };
+            const introKey = ['logro', 'urgente', 'tristeza'].includes(emocionDetectada) ? emocionDetectada : 'default';
+            result.push(intros[introKey] + lines[0] + '.');
             result.push('');
 
             let seen = new Set();
@@ -419,9 +515,232 @@
             // Actualizar detector
             analizarDetectores();
 
-            // Guardar en historial
-            guardarEnHistorial(input, textoFinal);
+            // Guardar si no es confidencial
+            if (!confidencialMode) {
+                guardarEnHistorial(input, textoFinal);
+            }
+
             mostrarToast('✅ Texto humanizado');
+        }
+
+        // Analizar detectores
+        function analizarDetectores() {
+            const input = document.getElementById('input').value.trim();
+            if (!input) return;
+
+            const detector = document.getElementById('detector-result');
+            const textoLower = input.toLowerCase();
+
+            const encontradas = frasesIA.filter(frase => textoLower.includes(frase));
+            const tieneFrasesIA = encontradas.length > 0;
+            const tieneMuletilla = muletillasHumanas.some(m => textoLower.includes(m));
+            const tieneSaltoDespuesDeDosPuntos = (input.match(/:\s*\n/g) || []).length > 2;
+            const tieneFirma = textoLower.includes('tu éxito es mi mayor motivación');
+
+            if (tieneFrasesIA) {
+                detector.innerHTML = `
+                    <p><strong>❌ Cuidado:</strong> Se detectaron frases que suenan como IA:</p>
+                    <div style="margin: 10px 0; color: #f87171;">
+                        ${encontradas.map(f => `• "${f}"`).join('<br>')}
+                    </div>
+                    <p><strong>✅ Solución:</strong> Usa el botón <strong>"Humanizar"</strong> para convertirlo en texto humano.</p>
+                `;
+            } else if (tieneMuletilla && tieneSaltoDespuesDeDosPuntos) {
+                detector.innerHTML = `
+                    <p><strong>✅ ¡Perfecto!</strong> Este texto <span class="safe">sí pasa detectores de IA</span>.</p>
+                    <p>Razones:</p>
+                    <ul style="margin: 10px 0;">
+                        <li>Tiene muletillas naturales</li>
+                        <li>Usa saltos estratégicos</li>
+                        <li>Suena como escrito por un humano real</li>
+                    </ul>
+                `;
+            } else {
+                detector.innerHTML = `
+                    <p><strong>⚠️ Podría ser detectado.</strong> Aunque no tiene frases obvias de IA, le faltan elementos humanos.</p>
+                    <p><strong>✅ Recomendación:</strong> Usa <strong>"Humanizar"</strong> para añadir toques naturales.</p>
+                `;
+            }
+
+            detector.style.display = 'block';
+        }
+
+        // Detectar tono robótico
+        function detectarTonoRobótico() {
+            const input = document.getElementById('input').value.trim();
+            if (!input) {
+                alert('Pega un texto primero');
+                return;
+            }
+
+            const encontradas = frasesIA.filter(frase => input.toLowerCase().includes(frase));
+            const detector = document.getElementById('detector-result');
+            
+            if (encontradas.length > 0) {
+                detector.innerHTML = `
+                    <p><strong>⚠️ Frases que suenan robóticas:</strong></p>
+                    <div style="margin: 10px 0; color: #f87171;">
+                        ${encontradas.map(f => `• "${f}"`).join('<br>')}
+                    </div>
+                    <p><strong>Sugerencias:</strong> Reemplaza con "la verdad,", "ahora...", o "fijate que..."</p>
+                `;
+            } else {
+                detector.innerHTML = '<p><strong>✅ No se detectaron frases robóticas.</strong> Tu texto ya suena humano.</p>';
+            }
+            detector.style.display = 'block';
+        }
+
+        // Entrenamiento con voz
+        function empezarEntrenamientoVoz() {
+            if (!('SpeechRecognition' in window || 'webkitSpeechRecognition' in window)) {
+                alert('Tu navegador no soporta reconocimiento de voz.');
+                return;
+            }
+
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            const recognition = new SpeechRecognition();
+            recognition.lang = 'es-ES';
+
+            recognition.onresult = (event) => {
+                const transcript = event.results[0][0].transcript;
+                document.getElementById('input').value += '\n' + transcript;
+                mostrarToast('🎤 Voz convertida a texto');
+            };
+
+            recognition.start();
+        }
+
+        // Resumen de voz
+        function generarResumenVoz() {
+            const input = document.getElementById('input').value.trim();
+            if (!input) {
+                alert('Pega un texto primero');
+                return;
+            }
+
+            const lines = input.split('\n').filter(l => l.trim());
+            const titulo = lines[0];
+            const primeras = lines.slice(1, 4).join(' ').substring(0, 150) + '...';
+
+            const resumen = `En esta unidad: ${titulo}. ${primeras} Este es un resumen rápido para que puedas compartirlo.`;
+
+            const utterance = new SpeechSynthesisUtterance(resumen);
+            utterance.rate = 0.9;
+            utterance.pitch = 1;
+            utterance.lang = 'es-ES';
+            speechSynthesis.speak(utterance);
+            mostrarToast('📢 Resumen de 30s reproduciéndose');
+        }
+
+        // Mapa de ideas
+        function generarMapa() {
+            const input = document.getElementById('input').value.trim();
+            if (!input) {
+                alert('Pega un texto primero');
+                return;
+            }
+
+            document.getElementById('mapa-container').style.display = 'block';
+            const stage = new Konva.Stage({
+                container: 'mapa',
+                width: document.getElementById('mapa').offsetWidth,
+                height: 400
+            });
+
+            const layer = new Konva.Layer();
+            const lines = input.split('\n').filter(l => l.trim()).slice(0, 6);
+            const centerX = stage.width() / 2;
+            const centerY = stage.height() / 2;
+
+            // Nodo central
+            const centro = new Konva.Circle({
+                x: centerX, y: centerY, radius: 40,
+                fill: '#0d9488', stroke: '#14b8a6', strokeWidth: 3
+            });
+            const textoCentro = new Konva.Text({
+                x: centerX - 30, y: centerY - 10, text: 'Tema',
+                fontSize: 14, fontFamily: 'Inter', fill: 'white', width: 60, align: 'center'
+            });
+            layer.add(centro, textoCentro);
+
+            // Nodos secundarios
+            lines.forEach((line, i) => {
+                const angle = (i / lines.length) * 2 * Math.PI;
+                const radius = 150;
+                const x = centerX + radius * Math.cos(angle);
+                const y = centerY + radius * Math.sin(angle);
+
+                const nodo = new Konva.Rect({
+                    x: x - 60, y: y - 20, width: 120, height: 40,
+                    fill: '#1e293b', stroke: '#334155', strokeWidth: 1, cornerRadius: 8
+                });
+                const texto = new Konva.Text({
+                    x: x - 50, y: y - 10,
+                    text: line.length > 15 ? line.substring(0, 15) + '...' : line,
+                    fontSize: 12, fontFamily: 'Inter', fill: '#e2e8f0', width: 100
+                });
+                const linea = new Konva.Line({
+                    points: [centerX, centerY, x, y],
+                    stroke: '#94a3b8', strokeWidth: 1, tension: 0.2
+                });
+                layer.add(linea, nodo, texto);
+            });
+
+            stage.add(layer);
+        }
+
+        // Presentación
+        function iniciarPresentacion() {
+            const output = document.getElementById('output').value;
+            if (!output) return;
+
+            const slides = output.split('\n\n').filter(s => s.trim());
+            const presentation = document.getElementById('presentation');
+            presentation.style.display = 'block';
+            presentation.innerHTML = '';
+
+            slides.forEach((slide, i) => {
+                const slideEl = document.createElement('div');
+                slideEl.className = 'slide';
+                slideEl.textContent = slide;
+                presentation.appendChild(slideEl);
+            });
+
+            const nav = document.createElement('div');
+            nav.className = 'slide-nav';
+            nav.innerHTML = `
+                <button onclick="prevSlide()" class="small">⬅️ Anterior</button>
+                <span id="slide-counter">1 de ${slides.length}</span>
+                <button onclick="nextSlide()" class="small">Siguiente ➡️</button>
+            `;
+            presentation.appendChild(nav);
+
+            window.currentSlide = 0;
+            updateSlideCounter(slides.length);
+        }
+
+        function nextSlide() {
+            const slides = document.querySelectorAll('.slide');
+            if (currentSlide < slides.length - 1) {
+                slides[currentSlide].style.display = 'none';
+                currentSlide++;
+                slides[currentSlide].style.display = 'block';
+                updateSlideCounter(document.querySelectorAll('.slide').length);
+            }
+        }
+
+        function prevSlide() {
+            const slides = document.querySelectorAll('.slide');
+            if (currentSlide > 0) {
+                slides[currentSlide].style.display = 'none';
+                currentSlide--;
+                slides[currentSlide].style.display = 'block';
+                updateSlideCounter(document.querySelectorAll('.slide').length);
+            }
+        }
+
+        function updateSlideCounter(total) {
+            document.getElementById('slide-counter').textContent = `${currentSlide + 1} de ${total}`;
         }
 
         // Exportar PDF
@@ -449,6 +768,10 @@
             document.getElementById('input').value = '';
             document.getElementById('output').value = '';
             document.getElementById('detector-result').style.display = 'none';
+            document.getElementById('mapa-container').style.display = 'none';
+            document.getElementById('presentation').style.display = 'none';
+            document.getElementById('status-dot').style.background = '#4ade80';
+            document.getElementById('scanner-text').textContent = 'Estado: Seguro';
         }
 
         // Guardar en historial
@@ -456,7 +779,14 @@
             const hist = JSON.parse(localStorage.getItem(historialKey) || '[]');
             const titulo = input.split('\n')[0].substring(0, 50) + '...';
             const preview = input.replace(/\n/g, ' ').substring(0, 120) + '...';
-            hist.unshift({ titulo, texto: input, resultado: output, fecha: new Date().toLocaleString(), preview });
+            hist.unshift({ 
+                titulo, 
+                texto: input, 
+                resultado: output, 
+                fecha: new Date().toLocaleString(), 
+                preview,
+                emocion: emocionDetectada
+            });
             if (hist.length > 5) hist.pop();
             localStorage.setItem(historialKey, JSON.stringify(hist));
             cargarHistorial();
@@ -480,7 +810,7 @@
                     div.onclick = () => {
                         document.getElementById('input').value = item.texto;
                         document.getElementById('output').value = item.resultado;
-                        analizarDetectores();
+                        analizarEnTiempoReal();
                     };
                     list.appendChild(div);
                 });
