@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RedactaPro Supremo - Vidrio Moderno</title>
+    <title>RedactaPro Supremo - V2</title>
     <style id="theme-style">
         :root {
             --bg: #0f172a;
@@ -14,6 +14,14 @@
             --accent-light: #14b8a6;
             --border: #334155;
             --shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        }
+
+        .light-mode {
+            --bg: #f1f5f9;
+            --bg-secondary: rgba(241, 245, 249, 0.8);
+            --text: #0f172a;
+            --text-secondary: #64748b;
+            --border: #cbd5e1;
         }
 
         body {
@@ -50,6 +58,16 @@
             color: var(--text-secondary);
             font-size: 1.1rem;
             margin-bottom: 25px;
+        }
+
+        .assistant-chat {
+            background: rgba(15, 23, 42, 0.5);
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 20px;
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+            border: 1px solid var(--border);
         }
 
         .controls {
@@ -119,7 +137,6 @@
             cursor: pointer;
             transition: all 0.3s ease;
             border: 3px solid transparent;
-            position: relative;
         }
 
         .color-option:hover {
@@ -183,7 +200,7 @@
             50% { transform: scale(1.2); opacity: 1; }
         }
 
-        .why-mode {
+        .suggestion {
             background: rgba(13, 148, 136, 0.1);
             border: 1px solid rgba(13, 148, 136, 0.3);
             padding: 12px;
@@ -250,105 +267,95 @@
         .toast.show {
             opacity: 1;
         }
-
-        /* Presentación */
-        .presentation {
-            display: none;
-            flex-direction: column;
-            gap: 20px;
-        }
-
-        .slide {
-            background: rgba(15, 23, 42, 0.5);
-            padding: 20px;
-            border-radius: 12px;
-            border: 1px solid var(--border);
-        }
-
-        .slide-nav {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 20px;
-        }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>RedactaPro Supremo</h1>
-        <p class="subtitle">💎 Vidrio Moderno • Presentación • Resumen • Explicación • Vista previa</p>
+        <p class="subtitle">💬 V2 - Asistente Conversacional • Entrenamiento • Vidrio Moderno</p>
 
-        <div class="controls">
-            <button onclick="toggleDarkMode()">🌙 / ☀️ Modo</button>
+        <!-- Asistente conversacional -->
+        <div class="assistant-chat" id="assistant">
+            Hola 👋 ¿Qué necesitás hoy?
+            <div style="margin-top: 15px;">
+                <button onclick="startMode('humanizar')" class="small">✨ Humanizar texto</button>
+                <button onclick="startMode('presentacion')" class="small">🎬 Preparar presentación</button>
+                <button onclick="startMode('exposicion')" class="small">📢 Practicar exposición</button>
+            </div>
+        </div>
 
-            <div class="color-palette">
-                <span style="color: var(--text-secondary); font-size: 0.9rem;">🎨</span>
-                <div class="color-option selected" data-color="green" onclick="selectColor('green')">
-                    <div class="tooltip">Verde Clásico</div>
+        <div id="main-content" style="display: none;">
+            <div class="controls">
+                <button onclick="toggleDarkMode()">🌙 / ☀️ Modo</button>
+
+                <div class="color-palette">
+                    <span style="color: var(--text-secondary); font-size: 0.9rem;">🎨</span>
+                    <div class="color-option selected" data-color="green" onclick="selectColor('green')">
+                        <div class="tooltip">Verde Clásico</div>
+                    </div>
+                    <div class="color-option" data-color="blue" onclick="selectColor('blue')">
+                        <div class="tooltip">Azul Profundo</div>
+                    </div>
+                    <div class="color-option" data-color="purple" onclick="selectColor('purple')">
+                        <div class="tooltip">Morado Real</div>
+                    </div>
+                    <div class="color-option" data-color="red" onclick="selectColor('red')">
+                        <div class="tooltip">Rojo Energía</div>
+                    </div>
                 </div>
-                <div class="color-option" data-color="blue" onclick="selectColor('blue')">
-                    <div class="tooltip">Azul Profundo</div>
-                </div>
-                <div class="color-option" data-color="purple" onclick="selectColor('purple')">
-                    <div class="tooltip">Morado Real</div>
-                </div>
-                <div class="color-option" data-color="red" onclick="selectColor('red')">
-                    <div class="tooltip">Rojo Energía</div>
-                </div>
+
+                <button onclick="toggleSilentMode()" id="silent-btn">🔊 Rápido</button>
             </div>
 
-            <button onclick="toggleSilentMode()" id="silent-btn">🔊 Rápido</button>
-            <button onclick="exportarPDF()">🖨️ PDF</button>
-        </div>
+            <textarea id="input" placeholder="Pega tu texto aquí..."></textarea>
 
-        <textarea id="input" placeholder="Pega tu texto aquí..."></textarea>
+            <div class="controls">
+                <button onclick="humanizar()">✨ Procesar</button>
+                <button onclick="copiar()">📋 Copiar</button>
+                <button onclick="leerEnVozAlta()">📢 Leer en voz alta</button>
+                <button onclick="exportarHTML()">💾 Exportar HTML</button>
+                <button onclick="limpiar()">🗑️ Limpiar</button>
+            </div>
 
-        <div class="controls">
-            <button onclick="humanizar()">✨ Procesar</button>
-            <button onclick="copiar()">📋 Copiar</button>
-            <button onclick="iniciarPresentacion()" id="present-btn" disabled>🎬 Presentar</button>
-            <button onclick="limpiar()">🗑️ Limpiar</button>
-        </div>
+            <!-- Carga elegante -->
+            <div class="loading" id="loading">
+                <div class="pulse"></div>
+                <div class="pulse"></div>
+                <div class="pulse"></div>
+                <p style="margin-top: 10px; font-size: 0.9rem; color: var(--text-secondary);">
+                    Analizando tu estilo...
+                </p>
+            </div>
 
-        <!-- Animación elegante -->
-        <div class="loading" id="loading">
-            <div class="pulse"></div>
-            <div class="pulse"></div>
-            <div class="pulse"></div>
-            <p style="margin-top: 10px; font-size: 0.9rem; color: var(--text-secondary);">
-                Analizando texto inteligentemente...
-            </p>
-        </div>
+            <!-- Sugerencias -->
+            <div class="suggestion" id="suggestion"></div>
 
-        <!-- Explicación del modo -->
-        <div class="why-mode" id="why-mode"></div>
+            <!-- Resultado -->
+            <div class="output">
+                <textarea id="output" readonly placeholder="Aquí aparecerá el resultado..."></textarea>
+            </div>
 
-        <!-- Resultado -->
-        <div class="output">
-            <textarea id="output" readonly placeholder="Aquí aparecerá el resultado..."></textarea>
-        </div>
-
-        <!-- Presentación -->
-        <div class="presentation" id="presentation"></div>
-
-        <!-- Historial -->
-        <div id="history" style="margin-top: 25px; display: none;">
-            <h3 style="color: var(--accent-light); margin-bottom: 15px;">📚 Historial Inteligente</h3>
-            <div id="history-list"></div>
+            <!-- Historial -->
+            <div id="history" style="margin-top: 25px; display: none;">
+                <h3 style="color: var(--accent-light); margin-bottom: 15px;">📚 Tu Historial</h3>
+                <div id="history-list"></div>
+            </div>
         </div>
     </div>
 
     <div class="toast" id="toast">¡Listo!</div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script>
         // Estado
         let darkMode = false;
         let textoFinal = '';
         let modoUsado = '';
         let silentMode = false;
-        const historialKey = 'rps_historial_v6';
+        let estiloPersonal = { formal: 0, fluidez: 0, markdown: 0 };
+        const historialKey = 'rps_historial_v7';
         const temaKey = 'rps_tema';
         const darkKey = 'rps_dark_mode_por_color';
+        const estiloKey = 'rps_estilo_personal';
 
         // Temas
         const temas = {
@@ -360,6 +367,35 @@
 
         // Transiciones
         const transiciones = ['Por otro lado,', 'Además,', 'Es importante destacar que', 'En este marco,', 'Asimismo,'];
+
+        // Cargar estado
+        window.addEventListener('DOMContentLoaded', () => {
+            const savedTema = localStorage.getItem(temaKey) || 'green';
+            selectColor(savedTema);
+
+            const savedEstilo = JSON.parse(localStorage.getItem(estiloKey) || '{}');
+            Object.assign(estiloPersonal, savedEstilo);
+
+            cargarHistorial();
+        });
+
+        // Iniciar modo
+        function startMode(mode) {
+            document.getElementById('assistant').style.display = 'none';
+            document.getElementById('main-content').style.display = 'block';
+            modoUsado = mode;
+
+            // Mostrar sugerencia inicial
+            const suggestion = document.getElementById('suggestion');
+            if (mode === 'humanizar') {
+                suggestion.textContent = '💡 Pega tu texto y haz clic en "Procesar". Ajustaré el estilo según tu historial.';
+            } else if (mode === 'presentacion') {
+                suggestion.textContent = '💡 Pega tu contenido. Lo dividiré en diapositivas listas para exponer.';
+            } else if (mode === 'exposicion') {
+                suggestion.textContent = '💡 Usa "Leer en voz alta" para practicar tu exposición con entonación natural.';
+            }
+            suggestion.style.display = 'block';
+        }
 
         // Seleccionar color
         function selectColor(color) {
@@ -377,13 +413,6 @@
             document.body.classList.toggle('dark-mode', esOscuro);
             darkMode = esOscuro;
         }
-
-        // Cargar estado
-        window.addEventListener('DOMContentLoaded', () => {
-            const savedTema = localStorage.getItem(temaKey) || 'green';
-            selectColor(savedTema);
-            cargarHistorial();
-        });
 
         // Alternar modo oscuro
         function toggleDarkMode() {
@@ -407,33 +436,27 @@
             const lineas = texto.split('\n').filter(l => l.trim());
             const tieneDosPuntos = lineas.filter(l => l.includes(':') && !l.endsWith(':')).length;
             const esLista = lineas.filter(l => l.trim().startsWith('-') || l.trim().startsWith('*') || l.match(/^\d+\./)).length;
-            const esMarkdown = texto.includes('#') || texto.includes('**') || texto.includes('```');
             const longitudPromedio = texto.length / lineas.length;
 
-            if (esMarkdown) return 'markdown';
             if (esLista > 3) return 'lista';
             if (tieneDosPuntos > 4) return 'definiciones';
             if (longitudPromedio > 80) return 'parrafo';
-
             return 'mixto';
         }
 
-        // Elegir modo
+        // Elegir modo según historial y tipo
         function elegirModo(tipo) {
+            // Si ya hay preferencias
+            const total = Object.values(estiloPersonal).reduce((a, b) => a + b, 0);
+            if (total > 3) {
+                const sorted = Object.entries(estiloPersonal).sort((a, b) => b[1] - a[1]);
+                return sorted[0][0];
+            }
+
+            // Si no, por tipo
             if (tipo === 'definiciones' || tipo === 'lista') return 'formal';
             if (tipo === 'parrafo') return 'fluidez';
-            if (tipo === 'markdown') return 'markdown';
             return 'formal';
-        }
-
-        // Explicar por qué
-        function explicarModo(tipo, modo) {
-            const explicaciones = {
-                formal: `Se eligió modo Formal porque detectamos una lista de definiciones. Ideal para precisión y claridad.`,
-                fluidez: `Se eligió modo Fluidez porque el texto es continuo. Añade transiciones naturales para mejor lectura.`,
-                markdown: `Se detectó formato Markdown. Se respetarán estilos como #, **, etc.`
-            };
-            return explicaciones[modo] || `Modo ${modo} aplicado según análisis de estructura.`;
         }
 
         // Procesar texto
@@ -456,9 +479,7 @@
                 if (seen.has(line.toLowerCase())) continue;
                 seen.add(line.toLowerCase());
 
-                if (modo === 'markdown') {
-                    result.push(line);
-                } else if (modo === 'fluidez' && !line.endsWith(':') && line.length > 40 && Math.random() < 0.4) {
+                if (modo === 'fluidez' && !line.endsWith(':') && line.length > 40 && Math.random() < 0.4) {
                     const trans = transiciones[Math.floor(Math.random() * transiciones.length)];
                     result.push(trans + ' ' + line.charAt(0).toLowerCase() + line.slice(1));
                 } else {
@@ -470,7 +491,7 @@
                 }
             }
 
-            // Resumen automático (si es largo)
+            // Resumen automático
             if (lines.length > 10) {
                 result.push('');
                 result.push('📌 **Resumen:** Este contenido explica la organización política del Estado Nacional, sus elementos, forma de gobierno y división de poderes.');
@@ -487,21 +508,11 @@
                 return;
             }
 
-            // Reset
-            document.getElementById('why-mode').style.display = 'none';
-            document.getElementById('presentation').style.display = 'none';
-            document.getElementById('output').style.display = 'block';
-            document.getElementById('present-btn').disabled = false;
-
-            // Mostrar carga elegante o no
-            if (!silentMode) {
-                document.getElementById('loading').style.display = 'block';
-            }
+            document.getElementById('suggestion').style.display = 'none';
+            document.getElementById('loading').style.display = 'block';
 
             setTimeout(() => {
-                if (!silentMode) {
-                    document.getElementById('loading').style.display = 'none';
-                }
+                document.getElementById('loading').style.display = 'none';
 
                 const tipo = detectarTipo(input);
                 const modo = elegirModo(tipo);
@@ -509,14 +520,17 @@
                 textoFinal = procesarTexto(input, modo);
                 document.getElementById('output').value = textoFinal;
 
-                // Explicación
-                const why = document.getElementById('why-mode');
-                why.textContent = explicarModo(tipo, modo);
-                why.style.display = 'block';
-
-                // Guardar
+                // Guardar y entrenar
+                estiloPersonal[modo] = (estiloPersonal[modo] || 0) + 1;
+                localStorage.setItem(estiloKey, JSON.stringify(estiloPersonal));
                 guardarEnHistorial(input, textoFinal, modo);
+
                 mostrarToast('¡Procesado!');
+
+                // Sugerencia de mejora
+                const suggestion = document.getElementById('suggestion');
+                suggestion.textContent = '✅ Listo. ¿Querés que lo lea en voz alta o exportarlo como HTML?';
+                suggestion.style.display = 'block';
             }, silentMode ? 100 : 2000);
         }
 
@@ -549,70 +563,77 @@
                     div.onclick = () => {
                         document.getElementById('input').value = item.texto;
                         document.getElementById('output').value = item.resultado;
-                        document.getElementById('presentation').style.display = 'none';
-                        document.getElementById('output').style.display = 'block';
                     };
                     list.appendChild(div);
                 });
             }
         }
 
-        // Iniciar presentación
-        function iniciarPresentacion() {
-            const output = document.getElementById('output').value;
-            if (!output) return;
-
-            const slides = output.split('\n\n').filter(s => s.trim());
-            const presentation = document.getElementById('presentation');
-            const container = document.getElementById('output');
-
-            container.style.display = 'none';
-            presentation.style.display = 'block';
-            presentation.innerHTML = '';
-
-            slides.forEach((slide, i) => {
-                const slideEl = document.createElement('div');
-                slideEl.className = 'slide';
-                slideEl.textContent = slide;
-                presentation.appendChild(slideEl);
-            });
-
-            // Navegación
-            const nav = document.createElement('div');
-            nav.className = 'slide-nav';
-            nav.innerHTML = `
-                <button onclick="prevSlide()" class="small">⬅️ Anterior</button>
-                <span id="slide-counter">1 de ${slides.length}</span>
-                <button onclick="nextSlide()" class="small">Siguiente ➡️</button>
-            `;
-            presentation.appendChild(nav);
-
-            window.currentSlide = 0;
-            updateSlideCounter(slides.length);
+        // Leer en voz alta
+        function leerEnVozAlta() {
+            const text = document.getElementById('output').value;
+            if (!text) return;
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.rate = 0.9;
+            utterance.pitch = 1;
+            speechSynthesis.speak(utterance);
+            mostrarToast('🔊 Escuchando...');
         }
 
-        function nextSlide() {
-            const slides = document.querySelectorAll('.slide');
-            if (currentSlide < slides.length - 1) {
-                slides[currentSlide].style.display = 'none';
-                currentSlide++;
-                slides[currentSlide].style.display = 'block';
-                updateSlideCounter(document.querySelectorAll('.slide').length);
-            }
+        // Exportar como HTML autónomo
+        function exportarHTML() {
+            if (!textoFinal) return;
+            const html = `<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Texto Procesado</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: #0f172a;
+            color: #e2e8f0;
+            line-height: 1.7;
+            padding: 40px;
+            margin: 0;
         }
-
-        function prevSlide() {
-            const slides = document.querySelectorAll('.slide');
-            if (currentSlide > 0) {
-                slides[currentSlide].style.display = 'none';
-                currentSlide--;
-                slides[currentSlide].style.display = 'block';
-                updateSlideCounter(document.querySelectorAll('.slide').length);
-            }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: rgba(30, 41, 59, 0.8);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(10px);
+            border: 1px solid #334155;
         }
-
-        function updateSlideCounter(total) {
-            document.getElementById('slide-counter').textContent = `${currentSlide + 1} de ${total}`;
+        pre {
+            white-space: pre-wrap;
+            font-family: inherit;
+            background: rgba(15, 23, 42, 0.7);
+            padding: 20px;
+            border-radius: 10px;
+            border: 1px solid #334155;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Texto Procesado</h2>
+        <pre>${textoFinal}</pre>
+    </div>
+</body>
+</html>`;
+            const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'texto-procesado.html';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
         }
 
         // Copiar
@@ -624,26 +645,12 @@
             mostrarToast('¡Copiado!');
         }
 
-        // Exportar PDF
-        function exportarPDF() {
-            if (!textoFinal) return;
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF();
-            doc.setFontSize(12);
-            const lines = doc.splitTextToSize(textoFinal, 180);
-            doc.text(lines, 15, 20);
-            doc.save('redactapro-supremo.pdf');
-        }
-
         // Limpiar
         function limpiar() {
             document.getElementById('input').value = '';
             document.getElementById('output').value = '';
             document.getElementById('loading').style.display = 'none';
-            document.getElementById('why-mode').style.display = 'none';
-            document.getElementById('presentation').style.display = 'none';
-            document.getElementById('output').style.display = 'block';
-            document.getElementById('present-btn').disabled = true;
+            document.getElementById('suggestion').style.display = 'none';
         }
 
         // Mostrar toast
