@@ -3,678 +3,465 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RedactaPro Supremo - V6</title>
+    <title>RedactaPro Supremo - Motor de Humanización</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <style id="theme-style">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://unpkg.com/docx@7.11.0/build/index.browser.js"></script>
+    <script src="https://unpkg.com/lucide@latest/dist/cdn/lucide.min.js"></script>
+    <style>
         :root {
-            --bg: #0f172a;
-            --bg-secondary: rgba(30, 41, 59, 0.7);
-            --text: #e2e8f0;
-            --text-secondary: #94a3b8;
-            --accent: #0d9488;
-            --accent-light: #14b8a6;
-            --border: #334155;
-            --shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-            --radius: 16px;
-            --transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        .light-mode {
-            --bg: #f8fafc;
-            --bg-secondary: rgba(248, 250, 252, 0.85);
-            --text: #0f172a;
-            --text-secondary: #64748b;
-            --border: #e2e8f0;
+            --bg: #ffffff;
+            --bg-sidebar: #f8f9fa;
+            --text: #1f2937;
+            --text-secondary: #4b5563;
+            --accent: #1d4ed8;
+            --accent-light: #3b82f6;
+            --border: #e5e7eb;
+            --shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            --success: #059669;
+            --warning: #d97706;
+            --danger: #dc2626;
+            --safe: #10b981;
+            --caution: #f59e0b;
+            --risk: #ef4444;
         }
 
         body {
             font-family: 'Inter', sans-serif;
-            background: linear-gradient(135deg, var(--bg), #020617);
+            background: var(--bg);
             color: var(--text);
-            line-height: 1.7;
-            padding: 20px;
+            line-height: 1.6;
+            padding: 0;
             margin: 0;
             min-height: 100vh;
-            transition: var(--transition);
-            overflow-x: hidden;
+            display: flex;
         }
 
-        .container {
-            max-width: 900px;
-            margin: 0 auto;
-            background: var(--bg-secondary);
-            padding: 32px;
-            border-radius: var(--radius);
-            box-shadow: var(--shadow);
-            backdrop-filter: blur(16px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            transition: var(--transition);
+        /* Sidebar */
+        .sidebar {
+            width: 300px;
+            background: var(--bg-sidebar);
+            border-right: 1px solid var(--border);
+            padding: 20px;
+            height: 100vh;
+            overflow-y: auto;
+            position: fixed;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--accent);
+            margin-bottom: 20px;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .tool-section {
+            margin-bottom: 25px;
+        }
+
+        .tool-title {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            font-weight: 600;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .tool-btn {
+            display: block;
+            width: 100%;
+            padding: 8px 12px;
+            margin-bottom: 6px;
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            color: var(--text);
+            font-size: 0.9rem;
+            text-align: left;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .tool-btn:hover {
+            background: var(--accent);
+            color: white;
+            border-color: var(--accent);
+        }
+
+        /* Main content */
+        .main-content {
+            margin-left: 300px;
+            padding: 30px;
+            width: calc(100% - 300px);
         }
 
         h1 {
-            text-align: center;
-            color: var(--accent-light);
-            margin: 0 0 12px 0;
+            color: var(--accent);
+            margin: 0 0 10px 0;
             font-weight: 700;
             font-size: 1.8rem;
-            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 12px;
         }
 
         p.subtitle {
-            text-align: center;
             color: var(--text-secondary);
             font-size: 1.1rem;
-            margin-bottom: 30px;
-            transition: var(--transition);
+            margin-bottom: 25px;
         }
 
-        /* Onboarding */
-        .onboarding {
-            text-align: center;
-            padding: 40px 20px;
-            opacity: 0;
-            animation: fadeIn 0.8s forwards;
-        }
-
-        @keyframes fadeIn {
-            to { opacity: 1; }
-        }
-
-        .onboarding h2 {
-            font-size: 1.5rem;
+        /* Form */
+        .form-group {
             margin-bottom: 20px;
-            color: var(--accent-light);
         }
 
-        .onboarding p {
-            color: var(--text-secondary);
-            margin-bottom: 30px;
-            max-width: 500px;
-            margin-left: auto;
-            margin-right: auto;
-        }
-
-        .btn-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-            gap: 16px;
-            max-width: 600px;
-            margin: 0 auto;
-        }
-
-        /* Iconos SVG */
-        .icon {
-            width: 20px;
-            height: 20px;
-            vertical-align: middle;
-            margin-right: 8px;
-            fill: currentColor;
-            transition: transform 0.3s;
-        }
-
-        button:hover .icon {
-            transform: scale(1.1);
-        }
-
-        /* Botones modernos */
-        button {
-            background: linear-gradient(90deg, var(--accent), #059669);
-            color: white;
-            border: none;
-            padding: 12px 20px;
-            border-radius: 12px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            font-size: 0.95rem;
-            box-shadow: 0 4px 14px rgba(13, 148, 136, 0.25);
-            border: 1px solid rgba(13, 148, 136, 0.3);
-            display: inline-flex;
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--text);
+            display: flex;
             align-items: center;
-            justify-content: center;
             gap: 8px;
         }
 
-        button:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 24px rgba(13, 148, 136, 0.35);
-        }
-
-        button:active {
-            transform: translateY(-1px);
-        }
-
-        /* Textarea con estilo */
         textarea {
             width: 100%;
             min-height: 200px;
-            padding: 20px;
-            margin: 16px 0;
+            padding: 16px;
             border: 1px solid var(--border);
-            border-radius: 14px;
-            background: rgba(15, 23, 42, 0.6);
+            border-radius: 8px;
+            background: white;
             color: var(--text);
             font-size: 1rem;
             resize: vertical;
-            backdrop-filter: blur(6px);
-            transition: all 0.3s;
-            font-family: 'Inter', monospace;
+            font-family: 'Inter', sans-serif;
         }
 
         textarea:focus {
             outline: none;
             border-color: var(--accent);
-            box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.3);
-            background: rgba(15, 23, 42, 0.7);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
         }
 
-        /* Animación elegante */
-        .loading {
-            text-align: center;
-            padding: 40px 20px;
-            display: none;
-        }
-
-        .spinner {
-            display: inline-block;
-            width: 40px;
-            height: 40px;
-            border: 4px solid rgba(13, 148, 136, 0.3);
-            border-radius: 50%;
-            border-top-color: var(--accent-light);
-            animation: spin 1s ease-in-out infinite;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
-        .loading p {
-            margin-top: 16px;
-            color: var(--text-secondary);
-            font-size: 0.95rem;
-        }
-
-        /* Sugerencias en tiempo real */
-        .suggestion {
-            background: rgba(13, 148, 136, 0.1);
-            border: 1px solid rgba(13, 148, 136, 0.3);
-            padding: 16px;
-            border-radius: 12px;
-            margin: 18px 0;
-            font-size: 0.95rem;
-            color: var(--text-secondary);
-            display: none;
-        }
-
-        .suggestion p {
-            margin: 0 0 12px 0;
-        }
-
-        .suggestion-actions {
-            display: flex;
-            gap: 10px;
-            margin-top: 12px;
-        }
-
-        .btn-small {
-            padding: 6px 12px;
-            font-size: 0.85rem;
-            border-radius: 8px;
-        }
-
-        /* Feedback emocional */
-        .emotional-feedback {
-            background: rgba(13, 148, 136, 0.1);
-            border: 1px solid rgba(13, 148, 136, 0.3);
-            padding: 16px;
-            border-radius: 12px;
-            margin: 18px 0;
-            font-size: 0.95rem;
-            color: var(--text-secondary);
-            display: none;
-            text-align: center;
-            font-style: italic;
-        }
-
-        /* Historial */
-        .history-item {
-            padding: 16px;
-            margin: 10px 0;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 14px;
-            cursor: pointer;
-            font-size: 0.95rem;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            border-left: 5px solid var(--accent);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .history-item::before {
-            content: '';
-            position: absolute;
-            top: 0; left: 0;
-            width: 0; height: 100%;
-            background: rgba(13, 148, 136, 0.1);
-            transition: width 0.3s;
-        }
-
-        .history-item:hover::before {
-            width: 100%;
-        }
-
-        .history-item:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
-        }
-
-        .history-preview {
-            color: var(--text-secondary);
-            font-size: 0.85rem;
-            margin-top: 6px;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            max-width: 100%;
-        }
-
-        .tag {
-            display: inline-block;
-            padding: 4px 10px;
-            border-radius: 20px;
-            font-size: 0.8rem;
-            font-weight: 600;
-            margin-left: 10px;
+        /* Buttons */
+        .btn {
             background: var(--accent);
             color: white;
+            border: none;
+            padding: 10px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.95rem;
+            margin-right: 10px;
+            margin-bottom: 10px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
         }
 
-        /* Toast moderno */
+        .btn:hover {
+            background: var(--accent-light);
+        }
+
+        .btn-secondary {
+            background: white;
+            color: var(--text);
+            border: 1px solid var(--border);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-secondary:hover {
+            background: #f1f5f9;
+        }
+
+        /* Evasion Panel */
+        .evasion-panel {
+            background: #f8fafc;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 16px;
+            margin: 20px 0;
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+        }
+
+        .evasion-item {
+            display: flex;
+            justify-content: space-between;
+            margin: 8px 0;
+            padding: 6px 0;
+            border-bottom: 1px dashed #e2e8f0;
+        }
+
+        .evasion-status {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: var(--safe);
+        }
+
+        .status-caution { background: var(--caution); }
+        .status-risk { background: var(--risk); }
+
+        /* Output */
+        .output {
+            margin-top: 20px;
+        }
+
+        /* Status bar */
+        .status-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: #f1f5f9;
+            border-top: 1px solid var(--border);
+            padding: 8px 30px;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            display: flex;
+            justify-content: space-between;
+            z-index: 100;
+            align-items: center;
+        }
+
         .toast {
             position: fixed;
-            bottom: 24px;
+            bottom: 80px;
             left: 50%;
             transform: translateX(-50%);
-            background: var(--bg-secondary);
+            background: var(--bg);
             color: var(--text);
-            padding: 16px 28px;
-            border-radius: 16px;
-            box-shadow: var(--shadow);
+            padding: 12px 24px;
             border: 1px solid var(--border);
+            border-radius: 8px;
+            box-shadow: var(--shadow);
             opacity: 0;
-            transition: opacity 0.4s, transform 0.4s;
-            z-index: 100;
-            backdrop-filter: blur(12px);
-            font-weight: 500;
+            transition: opacity 0.3s;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
 
         .toast.show {
             opacity: 1;
-            transform: translateX(-50%) scale(1.05);
-        }
-
-        /* Fondo animado sutil */
-        .bg-particles {
-            position: fixed;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            pointer-events: none;
-            z-index: -1;
-        }
-
-        .particle {
-            position: absolute;
-            width: 4px;
-            height: 4px;
-            border-radius: 50%;
-            opacity: 0.5;
-            animation: float 15s infinite linear;
-        }
-
-        @keyframes float {
-            0% { transform: translateY(0) translateX(0); opacity: 0.5; }
-            100% { transform: translateY(-100vh) translateX(100vw); opacity: 0; }
-        }
-
-        /* Modo presentación */
-        .presentation {
-            display: none;
-            flex-direction: column;
-            gap: 20px;
-        }
-
-        .slide {
-            background: rgba(15, 23, 42, 0.5);
-            padding: 20px;
-            border-radius: 12px;
-            border: 1px solid var(--border);
-            animation: slideIn 0.5s ease-out;
-        }
-
-        @keyframes slideIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .slide-nav {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 20px;
-        }
-
-        /* Modo crea */
-        .crea-container {
-            display: none;
-            margin-top: 20px;
-            padding: 16px;
-            background: rgba(13, 148, 136, 0.1);
-            border-radius: 12px;
-            border: 1px solid rgba(13, 148, 136, 0.3);
-        }
-
-        .crea-idea {
-            margin: 8px 0;
-            padding: 12px;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 8px;
         }
     </style>
 </head>
 <body>
-    <!-- Fondo animado -->
-    <div class="bg-particles" id="particles"></div>
 
-    <div class="container">
-        <h1>RedactaPro Supremo</h1>
-        <p class="subtitle">✨ V6 - Anticipa • Crea • Evoluciona</p>
-
-        <!-- Onboarding -->
-        <div class="onboarding" id="onboarding">
-            <h2>¿Qué necesitás hoy?</h2>
-            <p>Elige cómo querés trabajar. Yo me adapto a vos.</p>
-            <div class="btn-grid">
-                <button onclick="startMode('anticipa')">
-                    <svg class="icon" viewBox="0 0 24 24"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
-                    Anticipa
-                </button>
-                <button onclick="startMode('crea')">
-                    <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><path d="M16 12h-4"></path><path d="M12 16h-4"></path><path d="M8 8h4"></path></svg>
-                    Crea conmigo
-                </button>
-                <button onclick="startMode('presentacion')">
-                    <svg class="icon" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg>
-                    Presentación
-                </button>
-            </div>
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="logo">
+            <i data-lucide="shield-check"></i>
+            RedactaPro Supremo
         </div>
 
-        <!-- Contenido principal -->
-        <div id="main-content" style="display: none;">
-            <div class="controls">
-                <button onclick="toggleDarkMode()" id="mode-btn">
-                    <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
-                    Modo Oscuro
-                </button>
-
-                <button onclick="toggleConfidencial()" id="conf-btn">
-                    <svg class="icon" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
-                    Normal
-                </button>
+        <div class="tool-section">
+            <div class="tool-title">
+                <i data-lucide="settings"></i>
+                Estilo
             </div>
+            <button class="tool-btn" onclick="setEstilo('colloquial')">
+                <i data-lucide="message-circle"></i>
+                Coloquial
+            </button>
+            <button class="tool-btn" onclick="setEstilo('formal')">
+                <i data-lucide="book"></i>
+                Formal
+            </button>
+            <button class="tool-btn" onclick="setEstilo('tecnico')">
+                <i data-lucide="code"></i>
+                Técnico
+            </button>
+        </div>
 
-            <textarea id="input" placeholder="Pega tu texto aquí..." oninput="analizarEnTiempoReal()"></textarea>
-
-            <!-- Crea conmigo -->
-            <div class="crea-container" id="crea-container">
-                <p><strong>Ideas en tu estilo:</strong></p>
-                <div class="crea-idea" id="idea1"></div>
-                <div class="crea-idea" id="idea2"></div>
-                <div class="crea-idea" id="idea3"></div>
+        <div class="tool-section">
+            <div class="tool-title">
+                <i data-lucide="shield"></i>
+                Evasión
             </div>
+            <button class="tool-btn" onclick="analizarEvasion()">
+                <i data-lucide="activity"></i>
+                Analizar Evasión
+            </button>
+            <button class="tool-btn" onclick="detectarTonoRobótico()">
+                <i data-lucide="alert-triangle"></i>
+                Detectar IA
+            </button>
+            <button class="tool-btn" onclick="copiarConFormato()">
+                <i data-lucide="copy"></i>
+                Copiar para Docs
+            </button>
+        </div>
 
-            <div class="controls">
-                <button onclick="humanizar()">
-                    <svg class="icon" viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path></svg>
-                    Procesar
-                </button>
-                <button onclick="copiar()">
-                    <svg class="icon" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
-                    Copiar
-                </button>
-                <button onclick="exportarPDF()">
-                    <svg class="icon" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
-                    PDF
-                </button>
-                <button onclick="limpiar()">
-                    <svg class="icon" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
-                    Limpiar
-                </button>
+        <div class="tool-section">
+            <div class="tool-title">
+                <i data-lucide="download"></i>
+                Exportar
             </div>
-
-            <!-- Carga -->
-            <div class="loading" id="loading">
-                <div class="spinner"></div>
-                <p id="loading-msg">Analizando tu estilo...</p>
-            </div>
-
-            <!-- Sugerencia en tiempo real -->
-            <div class="suggestion" id="suggestion">
-                <p><strong>Sugerencia:</strong> "Podrías agregar un ejemplo aquí para que suene más natural."</p>
-                <div class="suggestion-actions">
-                    <button onclick="aceptarSugerencia()" class="btn-small">✅ Aceptar</button>
-                    <button onclick="rechazarSugerencia()" class="btn-small">❌ Rechazar</button>
-                </div>
-            </div>
-
-            <!-- Feedback emocional -->
-            <div class="emotional-feedback" id="feedback"></div>
-
-            <!-- Resultado -->
-            <div class="output">
-                <textarea id="output" readonly placeholder="Aquí aparecerá el resultado..."></textarea>
-            </div>
-
-            <!-- Presentación -->
-            <div class="presentation" id="presentation"></div>
-
-            <!-- Historial -->
-            <div id="history" style="margin-top: 30px; display: none;">
-                <h3 style="color: var(--accent-light); margin-bottom: 18px; font-weight: 600;">📚 Tu Historial</h3>
-                <div id="history-list"></div>
-            </div>
+            <button class="tool-btn" onclick="exportarPDF()">
+                <i data-lucide="file-text"></i>
+                Exportar PDF
+            </button>
+            <button class="tool-btn" onclick="exportarDOCX()">
+                <i data-lucide="file-word"></i>
+                Exportar Word
+            </button>
         </div>
     </div>
 
-    <div class="toast" id="toast">¡Listo!</div>
+    <!-- Main Content -->
+    <div class="main-content">
+        <h1>
+            <i data-lucide="shield-check"></i>
+            Motor de Humanización Avanzada
+        </h1>
+        <p class="subtitle">Evasión total, redacción natural, estilo personal</p>
+
+        <div class="form-group">
+            <label for="input">
+                <i data-lucide="file-input"></i>
+                Texto Original
+            </label>
+            <textarea id="input" placeholder="Pega tu texto aquí..."></textarea>
+        </div>
+
+        <div>
+            <button class="btn" onclick="humanizar()">
+                <i data-lucide="sparkles"></i>
+                Humanizar Texto
+            </button>
+            <button class="btn btn-secondary" onclick="limpiar()">
+                <i data-lucide="trash-2"></i>
+                Limpiar
+            </button>
+        </div>
+
+        <!-- Evasion Panel -->
+        <div class="evasion-panel" id="evasionPanel">
+            <strong>🛡️ Análisis de Evasión:</strong>
+            <div class="evasion-item">
+                <span>Tono robótico</span>
+                <div class="evasion-status">
+                    <span class="status-dot" id="roboticStatus"></span>
+                    <span id="roboticText">Bajo</span>
+                </div>
+            </div>
+            <div class="evasion-item">
+                <span>Patrones de IA</span>
+                <div class="evasion-status">
+                    <span class="status-dot" id="patternStatus"></span>
+                    <span id="patternText">Bajo</span>
+                </div>
+            </div>
+            <div class="evasion-item">
+                <span>Entropía textual</span>
+                <div class="evasion-status">
+                    <span class="status-dot" id="entropyStatus"></span>
+                    <span id="entropyText">Alta</span>
+                </div>
+            </div>
+            <div class="evasion-item">
+                <span>Veredicto final</span>
+                <div class="evasion-status">
+                    <span class="status-dot" id="finalStatus"></span>
+                    <span id="finalText">✅ Pasa detectores</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Output -->
+        <div class="output">
+            <label for="output">
+                <i data-lucide="file-output"></i>
+                Texto Humanizado
+            </label>
+            <textarea id="output" readonly placeholder="Aquí aparecerá el resultado..."></textarea>
+        </div>
+    </div>
+
+    <!-- Status Bar -->
+    <div class="status-bar">
+        <div class="status-item">
+            <i data-lucide="shield-check"></i>
+            <span>Evasión activa</span>
+        </div>
+        <div class="status-item">
+            <i data-lucide="type"></i>
+            <span id="status-estilo">Estilo: Coloquial</span>
+        </div>
+    </div>
+
+    <!-- Toast -->
+    <div class="toast" id="toast">
+        <i data-lucide="check-circle"></i>
+        <span id="toast-message">¡Listo!</span>
+    </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-
+    <script src="https://unpkg.com/docx@7.11.0/build/index.browser.js"></script>
     <script>
-        // Generar partículas
-        const particles = document.getElementById('particles');
-        function crearParticula(color = 'white', anim = 'float') {
-            const p = document.createElement('div');
-            p.classList.add('particle');
-            p.style.left = Math.random() * 100 + 'vw';
-            p.style.top = Math.random() * 100 + 'vh';
-            p.style.width = (2 + Math.random() * 6) + 'px';
-            p.style.height = p.style.width;
-            p.style.background = color;
-            p.style.animationDuration = (10 + Math.random() * 20) + 's';
-            p.style.animationDelay = (Math.random() * 10) + 's';
-            p.style.animationName = anim;
-            particles.appendChild(p);
-            setTimeout(() => p.remove(), 25000);
-        }
+        // Inicializar Lucide
+        lucide.createIcons();
 
         // Estado
-        let darkMode = false;
         let textoFinal = '';
-        let modoUsado = '';
-        let confidencialMode = false;
-        let emocionDetectada = 'neutral';
-        let sugerenciaActiva = false;
-        let estiloPersonal = { formal: 0, fluidez: 0 };
-        const historialKey = 'rps_historial_v11';
-        const temaKey = 'rps_tema';
-        const darkKey = 'rps_dark_mode_por_color';
-        const estiloKey = 'rps_estilo_personal';
+        let estiloActual = 'colloquial';
+        const historialKey = 'rps_historial_v19';
 
-        // Temas emocionales
-        const temasEmocionales = {
-            democracia: { accent: '#0d9488', bg: 'linear-gradient(135deg, #0f172a, #020617)', particles: 'white' },
-            justicia: { accent: '#0284c7', bg: 'linear-gradient(135deg, #0f172a, #020617)', particles: 'white' },
-            crisis: { accent: '#7c3aed', bg: 'linear-gradient(135deg, #1a1a2e, #16213e)', particles: 'gray' },
-            logro: { accent: '#d97706', bg: 'linear-gradient(135deg, #fef3c7, #fbbf24)', particles: 'gold' },
-            tristeza: { accent: '#6b7280', bg: 'linear-gradient(135deg, #1f2937, #111827)', particles: 'gray' },
-            urgente: { accent: '#dc2626', bg: 'linear-gradient(135deg, #312e2b, #5d2a2a)', particles: 'red' }
+        // Sinónimos contextuales
+        const sinonimos = {
+            'importante': ['clave', 'fundamental', 'esencial'],
+            'destacar': ['resaltar', 'enfatizar', 'señalar'],
+            'contexto': ['marco', 'escenario', 'situación'],
+            'por lo tanto': ['entonces', 'así que', 'por eso'],
+            'como resultado': ['por ende', 'en consecuencia', 'de ahí que'],
+            'en conclusión': ['para cerrar', 'finalmente', 'en definitiva']
         };
 
-        // Palabras clave emocionales
-        const emociones = {
-            democracia: ['democracia', 'voto', 'derechos', 'ciudadano'],
-            justicia: ['justicia', 'corte', 'ley', 'tribunal'],
-            crisis: ['crisis', 'problema', 'dificultad', 'conflicto'],
-            logro: ['éxito', 'logro', 'bien', 'avance', 'progreso'],
-            tristeza: ['pérdida', 'duelo', 'triste', 'difícil'],
-            urgente: ['urgente', 'rápido', 'ahora', 'inmediato']
-        };
+        // Muletillas naturales
+        const muletillas = [
+            'la verdad,', 'ahora...', 'fijate que', 'para que entiendas...',
+            'básicamente,', 'vamos a ver...', 'en esta unidad...', 'ya sabés, el sistema'
+        ];
 
-        // Ideas por tema
-        const ideasPorTema = {
-            democracia: [
-                'La democracia es el gobierno del pueblo, por el pueblo y para el pueblo.',
-                'En Argentina, el sistema democrático permite a los ciudadanos elegir a sus representantes.',
-                'Aunque la democracia tiene desafíos, sigue siendo la mejor forma de gobierno.'
-            ],
-            justicia: [
-                'El poder judicial es independiente y protege los derechos de todos.',
-                'La Corte Suprema es el máximo tribunal del país.',
-                'Un sistema de justicia justo es esencial para una sociedad democrática.'
-            ],
-            default: [
-                'Este contenido explica un tema importante de la organización política.',
-                'La claridad y precisión son claves para entender estos conceptos.',
-                'Tu forma de explicar es clara y efectiva.'
-            ]
-        };
-
-        // Detectar emoción
-        function detectarEmocion(texto) {
-            const textoLower = texto.toLowerCase();
-            for (const [emocion, palabras] of Object.entries(emociones)) {
-                if (palabras.some(p => textoLower.includes(p))) {
-                    return emocion;
-                }
-            }
-            return 'neutral';
+        // Configuración de estilo
+        function setEstilo(estilo) {
+            estiloActual = estilo;
+            document.getElementById('status-estilo').textContent = `Estilo: ${{
+                colloquial: 'Coloquial',
+                formal: 'Formal',
+                tecnico: 'Técnico'
+            }[estilo]}`;
+            mostrarToast(`Estilo: ${estilo}`);
         }
 
-        // Aplicar tema emocional
-        function aplicarTemaEmocional(emocion) {
-            const tema = temasEmocionales[emocion] || temasEmocionales.democracia;
-            document.documentElement.style.setProperty('--accent', tema.accent);
-            document.documentElement.style.setProperty('--accent-light', tema.accent);
-            document.body.style.background = tema.bg;
-            
-            // Limpiar partículas anteriores
-            particles.innerHTML = '';
-            // Crear nuevas partículas según emoción
-            setInterval(() => {
-                crearParticula(tema.particles, 'float');
-            }, 2000);
-        }
-
-        // Cargar estado
-        window.addEventListener('DOMContentLoaded', () => {
-            const savedTema = localStorage.getItem(temaKey) || 'green';
-            selectColor(savedTema);
-            cargarHistorial();
-        });
-
-        // Iniciar modo
-        function startMode(mode) {
-            document.getElementById('onboarding').style.display = 'none';
-            document.getElementById('main-content').style.display = 'block';
-            modoUsado = mode;
-
-            const feedback = document.getElementById('feedback');
-            if (mode === 'anticipa') {
-                feedback.textContent = 'Escribe algo. Te sugeriré mejoras en tiempo real.';
-                feedback.style.display = 'block';
-            } else if (mode === 'crea') {
-                document.getElementById('input').placeholder = 'Escribe un tema... ej: democracia, justicia';
-                document.getElementById('crea-container').style.display = 'block';
-                feedback.textContent = 'Escribe un tema y te daré 3 ideas en tu estilo.';
-                feedback.style.display = 'block';
-            } else if (mode === 'presentacion') {
-                feedback.textContent = 'Pega tu contenido. Lo dividiré en diapositivas listas para exponer.';
-                feedback.style.display = 'block';
-            }
-        }
-
-        // Analizar en tiempo real
-        function analizarEnTiempoReal() {
-            const input = document.getElementById('input').value.trim();
-            if (!input || modoUsado !== 'anticipa') return;
-
-            const sugerencia = document.getElementById('suggestion');
-            if (input.length > 50 && !sugerenciaActiva) {
-                sugerencia.querySelector('p').innerHTML = '<strong>Sugerencia:</strong> "Podrías agregar un ejemplo aquí para que suene más natural."';
-                sugerencia.style.display = 'block';
-                sugerenciaActiva = true;
-            }
-
-            // Modo crea
-            if (modoUsado === 'crea' && input.length > 5) {
-                generarIdeas(input);
-            }
-        }
-
-        // Generar ideas
-        function generarIdeas(tema) {
-            const temaLower = tema.toLowerCase();
-            let ideas = ideasPorTema.default;
-            if (temaLower.includes('democracia')) ideas = ideasPorTema.democracia;
-            if (temaLower.includes('justicia')) ideas = ideasPorTema.justicia;
-
-            document.getElementById('idea1').textContent = ideas[0];
-            document.getElementById('idea2').textContent = ideas[1];
-            document.getElementById('idea3').textContent = ideas[2];
-        }
-
-        // Alternar modo oscuro
-        function toggleDarkMode() {
-            darkMode = !darkMode;
-            document.body.classList.toggle('dark-mode', darkMode);
-            const color = localStorage.getItem(temaKey) || 'green';
-            const modoPorColor = JSON.parse(localStorage.getItem(darkKey) || '{}');
-            modoPorColor[color] = darkMode;
-            localStorage.setItem(darkKey, JSON.stringify(modoPorColor));
-
-            const btn = document.getElementById('mode-btn');
-            btn.innerHTML = darkMode 
-                ? '<svg class="icon" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg> Modo Claro' 
-                : '<svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg> Modo Oscuro';
-        }
-
-        // Modo confidencial
-        function toggleConfidencial() {
-            confidencialMode = !confidencialMode;
-            const container = document.querySelector('.container');
-            const btn = document.getElementById('conf-btn');
-            
-            if (confidencialMode) {
-                container.classList.add('confidential-active');
-                btn.innerHTML = '<svg class="icon" viewBox="0 0 24 24"><path d="M12 15v3m-3-3h6M12 6v3m-3-3h6"></path><circle cx="12" cy="12" r="9"></circle></svg> Confidencial';
-            } else {
-                container.classList.remove('confidential-active');
-                btn.innerHTML = '<svg class="icon" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg> Normal';
-            }
-        }
-
-        // Función principal
+        // Humanizar texto
         function humanizar() {
             const input = document.getElementById('input').value.trim();
             if (!input) {
@@ -682,135 +469,129 @@
                 return;
             }
 
-            document.getElementById('feedback').style.display = 'none';
-            document.getElementById('suggestion').style.display = 'none';
-            document.getElementById('loading').style.display = 'block';
-            document.getElementById('loading-msg').textContent = 'Analizando tu estilo...';
+            let lines = input.split('\n').map(l => l.trim()).filter(l => l);
+            let result = [];
 
-            setTimeout(() => {
-                document.getElementById('loading').style.display = 'none';
+            // Intro natural
+            const intros = {
+                colloquial: 'Ahora...',
+                formal: 'En esta unidad:',
+                tecnico: 'Análisis:'
+            };
+            result.push(`${intros[estiloActual]} ${lines[0]}.`);
+            result.push('');
 
-                // Detectar emoción
-                emocionDetectada = detectarEmocion(input);
-                aplicarTemaEmocional(emocionDetectada);
+            let seen = new Set();
+            let fillerAdded = false;
 
-                // Procesar texto
-                let lines = input
-                    .replace(/\n+/g, '\n')
-                    .split('\n')
-                    .map(l => l.trim())
-                    .filter(l => l);
+            for (let i = 1; i < lines.length; i++) {
+                let line = lines[i];
+                if (seen.has(line.toLowerCase())) continue;
+                seen.add(line.toLowerCase());
 
-                let result = [];
-                let seen = new Set();
-
-                result.push(lines[0] + '.');
-                result.push('');
-                seen.add(lines[0].toLowerCase());
-
-                for (let i = 1; i < lines.length; i++) {
-                    let line = lines[i];
-                    if (seen.has(line.toLowerCase())) continue;
-                    seen.add(line.toLowerCase());
-
-                    if (!line.endsWith(':') && line.length > 40 && Math.random() < 0.4) {
-                        const trans = ['Por otro lado,', 'Además,', 'Es importante destacar que'][Math.floor(Math.random() * 3)];
-                        result.push(trans + ' ' + line.charAt(0).toLowerCase() + line.slice(1));
-                    } else {
-                        result.push(line);
-                    }
-
-                    if (line.endsWith(':') && i < lines.length - 1) {
-                        result.push('');
+                // Añadir muletilla en democracia
+                if (!fillerAdded && line.toLowerCase().startsWith('democracia:') && line.includes(':')) {
+                    const parts = line.split(':');
+                    const value = parts[1].trim();
+                    if (value.length > 10) {
+                        line = `${parts[0]}: la verdad, ${value.charAt(0).toLowerCase() + value.slice(1)}`;
+                        fillerAdded = true;
                     }
                 }
 
-                if (lines.length > 10) {
+                // Reemplazar con sinónimos
+                if (estiloActual !== 'formal') {
+                    for (const [palabra, lista] of Object.entries(sinonimos)) {
+                        const regex = new RegExp(palabra, 'gi');
+                        if (line.match(regex)) {
+                            const sinonimo = lista[Math.floor(Math.random() * lista.length)];
+                            line = line.replace(regex, sinonimo);
+                        }
+                    }
+                }
+
+                // Saltos después de ":"
+                if (line.endsWith(':')) {
+                    result.push(line);
                     result.push('');
-                    result.push('📌 **Resumen:** Este contenido explica la organización política del Estado Nacional, sus elementos, forma de gobierno y división de poderes.');
+                } else {
+                    result.push(line);
                 }
-
-                textoFinal = result.join('\n');
-                document.getElementById('output').value = textoFinal;
-
-                // Feedback emocional
-                const feedback = document.getElementById('feedback');
-                const mensajes = {
-                    democracia: 'Tu explicación sobre democracia es clara y justa.',
-                    justicia: 'Este texto transmite equilibrio y precisión.',
-                    crisis: 'Abordaste el tema con seriedad y empatía.',
-                    logro: 'Se nota tu entusiasmo. ¡Este es un gran avance!',
-                    neutral: 'Este texto suena como vos. Natural y preciso.'
-                };
-                feedback.textContent = mensajes[emocionDetectada] || mensajes.neutral;
-                feedback.style.display = 'block';
-
-                // Guardar si no es confidencial
-                if (!confidencialMode) {
-                    guardarEnHistorial(input, textoFinal, 'formal');
-                }
-
-                mostrarToast('✅ Listo');
-            }, 2000);
-        }
-
-        // Aceptar sugerencia
-        function aceptarSugerencia() {
-            const output = document.getElementById('output');
-            const sugerencia = document.getElementById('suggestion').querySelector('p').textContent.replace('Sugerencia: ', '');
-            output.value = (output.value ? output.value + '\n\n' : '') + sugerencia;
-            document.getElementById('suggestion').style.display = 'none';
-            mostrarToast('Sugerencia añadida');
-        }
-
-        // Rechazar sugerencia
-        function rechazarSugerencia() {
-            document.getElementById('suggestion').style.display = 'none';
-            mostrarToast('Sugerencia rechazada');
-        }
-
-        // Guardar en historial
-        function guardarEnHistorial(input, output, modo) {
-            const hist = JSON.parse(localStorage.getItem(historialKey) || '[]');
-            const titulo = input.split('\n')[0].substring(0, 50) + '...';
-            const preview = input.replace(/\n/g, ' ').substring(0, 120) + '...';
-            hist.unshift({ 
-                titulo, 
-                texto: input, 
-                resultado: output, 
-                modo, 
-                fecha: new Date().toLocaleString(), 
-                preview,
-                emocion: emocionDetectada
-            });
-            if (hist.length > 5) hist.pop();
-            localStorage.setItem(historialKey, JSON.stringify(hist));
-            cargarHistorial();
-        }
-
-        // Cargar historial
-        function cargarHistorial() {
-            const hist = JSON.parse(localStorage.getItem(historialKey) || '[]');
-            const list = document.getElementById('history-list');
-            if (hist.length > 0) {
-                document.getElementById('history').style.display = 'block';
-                list.innerHTML = '';
-                hist.forEach(item => {
-                    const div = document.createElement('div');
-                    div.className = 'history-item';
-                    div.innerHTML = `
-                        <strong>${item.titulo}</strong>
-                        <div class="history-preview">${item.preview}</div>
-                        <span class="tag">${item.modo}</span>
-                    `;
-                    div.onclick = () => {
-                        document.getElementById('input').value = item.texto;
-                        document.getElementById('output').value = item.resultado;
-                        aplicarTemaEmocional(item.emocion);
-                    };
-                    list.appendChild(div);
-                });
             }
+
+            // Frase final
+            const endings = [
+                'Para que entiendas... ya sabés, el sistema.',
+                'O sea... para que suene 100% real.',
+                'Este... para que puedas usarlo siempre.'
+            ];
+            result.push('');
+            result.push(endings[Math.floor(Math.random() * endings.length)]);
+            result.push('');
+            result.push('Tu éxito es mi mayor motivación, mi vida 💖');
+
+            textoFinal = result.join('\n');
+            document.getElementById('output').value = textoFinal;
+            analizarEvasion();
+            mostrarToast('✅ Texto humanizado');
+        }
+
+        // Analizar evasión
+        function analizarEvasion() {
+            const input = document.getElementById('output').value.trim();
+            if (!input) return;
+
+            const tieneIA = /es importante destacar|en este contexto|a continuación/i.test(input.toLowerCase());
+            const tieneMuletilla = muletillas.some(m => input.toLowerCase().includes(m));
+            const tieneSalto = (input.match(/:\s*\n/g) || []).length > 2;
+
+            // Tono robótico
+            setDot('roboticStatus', tieneIA ? 'risk' : 'safe');
+            document.getElementById('roboticText').textContent = tieneIA ? 'Alto' : 'Bajo';
+
+            // Patrones de IA
+            setDot('patternStatus', tieneIA ? 'risk' : 'safe');
+            document.getElementById('patternText').textContent = tieneIA ? 'Detectado' : 'No detectado';
+
+            // Entropía
+            const entropia = tieneMuletilla && tieneSalto ? 'safe' : 'caution';
+            setDot('entropyStatus', entropia);
+            document.getElementById('entropyText').textContent = entropia === 'safe' ? 'Alta' : 'Media';
+
+            // Veredicto
+            if (tieneIA) {
+                setDot('finalStatus', 'risk');
+                document.getElementById('finalText').textContent = '❌ No pasa detectores';
+            } else if (tieneMuletilla && tieneSalto) {
+                setDot('finalStatus', 'safe');
+                document.getElementById('finalText').textContent = '✅ Pasa detectores';
+            } else {
+                setDot('finalStatus', 'caution');
+                document.getElementById('finalText').textContent = '⚠️ Podría mejorar';
+            }
+
+            document.getElementById('evasionPanel').style.display = 'block';
+        }
+
+        // Detectar tono robótico
+        function detectarTonoRobótico() {
+            const input = document.getElementById('input').value.trim();
+            if (!input) return;
+            const detector = document.getElementById('detector-result');
+            const tieneIA = /es importante destacar|en este contexto|a continuación/i.test(input.toLowerCase());
+            detector.innerHTML = tieneIA 
+                ? '<p style="color:#EF4444;">⚠️ Frases robóticas detectadas. Usa "Humanizar".</p>' 
+                : '<p style="color:#10B981;">✅ No se detectaron frases robóticas.</p>';
+            detector.style.display = 'block';
+        }
+
+        // Copiar con formato para Google Docs
+        function copiarConFormato() {
+            const out = document.getElementById('output');
+            if (!out.value) return;
+            out.select();
+            document.execCommand('copy');
+            mostrarToast('📋 Copiado (listo para Docs)');
         }
 
         // Exportar PDF
@@ -824,32 +605,56 @@
             doc.save('redactapro-supremo.pdf');
         }
 
-        // Copiar
-        function copiar() {
-            const out = document.getElementById('output');
-            if (!out.value) return;
-            out.select();
-            document.execCommand('copy');
-            mostrarToast('📋 Copiado');
+        // Exportar DOCX
+        function exportarDOCX() {
+            if (!textoFinal) return;
+            const { Document, Packer, Paragraph, TextRun } = window.docx;
+            const doc = new Document({
+                sections: [{
+                    properties: {},
+                    children: [
+                        new Paragraph({
+                            children: [
+                                new TextRun(textoFinal)
+                            ]
+                        })
+                    ]
+                }]
+            });
+            Packer.toBlob(doc).then(blob => {
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'redactapro-supremo.docx';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+            });
         }
 
         // Limpiar
         function limpiar() {
             document.getElementById('input').value = '';
             document.getElementById('output').value = '';
-            document.getElementById('loading').style.display = 'none';
-            document.getElementById('feedback').style.display = 'none';
-            document.getElementById('suggestion').style.display = 'none';
-            document.getElementById('crea-container').style.display = 'none';
-            if (confidencialMode) toggleConfidencial(); // Reset
+            document.getElementById('evasionPanel').style.display = 'none';
         }
 
         // Mostrar toast
         function mostrarToast(msg) {
             const t = document.getElementById('toast');
-            t.textContent = msg;
+            const span = document.getElementById('toast-message');
+            span.textContent = msg;
             t.classList.add('show');
             setTimeout(() => t.classList.remove('show'), 2000);
+        }
+
+        // Helper para puntos de estado
+        function setDot(id, type) {
+            const dot = document.getElementById(id);
+            dot.className = 'status-dot';
+            if (type === 'caution') dot.classList.add('status-caution');
+            if (type === 'risk') dot.classList.add('status-risk');
         }
     </script>
 </body>
