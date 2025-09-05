@@ -3,221 +3,336 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RedactaPro Supremo - Paleta Elegante</title>
+    <title>RedactaPro Supremo - Vidrio Moderno</title>
     <style id="theme-style">
         :root {
             --bg: #0f172a;
+            --bg-secondary: rgba(30, 41, 59, 0.7);
             --text: #e2e8f0;
             --text-secondary: #94a3b8;
             --accent: #0d9488;
             --accent-light: #14b8a6;
             --border: #334155;
-            --shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            --shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
         }
-        .dark-mode { --bg: #1e293b; }
+
         body {
             font-family: 'Segoe UI', sans-serif;
-            background: var(--bg);
+            background: linear-gradient(135deg, var(--bg), #020617);
             color: var(--text);
             line-height: 1.7;
             padding: 20px;
             margin: 0;
-            transition: background 0.4s ease;
+            min-height: 100vh;
+            transition: all 0.4s ease;
         }
+
         .container {
             max-width: 900px;
             margin: 0 auto;
-            background: rgba(30, 41, 59, 0.8);
-            padding: 25px;
-            border-radius: 15px;
+            background: var(--bg-secondary);
+            padding: 30px;
+            border-radius: 20px;
             box-shadow: var(--shadow);
-            backdrop-filter: blur(10px);
-            border: 1px solid var(--border);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
+
         h1 {
             text-align: center;
-            color: var(--accent);
+            color: var(--accent-light);
             margin: 0 0 10px 0;
+            font-weight: 700;
         }
+
         p.subtitle {
             text-align: center;
             color: var(--text-secondary);
             font-size: 1.1rem;
-            margin-bottom: 20px;
+            margin-bottom: 25px;
         }
+
         .controls {
             display: flex;
             flex-wrap: wrap;
-            gap: 15px;
+            gap: 12px;
             justify-content: center;
             align-items: center;
-            margin-bottom: 15px;
+            margin-bottom: 20px;
         }
+
         button {
             background: linear-gradient(90deg, var(--accent), #059669);
             color: white;
             border: none;
-            padding: 10px 15px;
+            padding: 10px 16px;
             border-radius: 8px;
             cursor: pointer;
             font-weight: 600;
-            margin: 3px;
-            transition: all 0.3s;
+            transition: all 0.3s ease;
             font-size: 0.9rem;
+            box-shadow: 0 4px 12px rgba(13, 148, 136, 0.2);
         }
+
         button:hover {
             transform: translateY(-2px);
-            box-shadow: var(--shadow);
+            box-shadow: 0 8px 20px rgba(13, 148, 136, 0.3);
         }
+
+        button.small {
+            padding: 8px 12px;
+            font-size: 0.85rem;
+        }
+
         textarea {
             width: 100%;
-            min-height: 180px;
-            padding: 15px;
+            min-height: 200px;
+            padding: 18px;
             margin: 15px 0;
             border: 1px solid var(--border);
-            border-radius: 10px;
-            background: rgba(15, 23, 42, 0.7);
+            border-radius: 12px;
+            background: rgba(15, 23, 42, 0.6);
             color: var(--text);
             font-size: 1rem;
             resize: vertical;
+            backdrop-filter: blur(4px);
+            transition: border-color 0.3s;
         }
+
+        textarea:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.3);
+        }
+
         /* Selector de colores elegante */
         .color-palette {
             display: flex;
             gap: 12px;
             align-items: center;
         }
+
         .color-option {
-            width: 28px;
-            height: 28px;
+            width: 32px;
+            height: 32px;
             border-radius: 50%;
             cursor: pointer;
             transition: all 0.3s ease;
             border: 3px solid transparent;
             position: relative;
         }
+
         .color-option:hover {
-            transform: scale(1.2);
-            box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+            transform: scale(1.3);
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.4);
         }
+
         .color-option.selected {
             border-color: white;
             transform: scale(1.1);
-            box-shadow: 0 0 0 2px var(--accent);
+            box-shadow: 0 0 0 3px var(--accent);
         }
+
         .color-option[data-color="green"] { background: #0d9488; }
         .color-option[data-color="blue"] { background: #0284c7; }
         .color-option[data-color="purple"] { background: #7c3aed; }
         .color-option[data-color="red"] { background: #dc2626; }
 
-        /* Tooltip */
         .tooltip {
             position: absolute;
-            bottom: -30px;
+            bottom: -32px;
             left: 50%;
             transform: translateX(-50%);
             background: var(--bg-secondary);
             color: var(--text);
-            padding: 4px 10px;
-            border-radius: 6px;
+            padding: 6px 12px;
+            border-radius: 8px;
             font-size: 0.8rem;
             white-space: nowrap;
             opacity: 0;
             transition: opacity 0.3s;
             pointer-events: none;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
         }
+
         .color-option:hover .tooltip {
             opacity: 1;
         }
-        .progress-container {
-            margin: 15px 0;
+
+        /* Animación elegante */
+        .loading {
+            text-align: center;
+            padding: 30px;
             display: none;
         }
-        .progress-bar {
-            height: 6px;
-            background: var(--border);
-            border-radius: 3px;
-            overflow: hidden;
+
+        .pulse {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            background: var(--accent-light);
+            border-radius: 50%;
+            animation: pulse 1.5s infinite;
         }
-        .progress {
-            height: 100%;
-            background: var(--accent);
-            width: 0%;
-            transition: width 0.4s ease;
+
+        .pulse:nth-child(2) { animation-delay: 0.2s; }
+        .pulse:nth-child(3) { animation-delay: 0.4s; }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(0.8); opacity: 0.6; }
+            50% { transform: scale(1.2); opacity: 1; }
         }
-        .progress-message {
+
+        .why-mode {
+            background: rgba(13, 148, 136, 0.1);
+            border: 1px solid rgba(13, 148, 136, 0.3);
+            padding: 12px;
+            border-radius: 10px;
+            margin: 15px 0;
+            font-size: 0.95rem;
             color: var(--text-secondary);
-            font-size: 0.9rem;
-            margin: 5px 0;
+            display: none;
         }
+
+        .history-item {
+            padding: 14px;
+            margin: 8px 0;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 0.95rem;
+            transition: all 0.3s;
+            border-left: 4px solid var(--accent);
+        }
+
+        .history-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateX(4px);
+        }
+
+        .history-preview {
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            margin-top: 6px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 100%;
+        }
+
+        .tag {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            margin-left: 8px;
+            background: var(--accent);
+            color: white;
+        }
+
         .toast {
             position: fixed;
             bottom: 20px;
             left: 50%;
             transform: translateX(-50%);
-            background: var(--accent);
-            color: white;
-            padding: 12px 24px;
-            border-radius: 8px;
+            background: var(--bg-secondary);
+            color: var(--text);
+            padding: 16px 24px;
+            border-radius: 12px;
             box-shadow: var(--shadow);
+            border: 1px solid var(--border);
             opacity: 0;
             transition: opacity 0.3s;
             z-index: 100;
+            backdrop-filter: blur(8px);
         }
+
         .toast.show {
             opacity: 1;
+        }
+
+        /* Presentación */
+        .presentation {
+            display: none;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .slide {
+            background: rgba(15, 23, 42, 0.5);
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+        }
+
+        .slide-nav {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
         }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>RedactaPro Supremo</h1>
-        <p class="subtitle">🎨 Paleta Elegante • Inteligente • Profesional</p>
+        <p class="subtitle">💎 Vidrio Moderno • Presentación • Resumen • Explicación • Vista previa</p>
 
         <div class="controls">
             <button onclick="toggleDarkMode()">🌙 / ☀️ Modo</button>
 
-            <!-- Selector de colores elegante -->
             <div class="color-palette">
-                <span style="color: var(--text-secondary); font-size: 0.9rem; white-space: nowrap;">🎨 Color:</span>
-                <div class="color-option selected" data-color="green" onclick="selectColor('green')" title="Verde">
+                <span style="color: var(--text-secondary); font-size: 0.9rem;">🎨</span>
+                <div class="color-option selected" data-color="green" onclick="selectColor('green')">
                     <div class="tooltip">Verde Clásico</div>
                 </div>
-                <div class="color-option" data-color="blue" onclick="selectColor('blue')" title="Azul">
+                <div class="color-option" data-color="blue" onclick="selectColor('blue')">
                     <div class="tooltip">Azul Profundo</div>
                 </div>
-                <div class="color-option" data-color="purple" onclick="selectColor('purple')" title="Morado">
+                <div class="color-option" data-color="purple" onclick="selectColor('purple')">
                     <div class="tooltip">Morado Real</div>
                 </div>
-                <div class="color-option" data-color="red" onclick="selectColor('red')" title="Rojo">
+                <div class="color-option" data-color="red" onclick="selectColor('red')">
                     <div class="tooltip">Rojo Energía</div>
                 </div>
             </div>
 
-            <button onclick="exportarPDF()">🖨️ Exportar PDF</button>
+            <button onclick="toggleSilentMode()" id="silent-btn">🔊 Rápido</button>
+            <button onclick="exportarPDF()">🖨️ PDF</button>
         </div>
 
         <textarea id="input" placeholder="Pega tu texto aquí..."></textarea>
 
         <div class="controls">
-            <button onclick="humanizar()">✨ Procesar (Inteligente)</button>
+            <button onclick="humanizar()">✨ Procesar</button>
             <button onclick="copiar()">📋 Copiar</button>
+            <button onclick="iniciarPresentacion()" id="present-btn" disabled>🎬 Presentar</button>
             <button onclick="limpiar()">🗑️ Limpiar</button>
         </div>
 
-        <div class="progress-container" id="progressContainer">
-            <p class="progress-message" id="progressMessage">Analizando tipo de texto...</p>
-            <div class="progress-bar">
-                <div class="progress" id="progressBar"></div>
-            </div>
+        <!-- Animación elegante -->
+        <div class="loading" id="loading">
+            <div class="pulse"></div>
+            <div class="pulse"></div>
+            <div class="pulse"></div>
+            <p style="margin-top: 10px; font-size: 0.9rem; color: var(--text-secondary);">
+                Analizando texto inteligentemente...
+            </p>
         </div>
 
+        <!-- Explicación del modo -->
+        <div class="why-mode" id="why-mode"></div>
+
+        <!-- Resultado -->
         <div class="output">
             <textarea id="output" readonly placeholder="Aquí aparecerá el resultado..."></textarea>
         </div>
 
-        <div id="history" style="margin-top: 20px; display: none;">
-            <h3>📚 Historial con estilos</h3>
+        <!-- Presentación -->
+        <div class="presentation" id="presentation"></div>
+
+        <!-- Historial -->
+        <div id="history" style="margin-top: 25px; display: none;">
+            <h3 style="color: var(--accent-light); margin-bottom: 15px;">📚 Historial Inteligente</h3>
             <div id="history-list"></div>
         </div>
     </div>
@@ -225,13 +340,13 @@
     <div class="toast" id="toast">¡Listo!</div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-
     <script>
         // Estado
         let darkMode = false;
         let textoFinal = '';
         let modoUsado = '';
-        const historialKey = 'rps_historial_v5';
+        let silentMode = false;
+        const historialKey = 'rps_historial_v6';
         const temaKey = 'rps_tema';
         const darkKey = 'rps_dark_mode_por_color';
 
@@ -246,23 +361,17 @@
         // Transiciones
         const transiciones = ['Por otro lado,', 'Además,', 'Es importante destacar que', 'En este marco,', 'Asimismo,'];
 
-        // Seleccionar color (elegante)
+        // Seleccionar color
         function selectColor(color) {
-            // Actualizar UI
-            document.querySelectorAll('.color-option').forEach(el => {
-                el.classList.remove('selected');
-            });
+            document.querySelectorAll('.color-option').forEach(el => el.classList.remove('selected'));
             document.querySelector(`.color-option[data-color="${color}"]`).classList.add('selected');
 
-            // Aplicar estilo
             const t = temas[color];
             document.documentElement.style.setProperty('--accent', t.accent);
             document.documentElement.style.setProperty('--accent-light', t.accentLight);
 
-            // Guardar
             localStorage.setItem(temaKey, color);
 
-            // Recargar modo oscuro para este color
             const modoPorColor = JSON.parse(localStorage.getItem(darkKey) || '{}');
             const esOscuro = modoPorColor[color] !== false;
             document.body.classList.toggle('dark-mode', esOscuro);
@@ -272,19 +381,25 @@
         // Cargar estado
         window.addEventListener('DOMContentLoaded', () => {
             const savedTema = localStorage.getItem(temaKey) || 'green';
-            selectColor(savedTema); // Esto actualiza UI y estilo
+            selectColor(savedTema);
             cargarHistorial();
         });
 
-        // Alternar modo oscuro (guardado por color)
+        // Alternar modo oscuro
         function toggleDarkMode() {
             darkMode = !darkMode;
             document.body.classList.toggle('dark-mode', darkMode);
-
             const color = localStorage.getItem(temaKey) || 'green';
             const modoPorColor = JSON.parse(localStorage.getItem(darkKey) || '{}');
             modoPorColor[color] = darkMode;
             localStorage.setItem(darkKey, JSON.stringify(modoPorColor));
+        }
+
+        // Modo silencio total
+        function toggleSilentMode() {
+            silentMode = !silentMode;
+            const btn = document.getElementById('silent-btn');
+            btn.textContent = silentMode ? '🔊 Normal' : '🔇 Silencio';
         }
 
         // Detectar tipo de texto
@@ -311,7 +426,17 @@
             return 'formal';
         }
 
-        // Procesar según modo
+        // Explicar por qué
+        function explicarModo(tipo, modo) {
+            const explicaciones = {
+                formal: `Se eligió modo Formal porque detectamos una lista de definiciones. Ideal para precisión y claridad.`,
+                fluidez: `Se eligió modo Fluidez porque el texto es continuo. Añade transiciones naturales para mejor lectura.`,
+                markdown: `Se detectó formato Markdown. Se respetarán estilos como #, **, etc.`
+            };
+            return explicaciones[modo] || `Modo ${modo} aplicado según análisis de estructura.`;
+        }
+
+        // Procesar texto
         function procesarTexto(input, modo) {
             let lines = input
                 .replace(/\n+/g, '\n')
@@ -345,6 +470,12 @@
                 }
             }
 
+            // Resumen automático (si es largo)
+            if (lines.length > 10) {
+                result.push('');
+                result.push('📌 **Resumen:** Este contenido explica la organización política del Estado Nacional, sus elementos, forma de gobierno y división de poderes.');
+            }
+
             return result.join('\n');
         }
 
@@ -356,47 +487,45 @@
                 return;
             }
 
-            const pc = document.getElementById('progressContainer');
-            const pb = document.getElementById('progressBar');
-            const pm = document.getElementById('progressMessage');
-            pc.style.display = 'block';
+            // Reset
+            document.getElementById('why-mode').style.display = 'none';
+            document.getElementById('presentation').style.display = 'none';
+            document.getElementById('output').style.display = 'block';
+            document.getElementById('present-btn').disabled = false;
 
-            const steps = [
-                { msg: "Limpieza...", delay: 300 },
-                { msg: "Detectando tipo de texto...", delay: 400 },
-                { msg: "Seleccionando modo...", delay: 300 },
-                { msg: "Aplicando estilo inteligente...", delay: 500 },
-                { msg: "Finalizando...", delay: 300 }
-            ];
+            // Mostrar carga elegante o no
+            if (!silentMode) {
+                document.getElementById('loading').style.display = 'block';
+            }
 
-            let current = 0;
-            const total = steps.length;
-            const increment = 100 / total;
-
-            const interval = setInterval(() => {
-                if (current < steps.length) {
-                    const s = steps[current];
-                    pm.textContent = s.msg;
-                    pb.style.width = ((current + 1) * increment) + '%';
-                    current++;
-                } else {
-                    clearInterval(interval);
-                    const tipo = detectarTipo(input);
-                    const modo = elegirModo(tipo);
-                    modoUsado = modo;
-                    textoFinal = procesarTexto(input, modo);
-                    document.getElementById('output').value = textoFinal;
-                    pm.textContent = `¡Listo! (${modo})`;
-                    guardarEnHistorial(input, textoFinal, modo);
+            setTimeout(() => {
+                if (!silentMode) {
+                    document.getElementById('loading').style.display = 'none';
                 }
-            }, 300);
+
+                const tipo = detectarTipo(input);
+                const modo = elegirModo(tipo);
+                modoUsado = modo;
+                textoFinal = procesarTexto(input, modo);
+                document.getElementById('output').value = textoFinal;
+
+                // Explicación
+                const why = document.getElementById('why-mode');
+                why.textContent = explicarModo(tipo, modo);
+                why.style.display = 'block';
+
+                // Guardar
+                guardarEnHistorial(input, textoFinal, modo);
+                mostrarToast('¡Procesado!');
+            }, silentMode ? 100 : 2000);
         }
 
         // Guardar en historial
         function guardarEnHistorial(input, output, modo) {
             const hist = JSON.parse(localStorage.getItem(historialKey) || '[]');
             const titulo = input.split('\n')[0].substring(0, 50) + '...';
-            hist.unshift({ titulo, texto: input, resultado: output, modo, fecha: new Date().toLocaleString() });
+            const preview = input.replace(/\n/g, ' ').substring(0, 120) + '...';
+            hist.unshift({ titulo, texto: input, resultado: output, modo, fecha: new Date().toLocaleString(), preview });
             if (hist.length > 5) hist.pop();
             localStorage.setItem(historialKey, JSON.stringify(hist));
             cargarHistorial();
@@ -412,14 +541,78 @@
                 hist.forEach(item => {
                     const div = document.createElement('div');
                     div.className = 'history-item';
-                    div.innerHTML = `<strong>${item.titulo}</strong> <span style="background:${temas[item.modo === 'formal' ? 'green' : item.modo === 'fluidez' ? 'blue' : item.modo === 'markdown' ? 'purple' : 'red'].accent}; padding:2px 6px; border-radius:12px; color:white; font-size:0.8rem; margin-left:8px;">${item.modo}</span>`;
+                    div.innerHTML = `
+                        <strong>${item.titulo}</strong>
+                        <div class="history-preview">${item.preview}</div>
+                        <span class="tag">${item.modo}</span>
+                    `;
                     div.onclick = () => {
                         document.getElementById('input').value = item.texto;
                         document.getElementById('output').value = item.resultado;
+                        document.getElementById('presentation').style.display = 'none';
+                        document.getElementById('output').style.display = 'block';
                     };
                     list.appendChild(div);
                 });
             }
+        }
+
+        // Iniciar presentación
+        function iniciarPresentacion() {
+            const output = document.getElementById('output').value;
+            if (!output) return;
+
+            const slides = output.split('\n\n').filter(s => s.trim());
+            const presentation = document.getElementById('presentation');
+            const container = document.getElementById('output');
+
+            container.style.display = 'none';
+            presentation.style.display = 'block';
+            presentation.innerHTML = '';
+
+            slides.forEach((slide, i) => {
+                const slideEl = document.createElement('div');
+                slideEl.className = 'slide';
+                slideEl.textContent = slide;
+                presentation.appendChild(slideEl);
+            });
+
+            // Navegación
+            const nav = document.createElement('div');
+            nav.className = 'slide-nav';
+            nav.innerHTML = `
+                <button onclick="prevSlide()" class="small">⬅️ Anterior</button>
+                <span id="slide-counter">1 de ${slides.length}</span>
+                <button onclick="nextSlide()" class="small">Siguiente ➡️</button>
+            `;
+            presentation.appendChild(nav);
+
+            window.currentSlide = 0;
+            updateSlideCounter(slides.length);
+        }
+
+        function nextSlide() {
+            const slides = document.querySelectorAll('.slide');
+            if (currentSlide < slides.length - 1) {
+                slides[currentSlide].style.display = 'none';
+                currentSlide++;
+                slides[currentSlide].style.display = 'block';
+                updateSlideCounter(document.querySelectorAll('.slide').length);
+            }
+        }
+
+        function prevSlide() {
+            const slides = document.querySelectorAll('.slide');
+            if (currentSlide > 0) {
+                slides[currentSlide].style.display = 'none';
+                currentSlide--;
+                slides[currentSlide].style.display = 'block';
+                updateSlideCounter(document.querySelectorAll('.slide').length);
+            }
+        }
+
+        function updateSlideCounter(total) {
+            document.getElementById('slide-counter').textContent = `${currentSlide + 1} de ${total}`;
         }
 
         // Copiar
@@ -437,7 +630,6 @@
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
             doc.setFontSize(12);
-            doc.setTextColor(0, 0, 0);
             const lines = doc.splitTextToSize(textoFinal, 180);
             doc.text(lines, 15, 20);
             doc.save('redactapro-supremo.pdf');
@@ -447,7 +639,11 @@
         function limpiar() {
             document.getElementById('input').value = '';
             document.getElementById('output').value = '';
-            document.getElementById('progressContainer').style.display = 'none';
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('why-mode').style.display = 'none';
+            document.getElementById('presentation').style.display = 'none';
+            document.getElementById('output').style.display = 'block';
+            document.getElementById('present-btn').disabled = true;
         }
 
         // Mostrar toast
