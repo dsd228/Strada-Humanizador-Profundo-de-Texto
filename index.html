@@ -462,7 +462,7 @@
             readabilityScore.textContent = `${appState.readabilityScore}%`;
         }
         
-        // Limpieza sin destruir saltos de línea
+        // Limpieza sin destruir saltos
         function cleanText(text) {
             return text
                 .replace(/[\u200B-\u200D\uFEFF]/g, '')
@@ -471,62 +471,72 @@
                 .trim();
         }
         
-        // Mantener estructura de líneas
+        // Mantener estructura original
         function preserveStructure(text) {
             return text;
         }
         
-        // Añadir toque humano solo en la primera línea
+        // Añadir toque humano con criterio
         function addHumanTouch(text, settings) {
             if (!settings.naturalFlow) return text;
             
             const lines = text.split('\n').map(l => l.trim()).filter(l => l);
-            if (lines.length === 0) return text;
-            
-            // Solo modificar la primera línea si es un título
-            if (lines[0].toLowerCase().includes('unidad')) {
-                const intros = ["Vamos a ver...", "La idea es...", "Básicamente,", "En esta unidad,"];
-                const intro = intros[Math.floor(Math.random() * intros.length)];
-                // Evitar repetir "unidad"
-                if (!intro.toLowerCase().includes('unidad')) {
-                    lines[0] = `${intro} ${lines[0]}`;
-                }
-            }
-            
-            return lines.join('\n');
-        }
-        
-        // Mejorar fluidez en líneas con dos puntos
-        function improveFlow(text) {
-            const lines = text.split('\n');
             const result = [];
+            const fillers = ["bueno", "vale", "la verdad", "en cierto modo"];
+            const intros = ["Vamos a ver...", "La idea es...", "Básicamente,", "En esta unidad"];
             
-            for (const line of lines) {
-                if (line.includes(':')) {
-                    const parts = line.split(':');
-                    let definition = parts[1].trim();
-                    
-                    // Añadir muletillas suaves en definiciones
-                    if (definition.length > 20 && Math.random() < 0.3) {
-                        const fillers = ["bueno", "vale", "la verdad", "en cierto modo"];
-                        const filler = fillers[Math.floor(Math.random() * fillers.length)];
-                        definition = filler + ", " + definition.charAt(0).toLowerCase() + definition.slice(1);
+            // Palabras clave que no deben alterarse
+            const protectedLines = [
+                'Participación efectiva',
+                'Igualdad de votos',
+                'Electorado informado',
+                'Control ciudadano',
+                'Inclusión',
+                'Derechos fundamentales',
+                'Referéndum',
+                'Plebiscito',
+                'Código Electoral Nacional',
+                'Ley de Partidos Políticos',
+                'Sistema D’Hondt',
+                'Principios:'
+            ];
+            
+            let introAdded = false;
+            
+            for (let i = 0; i < lines.length; i++) {
+                let line = lines[i];
+                
+                // Intro en el título
+                if (!introAdded && line.toLowerCase().includes('unidad') && Math.random() < 0.7) {
+                    const intro = intros[Math.floor(Math.random() * intros.length)];
+                    if (!intro.toLowerCase().includes('unidad')) {
+                        line = `${intro} ${line}`;
                     }
-                    
-                    result.push(`${parts[0]}: ${definition}`);
-                } else {
-                    result.push(line);
+                    introAdded = true;
                 }
+                
+                // Añadir muletilla en definiciones simples
+                if (line.includes(':') && !protectedLines.some(p => line.startsWith(p))) {
+                    const parts = line.split(':');
+                    const definition = parts[1].trim();
+                    if (definition.length > 10 && definition.length < 100 && Math.random() < 0.5) {
+                        const filler = fillers[Math.floor(Math.random() * fillers.length)];
+                        line = `${parts[0]}: ${filler}, ${definition.charAt(0).toLowerCase() + definition.slice(1)}`;
+                    }
+                }
+                
+                result.push(line);
             }
             
             return result.join('\n');
         }
         
-        // Optimizar legibilidad
+        function improveFlow(text) {
+            return text;
+        }
+        
         function optimizeReadability(text) {
-            return text
-                .replace(/\.\s+/g, '. ')
-                .replace(/\s+([,.;:?!])/g, '$1');
+            return text;
         }
         
         // Copiar texto
