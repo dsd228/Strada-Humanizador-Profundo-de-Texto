@@ -3,9 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RedactaPro Supremo - V7</title>
+    <title>RedactaPro Supremo - Detector IA</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <script src="https://unpkg.com/konva@9/konva.min.js"></script>
     <style id="theme-style">
         :root {
             --bg: #0f172a;
@@ -20,14 +19,6 @@
             --transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        .light-mode {
-            --bg: #f8fafc;
-            --bg-secondary: rgba(248, 250, 252, 0.85);
-            --text: #0f172a;
-            --text-secondary: #64748b;
-            --border: #e2e8f0;
-        }
-
         body {
             font-family: 'Inter', sans-serif;
             background: linear-gradient(135deg, var(--bg), #020617);
@@ -37,7 +28,6 @@
             margin: 0;
             min-height: 100vh;
             transition: var(--transition);
-            overflow-x: hidden;
         }
 
         .container {
@@ -67,33 +57,67 @@
             margin-bottom: 30px;
         }
 
-        /* Botones */
-        button {
+        /* Botones principales */
+        .main-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin: 25px 0;
+            flex-wrap: wrap;
+        }
+
+        .btn-primary {
             background: linear-gradient(90deg, var(--accent), #059669);
             color: white;
             border: none;
-            padding: 12px 20px;
+            padding: 14px 30px;
             border-radius: 12px;
             cursor: pointer;
             font-weight: 600;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            font-size: 0.95rem;
+            font-size: 1.1rem;
             box-shadow: 0 4px 14px rgba(13, 148, 136, 0.25);
             border: 1px solid rgba(13, 148, 136, 0.3);
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            gap: 8px;
-            margin: 5px;
+            gap: 10px;
+            transition: all 0.3s;
+            min-width: 200px;
         }
 
-        button:hover {
+        .btn-primary:hover {
             transform: translateY(-3px);
             box-shadow: 0 8px 24px rgba(13, 148, 136, 0.35);
         }
 
-        button:active {
-            transform: translateY(-1px);
+        /* Botones secundarios */
+        .secondary-buttons {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin: 15px 0;
+        }
+
+        button {
+            background: rgba(13, 148, 136, 0.2);
+            color: white;
+            border: 1px solid rgba(13, 148, 136, 0.4);
+            padding: 10px 18px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s;
+            font-size: 0.9rem;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        button:hover {
+            background: rgba(13, 148, 136, 0.3);
+            transform: translateY(-2px);
         }
 
         /* Textarea */
@@ -121,40 +145,25 @@
         }
 
         /* Detector de IA */
-        .ia-detector {
-            background: rgba(220, 38, 38, 0.1);
-            border: 1px solid rgba(220, 38, 38, 0.3);
+        .detector-result {
+            background: rgba(13, 148, 136, 0.1);
+            border: 1px solid rgba(13, 148, 136, 0.3);
             padding: 16px;
             border-radius: 12px;
             margin: 18px 0;
             font-size: 0.95rem;
-            color: #fca5a5;
+            color: var(--text-secondary);
             display: none;
         }
 
-        .ia-suggestion {
-            background: rgba(13, 148, 136, 0.1);
-            border: 1px solid rgba(13, 148, 136, 0.3);
-            padding: 12px;
-            border-radius: 8px;
-            margin: 10px 0;
-            font-size: 0.9rem;
+        .safe {
+            color: #4ade80;
+            font-weight: 600;
         }
 
-        /* Mapa de ideas */
-        #mapa-container {
-            margin: 20px 0;
-            border-radius: 12px;
-            overflow: hidden;
-            display: none;
-        }
-
-        /* Resumen de voz */
-        .voz-controls {
-            display: flex;
-            gap: 10px;
-            margin: 15px 0;
-            flex-wrap: wrap;
+        .warning {
+            color: #f87171;
+            font-weight: 600;
         }
 
         /* Historial */
@@ -211,79 +220,41 @@
 <body>
     <div class="container">
         <h1>RedactaPro Supremo</h1>
-        <p class="subtitle">🎙️ V7 - Voz • Mapa • Detector IA • Resumen</p>
+        <p class="subtitle">🛡️ Detector de IA • Humanización Profesional</p>
 
         <textarea id="input" placeholder="Pega tu texto aquí..."></textarea>
 
-        <div class="controls">
-            <button onclick="detectarTonoRobótico()">
-                <svg class="icon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
-                    <circle cx="12" cy="12" r="10"></circle>
-                    <line x1="12" y1="8" x2="12" y2="12"></line>
-                    <line x1="12" y1="16" x2="12.01" y2="16"></line>
-                </svg>
-                Analizar IA
-            </button>
-            <button onclick="empezarEntrenamientoVoz()">
-                <svg class="icon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path>
-                    <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
-                    <line x1="12" y1="19" x2="12" y2="23"></line>
-                    <line x1="8" y1="23" x2="16" y2="23"></line>
-                </svg>
-                Entrenar con Voz
-            </button>
-            <button onclick="generarResumenVoz()">
-                <svg class="icon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
-                    <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
-                    <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
-                    <path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>
-                </svg>
-                Resumen 30s
-            </button>
-            <button onclick="generarMapa()">
-                <svg class="icon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
-                    <circle cx="12" cy="12" r="10"></circle>
-                    <path d="M8 12h8"></path>
-                    <path d="M12 8v8"></path>
-                </svg>
-                Mapa de Ideas
-            </button>
-            <button onclick="copiar()">
-                <svg class="icon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
-                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                </svg>
-                Copiar
-            </button>
-            <button onclick="limpiar()">
-                <svg class="icon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
-                    <polyline points="3 6 5 6 21 6"></polyline>
-                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-                </svg>
-                Limpiar
+        <!-- Botón principal "Humanizar" -->
+        <div class="main-buttons">
+            <button class="btn-primary" onclick="humanizar()">
+                ✨ Humanizar Texto
             </button>
         </div>
 
         <!-- Detector de IA -->
-        <div class="ia-detector" id="ia-detector">
-            <p><strong>⚠️ Frases que suenan robóticas:</strong></p>
-            <div id="ia-list"></div>
-            <p><strong>Sugerencias para humanizar:</strong></p>
-            <div id="suggestions"></div>
+        <div class="main-buttons">
+            <button class="btn-primary" onclick="analizarDetectores()">
+                🛡️ ¿Pasa detectores?
+            </button>
         </div>
 
-        <!-- Mapa de ideas -->
-        <div id="mapa-container">
-            <h3 style="color: var(--accent-light); margin: 10px 0;">🧠 Mapa de Ideas</h3>
-            <div id="mapa" style="background: rgba(15, 23, 42, 0.5); border-radius: 8px; height: 400px;"></div>
-        </div>
+        <!-- Resultado del detector -->
+        <div class="detector-result" id="detector-result"></div>
 
-        <!-- Controles de voz -->
-        <div class="voz-controls" id="voz-controls" style="display: none;">
-            <button onclick="reproducirResumen()">▶️ Reproducir</button>
-            <button onclick="pausarResumen()">⏸️ Pausar</button>
-            <button onclick="detenerResumen()">⏹️ Detener</button>
+        <!-- Botones secundarios -->
+        <div class="secondary-buttons">
+            <button onclick="copiar()">
+                📋 Copiar
+            </button>
+            <button onclick="exportarPDF()">
+                🖨️ Exportar PDF
+            </button>
+            <button onclick="limpiar()">
+                🗑️ Limpiar
+            </button>
+            <button onclick="toggleDarkMode()">
+                🌙 / ☀️ Modo
+            </button>
         </div>
 
         <!-- Resultado -->
@@ -300,205 +271,168 @@
 
     <div class="toast" id="toast">¡Listo!</div>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script>
         // Estado
+        let darkMode = false;
         let textoFinal = '';
-        let recognition;
-        let utterance;
-        let resumenAudio;
-        const historialKey = 'rps_historial_v12';
+        const historialKey = 'rps_historial_v13';
+        const darkKey = 'rps_dark_mode';
 
-        // Cargar historial
+        // Cargar estado
         window.addEventListener('DOMContentLoaded', () => {
-            cargarHistorial();
-            // Cargar Web Speech API
-            if ('SpeechRecognition' in window || 'webkitSpeechRecognition' in window) {
-                const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-                recognition = new SpeechRecognition();
-                recognition.continuous = false;
-                recognition.lang = 'es-ES';
+            darkMode = localStorage.getItem(darkKey) === 'true';
+            if (darkMode) {
+                document.body.classList.add('dark-mode');
             }
+            cargarHistorial();
         });
 
-        // Detectar tono robótico
-        function detectarTonoRobótico() {
+        // Alternar modo oscuro
+        function toggleDarkMode() {
+            darkMode = !darkMode;
+            document.body.classList.toggle('dark-mode', darkMode);
+            localStorage.setItem(darkKey, darkMode);
+        }
+
+        // Palabras y frases típicas de IA
+        const frasesIA = [
+            'es importante destacar', 'en este contexto', 'a continuación', 
+            'por lo tanto', 'como resultado', 'en conclusión', 'se puede observar',
+            'cabe mencionar', 'vale la pena resaltar', 'es fundamental entender',
+            'en virtud de', 'dicho de otro modo', 'en otras palabras'
+        ];
+
+        const muletillasHumanas = [
+            'la verdad,', 'ahora...', 'fijate que', 'o sea...', 'para que entiendas...',
+            'básicamente,', 'vamos a ver...', 'en esta unidad...', 'ya sabés, el sistema'
+        ];
+
+        // Analizar si pasa detectores
+        function analizarDetectores() {
             const input = document.getElementById('input').value.trim();
             if (!input) {
                 alert('Pega un texto primero');
                 return;
             }
 
-            const frasesRoboticas = [
-                'a continuación', 'es importante destacar', 'en este contexto', 
-                'por lo tanto', 'como resultado', 'en conclusión', 'se puede observar'
-            ];
+            const detector = document.getElementById('detector-result');
+            const textoLower = input.toLowerCase();
 
-            const palabras = input.toLowerCase();
-            const encontradas = frasesRoboticas.filter(frase => palabras.includes(frase));
+            // Contar frases de IA
+            const encontradas = frasesIA.filter(frase => textoLower.includes(frase));
+            const tieneFrasesIA = encontradas.length > 0;
 
-            const detector = document.getElementById('ia-detector');
-            const lista = document.getElementById('ia-list');
-            const sugerencias = document.getElementById('suggestions');
+            // Ver si tiene elementos humanos
+            const tieneMuletilla = muletillasHumanas.some(m => textoLower.includes(m));
+            const tieneSaltoDespuesDeDosPuntos = (input.match(/:\s*\n/g) || []).length > 2;
+            const tieneFirma = textoLower.includes('tu éxito es mi mayor motivación');
 
-            if (encontradas.length > 0) {
-                lista.innerHTML = encontradas.map(f => `<div style="color: #f87171; margin: 4px 0;">"${f}"</div>`).join('');
-                sugerencias.innerHTML = `
-                    <div class="ia-suggestion">👉 Cambia "en este contexto" por "la verdad," o "ahora..."</div>
-                    <div class="ia-suggestion">👉 Reemplaza "es importante destacar" por "fijate que..."</div>
-                    <div class="ia-suggestion">👉 Usa pausas: "O sea... para que suene 100% real."</div>
+            if (tieneFrasesIA) {
+                detector.innerHTML = `
+                    <p><strong>❌ Cuidado:</strong> Se detectaron frases que suenan como IA:</p>
+                    <div style="margin: 10px 0; color: #f87171;">
+                        ${encontradas.map(f => `• "${f}"`).join('<br>')}
+                    </div>
+                    <p><strong>✅ Solución:</strong> Usa el botón <strong>"Humanizar"</strong> para convertirlo en texto humano.</p>
                 `;
-                detector.style.display = 'block';
+            } else if (tieneMuletilla && tieneSaltoDespuesDeDosPuntos) {
+                detector.innerHTML = `
+                    <p><strong>✅ ¡Perfecto!</strong> Este texto <span class="safe">sí pasa detectores de IA</span>.</p>
+                    <p>Razones:</p>
+                    <ul style="margin: 10px 0;">
+                        <li>Tiene muletillas naturales como "${muletillasHumanas.find(m => textoLower.includes(m))}"</li>
+                        <li>Usa saltos estratégicos después de ":"</li>
+                        <li>Suena como escrito por un humano real</li>
+                    </ul>
+                `;
             } else {
-                lista.innerHTML = '<div style="color: #4ade80;">No se detectaron frases robóticas.</div>';
-                sugerencias.innerHTML = '<div class="ia-suggestion">Tu texto ya suena humano. ¡Bien hecho!</div>';
-                detector.style.display = 'block';
-            }
-        }
-
-        // Entrenamiento con voz
-        function empezarEntrenamientoVoz() {
-            if (!recognition) {
-                alert('Tu navegador no soporta reconocimiento de voz.');
-                return;
+                detector.innerHTML = `
+                    <p><strong>⚠️ Podría ser detectado.</strong> Aunque no tiene frases obvias de IA, le faltan elementos humanos.</p>
+                    <p><strong>✅ Recomendación:</strong> Usa <strong>"Humanizar"</strong> para añadir toques naturales.</p>
+                `;
             }
 
-            const toast = document.getElementById('toast');
-            toast.textContent = '🗣️ Habla ahora...';
-            toast.classList.add('show');
-            setTimeout(() => toast.classList.remove('show'), 2000);
-
-            recognition.onresult = (event) => {
-                const transcript = event.results[0][0].transcript;
-                document.getElementById('input').value += '\n' + transcript;
-                mostrarToast('🎤 Voz convertida a texto');
-            };
-
-            recognition.start();
+            detector.style.display = 'block';
         }
 
-        // Generar resumen de 30 segundos
-        function generarResumenVoz() {
+        // Humanizar texto
+        function humanizar() {
             const input = document.getElementById('input').value.trim();
             if (!input) {
                 alert('Pega un texto primero');
                 return;
             }
 
-            const lines = input.split('\n').filter(l => l.trim());
-            const titulo = lines[0];
-            const primeras = lines.slice(1, 4).join(' ').substring(0, 150) + '...';
+            // Detectar si ya tiene estructura
+            const lines = input.split('\n').map(l => l.trim()).filter(l => l);
+            let result = [];
 
-            const resumen = `En esta unidad: ${titulo}. ${primeras} Este es un resumen rápido para que puedas compartirlo.`;
+            // Intro natural
+            const intros = ['Ahora...', 'En esta unidad...', 'Básicamente,', 'Vamos a ver...'];
+            const intro = intros[Math.floor(Math.random() * intros.length)];
+            result.push(`${intro} ${lines[0]}.`);
+            result.push('');
 
-            utterance = new SpeechSynthesisUtterance(resumen);
-            utterance.rate = 0.9;
-            utterance.pitch = 1;
-            utterance.lang = 'es-ES';
+            let seen = new Set();
+            let fillerAdded = false;
 
-            document.getElementById('voz-controls').style.display = 'flex';
-            mostrarToast('✅ Resumen de 30s listo');
-        }
+            for (let i = 1; i < lines.length; i++) {
+                let line = lines[i];
+                if (seen.has(line.toLowerCase())) continue;
+                seen.add(line.toLowerCase());
 
-        // Reproducir resumen
-        function reproducirResumen() {
-            if (utterance) speechSynthesis.speak(utterance);
-        }
+                // Añadir "la verdad," en democracia
+                if (!fillerAdded && line.toLowerCase().startsWith('democracia:') && line.includes(':')) {
+                    const parts = line.split(':');
+                    const value = parts[1].trim();
+                    if (value.length > 10) {
+                        line = `${parts[0]}: la verdad, ${value.charAt(0).toLowerCase() + value.slice(1)}`;
+                        fillerAdded = true;
+                    }
+                }
 
-        // Pausar
-        function pausarResumen() {
-            speechSynthesis.pause();
-        }
-
-        // Detener
-        function detenerResumen() {
-            speechSynthesis.cancel();
-            document.getElementById('voz-controls').style.display = 'none';
-        }
-
-        // Generar mapa de ideas
-        function generarMapa() {
-            const input = document.getElementById('input').value.trim();
-            if (!input) {
-                alert('Pega un texto primero');
-                return;
+                // Salto extra después de ":"
+                if (line.endsWith(':')) {
+                    result.push(line);
+                    result.push('');
+                } else {
+                    result.push(line);
+                }
             }
 
-            document.getElementById('mapa-container').style.display = 'block';
+            // Frase final
+            const endings = [
+                'Para que entiendas... ya sabés, el sistema.',
+                'O sea... para que suene 100% real.',
+                'Este... para que puedas usarlo siempre.'
+            ];
+            result.push('');
+            result.push(endings[Math.floor(Math.random() * endings.length)]);
+            result.push('');
+            result.push('Tu éxito es mi mayor motivación, mi vida 💖');
 
-            const stage = new Konva.Stage({
-                container: 'mapa',
-                width: document.getElementById('mapa').offsetWidth,
-                height: 400
-            });
+            // Mostrar resultado
+            textoFinal = result.join('\n');
+            document.getElementById('output').value = textoFinal;
 
-            const layer = new Konva.Layer();
-            const lines = input.split('\n').filter(l => l.trim()).slice(0, 6);
+            // Actualizar detector
+            analizarDetectores();
 
-            const centerX = stage.width() / 2;
-            const centerY = stage.height() / 2;
+            // Guardar en historial
+            guardarEnHistorial(input, textoFinal);
+            mostrarToast('✅ Texto humanizado');
+        }
 
-            // Nodo central
-            const centro = new Konva.Circle({
-                x: centerX,
-                y: centerY,
-                radius: 40,
-                fill: '#0d9488',
-                stroke: '#14b8a6',
-                strokeWidth: 3
-            });
-
-            const textoCentro = new Konva.Text({
-                x: centerX - 30,
-                y: centerY - 10,
-                text: 'Tema',
-                fontSize: 14,
-                fontFamily: 'Inter',
-                fill: 'white',
-                width: 60,
-                align: 'center'
-            });
-
-            layer.add(centro, textoCentro);
-
-            // Nodos secundarios
-            lines.forEach((line, i) => {
-                const angle = (i / lines.length) * 2 * Math.PI;
-                const radius = 150;
-                const x = centerX + radius * Math.cos(angle);
-                const y = centerY + radius * Math.sin(angle);
-
-                const nodo = new Konva.Rect({
-                    x: x - 60,
-                    y: y - 20,
-                    width: 120,
-                    height: 40,
-                    fill: '#1e293b',
-                    stroke: '#334155',
-                    strokeWidth: 1,
-                    cornerRadius: 8
-                });
-
-                const texto = new Konva.Text({
-                    x: x - 50,
-                    y: y - 10,
-                    text: line.length > 15 ? line.substring(0, 15) + '...' : line,
-                    fontSize: 12,
-                    fontFamily: 'Inter',
-                    fill: '#e2e8f0',
-                    width: 100
-                });
-
-                const linea = new Konva.Line({
-                    points: [centerX, centerY, x, y],
-                    stroke: '#94a3b8',
-                    strokeWidth: 1,
-                    tension: 0.2
-                });
-
-                layer.add(linea, nodo, texto);
-            });
-
-            stage.add(layer);
+        // Exportar PDF
+        function exportarPDF() {
+            if (!textoFinal) return;
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            doc.setFontSize(12);
+            const lines = doc.splitTextToSize(textoFinal, 180);
+            doc.text(lines, 15, 20);
+            doc.save('redactapro-supremo.pdf');
         }
 
         // Copiar
@@ -514,10 +448,7 @@
         function limpiar() {
             document.getElementById('input').value = '';
             document.getElementById('output').value = '';
-            document.getElementById('ia-detector').style.display = 'none';
-            document.getElementById('mapa-container').style.display = 'none';
-            document.getElementById('voz-controls').style.display = 'none';
-            speechSynthesis.cancel();
+            document.getElementById('detector-result').style.display = 'none';
         }
 
         // Guardar en historial
@@ -525,13 +456,7 @@
             const hist = JSON.parse(localStorage.getItem(historialKey) || '[]');
             const titulo = input.split('\n')[0].substring(0, 50) + '...';
             const preview = input.replace(/\n/g, ' ').substring(0, 120) + '...';
-            hist.unshift({ 
-                titulo, 
-                texto: input, 
-                resultado: output, 
-                fecha: new Date().toLocaleString(), 
-                preview
-            });
+            hist.unshift({ titulo, texto: input, resultado: output, fecha: new Date().toLocaleString(), preview });
             if (hist.length > 5) hist.pop();
             localStorage.setItem(historialKey, JSON.stringify(hist));
             cargarHistorial();
@@ -555,6 +480,7 @@
                     div.onclick = () => {
                         document.getElementById('input').value = item.texto;
                         document.getElementById('output').value = item.resultado;
+                        analizarDetectores();
                     };
                     list.appendChild(div);
                 });
