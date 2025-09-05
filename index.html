@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RedactaPro Supremo - Profesional + Colores</title>
+    <title>RedactaPro Supremo - Ultra Inteligente</title>
     <style id="theme-style">
         :root {
             --bg: #0f172a;
             --text: #e2e8f0;
             --text-secondary: #94a3b8;
-            --accent: #0d9488; /* Verde (por defecto) */
+            --accent: #0d9488;
             --accent-light: #14b8a6;
             --border: #334155;
             --shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
@@ -80,6 +80,26 @@
             font-size: 1rem;
             resize: vertical;
         }
+        .tag {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            margin: 2px;
+            background: var(--accent);
+            color: white;
+        }
+        .history-item {
+            padding: 10px;
+            margin: 5px 0;
+            background: rgba(255,255,255,0.05);
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+        .history-item:hover {
+            background: rgba(255,255,255,0.1);
+        }
         .progress-container {
             margin: 15px 0;
             display: none;
@@ -123,12 +143,9 @@
 <body>
     <div class="container">
         <h1>RedactaPro Supremo</h1>
-        <p class="subtitle">🎨 Profesional + Colores • Sin firma • Fluidez controlada</p>
+        <p class="subtitle">🧠 Ultra Inteligente: Detección • Adaptativo • PDF • Historial • Markdown</p>
 
         <div class="controls">
-            <button onclick="setMode('formal')" class="active" id="btn-formal">📄 Formal</button>
-            <button onclick="setMode('fluidez')" id="btn-fluidez">🌀 Fluidez</button>
-            <button onclick="setMode('correccion')" id="btn-correccion">🔧 Solo corrección</button>
             <button onclick="toggleDarkMode()">🌙 / ☀️ Modo</button>
             <select onchange="cambiarTema(this.value)" id="tema-select">
                 <option value="green">Verde</option>
@@ -136,19 +153,19 @@
                 <option value="purple">Morado</option>
                 <option value="red">Rojo</option>
             </select>
+            <button onclick="exportarPDF()">🖨️ Exportar PDF</button>
         </div>
 
         <textarea id="input" placeholder="Pega tu texto aquí..."></textarea>
 
         <div class="controls">
-            <button onclick="humanizar()">✨ Procesar</button>
+            <button onclick="humanizar()">✨ Procesar (Inteligente)</button>
             <button onclick="copiar()">📋 Copiar</button>
-            <button onclick="descargar()">💾 Descargar</button>
             <button onclick="limpiar()">🗑️ Limpiar</button>
         </div>
 
         <div class="progress-container" id="progressContainer">
-            <p class="progress-message" id="progressMessage">Iniciando...</p>
+            <p class="progress-message" id="progressMessage">Analizando tipo de texto...</p>
             <div class="progress-bar">
                 <div class="progress" id="progressBar"></div>
             </div>
@@ -157,14 +174,26 @@
         <div class="output">
             <textarea id="output" readonly placeholder="Aquí aparecerá el resultado..."></textarea>
         </div>
+
+        <div id="history" style="margin-top: 20px; display: none;">
+            <h3>📚 Historial con estilos</h3>
+            <div id="history-list"></div>
+        </div>
     </div>
 
     <div class="toast" id="toast">¡Listo!</div>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
     <script>
+        // Estado
         let darkMode = false;
-        let modo = 'formal';
         let textoFinal = '';
+        let modoUsado = '';
+        const historialKey = 'rps_historial_v5';
+        const temaKey = 'rps_tema';
+        const darkKey = 'rps_dark_mode_por_color';
+        const usoKey = 'rps_uso_modos';
 
         // Temas
         const temas = {
@@ -174,38 +203,122 @@
             red: { accent: '#dc2626', accentLight: '#ef4444' }
         };
 
+        // Transiciones
+        const transiciones = ['Por otro lado,', 'Además,', 'Es importante destacar que', 'En este marco,', 'Asimismo,'];
+
         // Cambiar tema
         function cambiarTema(color) {
             const t = temas[color];
             document.documentElement.style.setProperty('--accent', t.accent);
             document.documentElement.style.setProperty('--accent-light', t.accentLight);
-            localStorage.setItem('rps_tema', color);
+            localStorage.setItem(temaKey, color);
+
+            // Aplicar modo oscuro guardado para este color
+            const modoPorColor = JSON.parse(localStorage.getItem(darkKey) || '{}');
+            const esOscuro = modoPorColor[color] !== false; // Por defecto true
+            document.body.classList.toggle('dark-mode', esOscuro);
+            darkMode = esOscuro;
         }
 
-        // Cargar tema
+        // Cargar estado
         window.addEventListener('DOMContentLoaded', () => {
-            const savedTema = localStorage.getItem('rps_tema') || 'green';
+            const savedTema = localStorage.getItem(temaKey) || 'green';
             document.getElementById('tema-select').value = savedTema;
             cambiarTema(savedTema);
-
-            darkMode = localStorage.getItem('rps_dark') === 'true';
-            if (darkMode) {
-                document.body.classList.add('dark-mode');
-            }
+            cargarHistorial();
         });
 
-        // Guardar modo oscuro
+        // Alternar modo oscuro (guardado por color)
         function toggleDarkMode() {
             darkMode = !darkMode;
             document.body.classList.toggle('dark-mode', darkMode);
-            localStorage.setItem('rps_dark', darkMode);
+
+            // Guardar por color
+            const color = document.getElementById('tema-select').value;
+            const modoPorColor = JSON.parse(localStorage.getItem(darkKey) || '{}');
+            modoPorColor[color] = darkMode;
+            localStorage.setItem(darkKey, JSON.stringify(modoPorColor));
         }
 
-        // Cambiar modo
-        function setMode(m) {
-            modo = m;
-            document.querySelectorAll('.controls button').forEach(b => b.classList.remove('active'));
-            document.getElementById(`btn-${m}`).classList.add('active');
+        // Detectar tipo de texto
+        function detectarTipo(texto) {
+            const lineas = texto.split('\n').filter(l => l.trim());
+            const tieneDosPuntos = lineas.filter(l => l.includes(':') && !l.endsWith(':')).length;
+            const esLista = lineas.filter(l => l.trim().startsWith('-') || l.trim().startsWith('*') || l.match(/^\d+\./)).length;
+            const esMarkdown = texto.includes('#') || texto.includes('**') || texto.includes('```');
+            const longitudPromedio = texto.length / lineas.length;
+
+            if (esMarkdown) return 'markdown';
+            if (esLista > 3) return 'lista';
+            if (tieneDosPuntos > 4) return 'definiciones';
+            if (longitudPromedio > 80) return 'parrafo';
+
+            return 'mixto';
+        }
+
+        // Elegir modo adaptativo
+        function elegirModo(tipo) {
+            const uso = JSON.parse(localStorage.getItem(usoKey) || '{"formal":0,"fluidez":0,"correccion":0}');
+            let modo = '';
+
+            if (tipo === 'definiciones' || tipo === 'lista') {
+                modo = 'formal';
+            } else if (tipo === 'parrafo') {
+                modo = 'fluidez';
+            } else if (tipo === 'markdown') {
+                modo = 'markdown';
+            } else {
+                modo = 'formal';
+            }
+
+            // Guardar uso
+            uso[modo] = (uso[modo] || 0) + 1;
+            localStorage.setItem(usoKey, JSON.stringify(uso));
+            return modo;
+        }
+
+        // Procesar según modo
+        function procesarTexto(input, modo) {
+            let lines = input
+                .replace(/\n+/g, '\n')
+                .split('\n')
+                .map(l => l.trim())
+                .filter(l => l);
+
+            let result = [];
+            let seen = new Set();
+
+            // Encabezado
+            result.push(lines[0] + '.');
+            result.push('');
+            seen.add(lines[0].toLowerCase());
+
+            for (let i = 1; i < lines.length; i++) {
+                let line = lines[i];
+                if (seen.has(line.toLowerCase())) continue;
+                seen.add(line.toLowerCase());
+
+                // Modo Markdown: respetar sintaxis
+                if (modo === 'markdown') {
+                    result.push(line);
+                }
+                // Modo Fluidez: añadir transiciones en frases largas
+                else if (modo === 'fluidez' && !line.endsWith(':') && line.length > 40 && Math.random() < 0.4) {
+                    const trans = transiciones[Math.floor(Math.random() * transiciones.length)];
+                    result.push(trans + ' ' + line.charAt(0).toLowerCase() + line.slice(1));
+                }
+                // Modo Formal o Definiciones: mantener estructura
+                else {
+                    result.push(line);
+                }
+
+                // Salto después de ":"
+                if (line.endsWith(':') && i < lines.length - 1) {
+                    result.push('');
+                }
+            }
+
+            return result.join('\n');
         }
 
         // Función principal
@@ -224,8 +337,9 @@
 
             const steps = [
                 { msg: "Limpieza...", delay: 300 },
-                { msg: "Analizando modo...", delay: 400 },
-                { msg: "Aplicando estilo...", delay: 500 },
+                { msg: "Detectando tipo de texto...", delay: 400 },
+                { msg: "Seleccionando modo...", delay: 300 },
+                { msg: "Aplicando estilo inteligente...", delay: 500 },
                 { msg: "Finalizando...", delay: 300 }
             ];
 
@@ -241,59 +355,45 @@
                     current++;
                 } else {
                     clearInterval(interval);
-                    procesarTexto(input);
-                    pm.textContent = "¡Listo!";
+                    const tipo = detectarTipo(input);
+                    const modo = elegirModo(tipo);
+                    modoUsado = modo;
+                    textoFinal = procesarTexto(input, modo);
+                    document.getElementById('output').value = textoFinal;
+                    pm.textContent = `¡Listo! (${modo})`;
+                    guardarEnHistorial(input, textoFinal, modo);
                 }
             }, 300);
         }
 
-        // Procesar según modo
-        function procesarTexto(input) {
-            let lines = input
-                .replace(/\n+/g, '\n')
-                .split('\n')
-                .map(l => l.trim())
-                .filter(l => l);
+        // Guardar en historial
+        function guardarEnHistorial(input, output, modo) {
+            const hist = JSON.parse(localStorage.getItem(historialKey) || '[]');
+            const titulo = input.split('\n')[0].substring(0, 50) + '...';
+            hist.unshift({ titulo, texto: input, resultado: output, modo, fecha: new Date().toLocaleString() });
+            if (hist.length > 5) hist.pop();
+            localStorage.setItem(historialKey, JSON.stringify(hist));
+            cargarHistorial();
+        }
 
-            let result = [];
-            let seen = new Set();
-
-            // Intro según modo
-            const intros = {
-                formal: '',
-                fluidez: 'En este contexto, ',
-                correccion: ''
-            };
-            result.push(intros[modo] + lines[0] + '.');
-            result.push('');
-            seen.add(lines[0].toLowerCase());
-
-            const transiciones = ['Por otro lado,', 'Además,', 'Es importante destacar que', 'En este marco,', 'Asimismo,'];
-
-            for (let i = 1; i < lines.length; i++) {
-                let line = lines[i];
-                if (seen.has(line.toLowerCase())) continue;
-                seen.add(line.toLowerCase());
-
-                // Solo aplicar transiciones si es modo fluidez Y no es un encabezado (termina en :)
-                if (modo === 'fluidez' && !line.endsWith(':') && !line.includes(':') && i > 1 && Math.random() < 0.4) {
-                    const trans = transiciones[Math.floor(Math.random() * transiciones.length)];
-                    result.push(trans + ' ' + line.charAt(0).toLowerCase() + line.slice(1));
-                } else {
-                    result.push(line);
-                }
-
-                // Salto extra después de ":"
-                if (line.endsWith(':') && i < lines.length - 1) {
-                    result.push('');
-                }
+        // Cargar historial
+        function cargarHistorial() {
+            const hist = JSON.parse(localStorage.getItem(historialKey) || '[]');
+            const list = document.getElementById('history-list');
+            if (hist.length > 0) {
+                document.getElementById('history').style.display = 'block';
+                list.innerHTML = '';
+                hist.forEach(item => {
+                    const div = document.createElement('div');
+                    div.className = 'history-item';
+                    div.innerHTML = `<strong>${item.titulo}</strong> <span class="tag">${item.modo}</span>`;
+                    div.onclick = () => {
+                        document.getElementById('input').value = item.texto;
+                        document.getElementById('output').value = item.resultado;
+                    };
+                    list.appendChild(div);
+                });
             }
-
-            // Unir
-            textoFinal = result.join('\n');
-
-            // Mostrar
-            document.getElementById('output').value = textoFinal;
         }
 
         // Copiar
@@ -305,18 +405,18 @@
             mostrarToast('¡Copiado!');
         }
 
-        // Descargar
-        function descargar() {
+        // Exportar PDF
+        function exportarPDF() {
             if (!textoFinal) return;
-            const blob = new Blob([textoFinal], { type: 'text/plain;charset=utf-8' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = 'texto-procesado.txt';
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            const color = document.getElementById('tema-select').value;
+            const textColor = temas[color].accent;
+            doc.setFontSize(12);
+            doc.setTextColor(0, 0, 0);
+            const lines = doc.splitTextToSize(textoFinal, 180);
+            doc.text(lines, 15, 20);
+            doc.save('redactapro-supremo.pdf');
         }
 
         // Limpiar
