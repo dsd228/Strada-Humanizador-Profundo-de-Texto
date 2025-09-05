@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RedactaPro Supremo - V2</title>
+    <title>RedactaPro Supremo - V3</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style id="theme-style">
         :root {
             --bg: #0f172a;
@@ -14,217 +15,220 @@
             --accent-light: #14b8a6;
             --border: #334155;
             --shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            --radius: 16px;
         }
 
         .light-mode {
-            --bg: #f1f5f9;
-            --bg-secondary: rgba(241, 245, 249, 0.8);
+            --bg: #f8fafc;
+            --bg-secondary: rgba(248, 250, 252, 0.85);
             --text: #0f172a;
             --text-secondary: #64748b;
-            --border: #cbd5e1;
+            --border: #e2e8f0;
         }
 
         body {
-            font-family: 'Segoe UI', sans-serif;
+            font-family: 'Inter', sans-serif;
             background: linear-gradient(135deg, var(--bg), #020617);
             color: var(--text);
             line-height: 1.7;
             padding: 20px;
             margin: 0;
             min-height: 100vh;
-            transition: all 0.4s ease;
+            transition: all 0.5s ease;
+            overflow-x: hidden;
         }
 
         .container {
             max-width: 900px;
             margin: 0 auto;
             background: var(--bg-secondary);
-            padding: 30px;
-            border-radius: 20px;
+            padding: 32px;
+            border-radius: var(--radius);
             box-shadow: var(--shadow);
             backdrop-filter: blur(16px);
             border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.4s ease;
         }
 
         h1 {
             text-align: center;
             color: var(--accent-light);
-            margin: 0 0 10px 0;
+            margin: 0 0 12px 0;
             font-weight: 700;
+            font-size: 1.8rem;
         }
 
         p.subtitle {
             text-align: center;
             color: var(--text-secondary);
             font-size: 1.1rem;
-            margin-bottom: 25px;
+            margin-bottom: 30px;
         }
 
-        .assistant-chat {
-            background: rgba(15, 23, 42, 0.5);
-            border-radius: 12px;
-            padding: 15px;
+        /* Onboarding */
+        .onboarding {
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        .onboarding h2 {
+            font-size: 1.5rem;
             margin-bottom: 20px;
-            font-size: 0.95rem;
+            color: var(--accent-light);
+        }
+
+        .onboarding p {
             color: var(--text-secondary);
-            border: 1px solid var(--border);
+            margin-bottom: 30px;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
         }
 
-        .controls {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 12px;
-            justify-content: center;
-            align-items: center;
-            margin-bottom: 20px;
+        .btn-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 16px;
+            max-width: 600px;
+            margin: 0 auto;
         }
 
+        /* Iconos SVG */
+        .icon {
+            width: 20px;
+            height: 20px;
+            vertical-align: middle;
+            margin-right: 8px;
+            fill: currentColor;
+        }
+
+        /* Botones modernos */
         button {
             background: linear-gradient(90deg, var(--accent), #059669);
             color: white;
             border: none;
-            padding: 10px 16px;
-            border-radius: 8px;
+            padding: 12px 20px;
+            border-radius: 12px;
             cursor: pointer;
             font-weight: 600;
-            transition: all 0.3s ease;
-            font-size: 0.9rem;
-            box-shadow: 0 4px 12px rgba(13, 148, 136, 0.2);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            font-size: 0.95rem;
+            box-shadow: 0 4px 14px rgba(13, 148, 136, 0.25);
+            border: 1px solid rgba(13, 148, 136, 0.3);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
         }
 
         button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(13, 148, 136, 0.3);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 24px rgba(13, 148, 136, 0.35);
         }
 
-        button.small {
-            padding: 8px 12px;
-            font-size: 0.85rem;
+        button:active {
+            transform: translateY(-1px);
         }
 
+        /* Textarea con estilo */
         textarea {
             width: 100%;
             min-height: 200px;
-            padding: 18px;
-            margin: 15px 0;
+            padding: 20px;
+            margin: 16px 0;
             border: 1px solid var(--border);
-            border-radius: 12px;
+            border-radius: 14px;
             background: rgba(15, 23, 42, 0.6);
             color: var(--text);
             font-size: 1rem;
             resize: vertical;
-            backdrop-filter: blur(4px);
-            transition: border-color 0.3s;
+            backdrop-filter: blur(6px);
+            transition: all 0.3s;
+            font-family: 'Inter', monospace;
         }
 
         textarea:focus {
             outline: none;
             border-color: var(--accent);
             box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.3);
-        }
-
-        /* Selector de colores elegante */
-        .color-palette {
-            display: flex;
-            gap: 12px;
-            align-items: center;
-        }
-
-        .color-option {
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            border: 3px solid transparent;
-        }
-
-        .color-option:hover {
-            transform: scale(1.3);
-            box-shadow: 0 0 15px rgba(255, 255, 255, 0.4);
-        }
-
-        .color-option.selected {
-            border-color: white;
-            transform: scale(1.1);
-            box-shadow: 0 0 0 3px var(--accent);
-        }
-
-        .color-option[data-color="green"] { background: #0d9488; }
-        .color-option[data-color="blue"] { background: #0284c7; }
-        .color-option[data-color="purple"] { background: #7c3aed; }
-        .color-option[data-color="red"] { background: #dc2626; }
-
-        .tooltip {
-            position: absolute;
-            bottom: -32px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: var(--bg-secondary);
-            color: var(--text);
-            padding: 6px 12px;
-            border-radius: 8px;
-            font-size: 0.8rem;
-            white-space: nowrap;
-            opacity: 0;
-            transition: opacity 0.3s;
-            pointer-events: none;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-        }
-
-        .color-option:hover .tooltip {
-            opacity: 1;
+            background: rgba(15, 23, 42, 0.7);
         }
 
         /* Animación elegante */
         .loading {
             text-align: center;
-            padding: 30px;
+            padding: 40px 20px;
             display: none;
         }
 
-        .pulse {
+        .spinner {
             display: inline-block;
-            width: 12px;
-            height: 12px;
-            background: var(--accent-light);
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(13, 148, 136, 0.3);
             border-radius: 50%;
-            animation: pulse 1.5s infinite;
+            border-top-color: var(--accent-light);
+            animation: spin 1s ease-in-out infinite;
         }
 
-        .pulse:nth-child(2) { animation-delay: 0.2s; }
-        .pulse:nth-child(3) { animation-delay: 0.4s; }
-
-        @keyframes pulse {
-            0%, 100% { transform: scale(0.8); opacity: 0.6; }
-            50% { transform: scale(1.2); opacity: 1; }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
         }
 
+        .loading p {
+            margin-top: 16px;
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+        }
+
+        /* Sugerencias */
         .suggestion {
             background: rgba(13, 148, 136, 0.1);
             border: 1px solid rgba(13, 148, 136, 0.3);
-            padding: 12px;
-            border-radius: 10px;
-            margin: 15px 0;
+            padding: 16px;
+            border-radius: 12px;
+            margin: 18px 0;
             font-size: 0.95rem;
             color: var(--text-secondary);
             display: none;
+            animation: fadeIn 0.5s;
         }
 
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Historial */
         .history-item {
-            padding: 14px;
-            margin: 8px 0;
+            padding: 16px;
+            margin: 10px 0;
             background: rgba(255, 255, 255, 0.05);
-            border-radius: 12px;
+            border-radius: 14px;
             cursor: pointer;
             font-size: 0.95rem;
-            transition: all 0.3s;
-            border-left: 4px solid var(--accent);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border-left: 5px solid var(--accent);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .history-item::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0;
+            width: 0; height: 100%;
+            background: rgba(13, 148, 136, 0.1);
+            transition: width 0.3s;
+        }
+
+        .history-item:hover::before {
+            width: 100%;
         }
 
         .history-item:hover {
-            background: rgba(255, 255, 255, 0.1);
-            transform: translateX(4px);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
         }
 
         .history-preview {
@@ -239,95 +243,147 @@
 
         .tag {
             display: inline-block;
-            padding: 2px 8px;
-            border-radius: 12px;
+            padding: 4px 10px;
+            border-radius: 20px;
             font-size: 0.8rem;
-            margin-left: 8px;
+            font-weight: 600;
+            margin-left: 10px;
             background: var(--accent);
             color: white;
         }
 
+        /* Toast moderno */
         .toast {
             position: fixed;
-            bottom: 20px;
+            bottom: 24px;
             left: 50%;
             transform: translateX(-50%);
             background: var(--bg-secondary);
             color: var(--text);
-            padding: 16px 24px;
-            border-radius: 12px;
+            padding: 16px 28px;
+            border-radius: 16px;
             box-shadow: var(--shadow);
             border: 1px solid var(--border);
             opacity: 0;
-            transition: opacity 0.3s;
+            transition: opacity 0.4s, transform 0.4s;
             z-index: 100;
-            backdrop-filter: blur(8px);
+            backdrop-filter: blur(12px);
+            font-weight: 500;
         }
 
         .toast.show {
             opacity: 1;
+            transform: translateX(-50%) scale(1.05);
+        }
+
+        /* Fondo animado sutil */
+        .bg-particles {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: -1;
+            opacity: 0.15;
+        }
+
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: white;
+            border-radius: 50%;
+            opacity: 0.5;
+            animation: float 15s infinite linear;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0) translateX(0); opacity: 0.5; }
+            100% { transform: translateY(-100vh) translateX(100vw); opacity: 0; }
         }
     </style>
 </head>
 <body>
+    <!-- Fondo animado -->
+    <div class="bg-particles" id="particles"></div>
+
     <div class="container">
         <h1>RedactaPro Supremo</h1>
-        <p class="subtitle">💬 V2 - Asistente Conversacional • Entrenamiento • Vidrio Moderno</p>
+        <p class="subtitle">✨ V3 - Estética Avanzada • Vidrio • Emoción • Inteligencia</p>
 
-        <!-- Asistente conversacional -->
-        <div class="assistant-chat" id="assistant">
-            Hola 👋 ¿Qué necesitás hoy?
-            <div style="margin-top: 15px;">
-                <button onclick="startMode('humanizar')" class="small">✨ Humanizar texto</button>
-                <button onclick="startMode('presentacion')" class="small">🎬 Preparar presentación</button>
-                <button onclick="startMode('exposicion')" class="small">📢 Practicar exposición</button>
+        <!-- Onboarding -->
+        <div class="onboarding" id="onboarding">
+            <h2>¿Qué necesitás hoy?</h2>
+            <p>Elige cómo querés trabajar. Yo me adapto a vos.</p>
+            <div class="btn-grid">
+                <button onclick="startMode('humanizar')">
+                    <svg class="icon" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+                    Humanizar texto
+                </button>
+                <button onclick="startMode('presentacion')">
+                    <svg class="icon" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg>
+                    Preparar presentación
+                </button>
+                <button onclick="startMode('exposicion')">
+                    <svg class="icon" viewBox="0 0 24 24"><path d="M9 9h2v6H9V9zm4 0h2v6h-2V9zm-7 1h14v2H6v-2z"></path><circle cx="12" cy="5" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 5.5 19a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 11a1.65 1.65 0 0 0 .33-1.82l-.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0 1.82.33H9a2 2 0 0 1 2 2 2 2 0 0 1-2 2H6.91a1.65 1.65 0 0 0-1.31.69l-.09.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.6 14.5H5a2 2 0 0 1 2 2 2 2 0 0 1-2 2H4.5"></path></svg>
+                    Practicar exposición
+                </button>
             </div>
         </div>
 
+        <!-- Contenido principal -->
         <div id="main-content" style="display: none;">
             <div class="controls">
-                <button onclick="toggleDarkMode()">🌙 / ☀️ Modo</button>
+                <button onclick="toggleDarkMode()" id="mode-btn">
+                    <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+                    Modo Oscuro
+                </button>
 
                 <div class="color-palette">
-                    <span style="color: var(--text-secondary); font-size: 0.9rem;">🎨</span>
-                    <div class="color-option selected" data-color="green" onclick="selectColor('green')">
-                        <div class="tooltip">Verde Clásico</div>
-                    </div>
-                    <div class="color-option" data-color="blue" onclick="selectColor('blue')">
-                        <div class="tooltip">Azul Profundo</div>
-                    </div>
-                    <div class="color-option" data-color="purple" onclick="selectColor('purple')">
-                        <div class="tooltip">Morado Real</div>
-                    </div>
-                    <div class="color-option" data-color="red" onclick="selectColor('red')">
-                        <div class="tooltip">Rojo Energía</div>
-                    </div>
+                    <span style="color: var(--text-secondary); font-size: 0.9rem; margin-right: 8px;">🎨</span>
+                    <div class="color-option selected" data-color="green" onclick="selectColor('green')"></div>
+                    <div class="color-option" data-color="blue" onclick="selectColor('blue')"></div>
+                    <div class="color-option" data-color="purple" onclick="selectColor('purple')"></div>
+                    <div class="color-option" data-color="red" onclick="selectColor('red')"></div>
                 </div>
 
-                <button onclick="toggleSilentMode()" id="silent-btn">🔊 Rápido</button>
+                <button onclick="toggleSilentMode()" id="silent-btn">
+                    <svg class="icon" viewBox="0 0 24 24"><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="15.5" x2="19" y2="17"></line><circle cx="12" cy="12" r="10"></circle></svg>
+                    Rápido
+                </button>
             </div>
 
             <textarea id="input" placeholder="Pega tu texto aquí..."></textarea>
 
             <div class="controls">
-                <button onclick="humanizar()">✨ Procesar</button>
-                <button onclick="copiar()">📋 Copiar</button>
-                <button onclick="leerEnVozAlta()">📢 Leer en voz alta</button>
-                <button onclick="exportarHTML()">💾 Exportar HTML</button>
-                <button onclick="limpiar()">🗑️ Limpiar</button>
+                <button onclick="humanizar()">
+                    <svg class="icon" viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path></svg>
+                    Procesar
+                </button>
+                <button onclick="copiar()">
+                    <svg class="icon" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                    Copiar
+                </button>
+                <button onclick="leerEnVozAlta()">
+                    <svg class="icon" viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path><path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path></svg>
+                    Escuchar
+                </button>
+                <button onclick="exportarHTML()">
+                    <svg class="icon" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                    Exportar HTML
+                </button>
+                <button onclick="limpiar()">
+                    <svg class="icon" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
+                    Limpiar
+                </button>
             </div>
 
-            <!-- Carga elegante -->
+            <!-- Carga -->
             <div class="loading" id="loading">
-                <div class="pulse"></div>
-                <div class="pulse"></div>
-                <div class="pulse"></div>
-                <p style="margin-top: 10px; font-size: 0.9rem; color: var(--text-secondary);">
-                    Analizando tu estilo...
-                </p>
+                <div class="spinner"></div>
+                <p>Analizando tu estilo... esto tomará un segundo.</p>
             </div>
 
-            <!-- Sugerencias -->
+            <!-- Sugerencia -->
             <div class="suggestion" id="suggestion"></div>
 
             <!-- Resultado -->
@@ -336,8 +392,8 @@
             </div>
 
             <!-- Historial -->
-            <div id="history" style="margin-top: 25px; display: none;">
-                <h3 style="color: var(--accent-light); margin-bottom: 15px;">📚 Tu Historial</h3>
+            <div id="history" style="margin-top: 30px; display: none;">
+                <h3 style="color: var(--accent-light); margin-bottom: 18px; font-weight: 600;">📚 Tu Historial</h3>
                 <div id="history-list"></div>
             </div>
         </div>
@@ -346,13 +402,25 @@
     <div class="toast" id="toast">¡Listo!</div>
 
     <script>
+        // Generar partículas
+        const particles = document.getElementById('particles');
+        for (let i = 0; i < 50; i++) {
+            const p = document.createElement('div');
+            p.classList.add('particle');
+            p.style.left = Math.random() * 100 + 'vw';
+            p.style.top = Math.random() * 100 + 'vh';
+            p.style.animationDuration = (10 + Math.random() * 20) + 's';
+            p.style.animationDelay = (Math.random() * 10) + 's';
+            particles.appendChild(p);
+        }
+
         // Estado
         let darkMode = false;
         let textoFinal = '';
         let modoUsado = '';
         let silentMode = false;
         let estiloPersonal = { formal: 0, fluidez: 0, markdown: 0 };
-        const historialKey = 'rps_historial_v7';
+        const historialKey = 'rps_historial_v8';
         const temaKey = 'rps_tema';
         const darkKey = 'rps_dark_mode_por_color';
         const estiloKey = 'rps_estilo_personal';
@@ -381,18 +449,17 @@
 
         // Iniciar modo
         function startMode(mode) {
-            document.getElementById('assistant').style.display = 'none';
+            document.getElementById('onboarding').style.display = 'none';
             document.getElementById('main-content').style.display = 'block';
             modoUsado = mode;
 
-            // Mostrar sugerencia inicial
             const suggestion = document.getElementById('suggestion');
             if (mode === 'humanizar') {
-                suggestion.textContent = '💡 Pega tu texto y haz clic en "Procesar". Ajustaré el estilo según tu historial.';
+                suggestion.textContent = '💡 Pega tu texto. Ajustaré el estilo según tu forma de escribir.';
             } else if (mode === 'presentacion') {
-                suggestion.textContent = '💡 Pega tu contenido. Lo dividiré en diapositivas listas para exponer.';
+                suggestion.textContent = '💡 Pega tu contenido. Lo dividiré en secciones listas para presentar.';
             } else if (mode === 'exposicion') {
-                suggestion.textContent = '💡 Usa "Leer en voz alta" para practicar tu exposición con entonación natural.';
+                suggestion.textContent = '💡 Usa "Escuchar" para practicar tu exposición con entonación natural.';
             }
             suggestion.style.display = 'block';
         }
@@ -412,6 +479,12 @@
             const esOscuro = modoPorColor[color] !== false;
             document.body.classList.toggle('dark-mode', esOscuro);
             darkMode = esOscuro;
+
+            // Actualizar botón de modo
+            const btn = document.getElementById('mode-btn');
+            btn.innerHTML = darkMode 
+                ? '<svg class="icon" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg> Modo Claro' 
+                : '<svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg> Modo Oscuro';
         }
 
         // Alternar modo oscuro
@@ -422,13 +495,16 @@
             const modoPorColor = JSON.parse(localStorage.getItem(darkKey) || '{}');
             modoPorColor[color] = darkMode;
             localStorage.setItem(darkKey, JSON.stringify(modoPorColor));
+            selectColor(color); // Actualiza UI
         }
 
         // Modo silencio total
         function toggleSilentMode() {
             silentMode = !silentMode;
             const btn = document.getElementById('silent-btn');
-            btn.textContent = silentMode ? '🔊 Normal' : '🔇 Silencio';
+            btn.innerHTML = silentMode 
+                ? '<svg class="icon" viewBox="0 0 24 24"><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="15.5" x2="19" y2="17"></line><circle cx="12" cy="12" r="10"></circle></svg> Normal' 
+                : '<svg class="icon" viewBox="0 0 24 24"><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="15.5" x2="19" y2="17"></line><circle cx="12" cy="12" r="10"></circle></svg> Rápido';
         }
 
         // Detectar tipo de texto
@@ -444,16 +520,13 @@
             return 'mixto';
         }
 
-        // Elegir modo según historial y tipo
+        // Elegir modo
         function elegirModo(tipo) {
-            // Si ya hay preferencias
             const total = Object.values(estiloPersonal).reduce((a, b) => a + b, 0);
             if (total > 3) {
                 const sorted = Object.entries(estiloPersonal).sort((a, b) => b[1] - a[1]);
                 return sorted[0][0];
             }
-
-            // Si no, por tipo
             if (tipo === 'definiciones' || tipo === 'lista') return 'formal';
             if (tipo === 'parrafo') return 'fluidez';
             return 'formal';
@@ -491,7 +564,6 @@
                 }
             }
 
-            // Resumen automático
             if (lines.length > 10) {
                 result.push('');
                 result.push('📌 **Resumen:** Este contenido explica la organización política del Estado Nacional, sus elementos, forma de gobierno y división de poderes.');
@@ -520,16 +592,14 @@
                 textoFinal = procesarTexto(input, modo);
                 document.getElementById('output').value = textoFinal;
 
-                // Guardar y entrenar
                 estiloPersonal[modo] = (estiloPersonal[modo] || 0) + 1;
                 localStorage.setItem(estiloKey, JSON.stringify(estiloPersonal));
                 guardarEnHistorial(input, textoFinal, modo);
 
-                mostrarToast('¡Procesado!');
+                mostrarToast('✅ Listo');
 
-                // Sugerencia de mejora
                 const suggestion = document.getElementById('suggestion');
-                suggestion.textContent = '✅ Listo. ¿Querés que lo lea en voz alta o exportarlo como HTML?';
+                suggestion.textContent = '¿Querés escucharlo o exportarlo como HTML? Te queda genial.';
                 suggestion.style.display = 'block';
             }, silentMode ? 100 : 2000);
         }
@@ -580,7 +650,7 @@
             mostrarToast('🔊 Escuchando...');
         }
 
-        // Exportar como HTML autónomo
+        // Exportar como HTML
         function exportarHTML() {
             if (!textoFinal) return;
             const html = `<!DOCTYPE html>
@@ -589,9 +659,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Texto Procesado</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
         body {
-            font-family: 'Segoe UI', sans-serif;
+            font-family: 'Inter', sans-serif;
             background: #0f172a;
             color: #e2e8f0;
             line-height: 1.7;
@@ -603,18 +674,20 @@
             margin: 0 auto;
             background: rgba(30, 41, 59, 0.8);
             padding: 30px;
-            border-radius: 15px;
+            border-radius: 16px;
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
             backdrop-filter: blur(10px);
             border: 1px solid #334155;
         }
         pre {
             white-space: pre-wrap;
-            font-family: inherit;
+            font-family: 'Inter', monospace;
+            font-size: 1rem;
             background: rgba(15, 23, 42, 0.7);
-            padding: 20px;
-            border-radius: 10px;
+            padding: 24px;
+            border-radius: 12px;
             border: 1px solid #334155;
+            margin: 0;
         }
     </style>
 </head>
@@ -642,7 +715,7 @@
             if (!out.value) return;
             out.select();
             document.execCommand('copy');
-            mostrarToast('¡Copiado!');
+            mostrarToast('📋 Copiado');
         }
 
         // Limpiar
