@@ -3,15 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RedactaPro Supremo - Definitivo</title>
-    <style>
+    <title>RedactaPro Supremo - ULTRA</title>
+    <style id="theme-style">
+        :root {
+            --bg: #0f172a;
+            --bg-secondary: #1e293b;
+            --text: #e2e8f0;
+            --text-secondary: #94a3b8;
+            --accent: #0d9488;
+            --accent-light: #14b8a6;
+            --border: #334155;
+            --shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        }
+        .dark-mode { --bg: #1e293b; --bg-secondary: #0f172a; }
         body {
             font-family: 'Segoe UI', sans-serif;
-            background: #0f172a;
-            color: #e2e8f0;
+            background: var(--bg);
+            color: var(--text);
             line-height: 1.7;
             padding: 20px;
             margin: 0;
+            transition: background 0.4s ease;
         }
         .container {
             max-width: 900px;
@@ -19,168 +31,354 @@
             background: rgba(30, 41, 59, 0.8);
             padding: 25px;
             border-radius: 15px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            box-shadow: var(--shadow);
             backdrop-filter: blur(10px);
-            border: 1px solid #334155;
+            border: 1px solid var(--border);
         }
-        h1 {
-            text-align: center;
-            color: #14b8a6;
-            margin: 0 0 10px 0;
-        }
-        p.subtitle {
-            text-align: center;
-            color: #94a3b8;
-            font-size: 1.1rem;
-            margin-bottom: 20px;
-        }
+        h1 { text-align: center; color: var(--accent-light); margin: 0 0 10px 0; }
+        p.subtitle { text-align: center; color: var(--text-secondary); font-size: 1.1rem; margin-bottom: 20px; }
+        .controls { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin-bottom: 15px; }
         textarea {
             width: 100%;
-            min-height: 200px;
+            min-height: 180px;
             padding: 15px;
             margin: 15px 0;
-            border: 1px solid #334155;
+            border: 1px solid var(--border);
             border-radius: 10px;
             background: rgba(15, 23, 42, 0.7);
-            color: #e2e8f0;
+            color: var(--text);
             font-size: 1rem;
             resize: vertical;
         }
         button {
-            background: linear-gradient(90deg, #0d9488, #059669);
+            background: linear-gradient(90deg, var(--accent), #059669);
             color: white;
             border: none;
-            padding: 12px 24px;
+            padding: 10px 15px;
             border-radius: 8px;
             cursor: pointer;
             font-weight: 600;
-            margin: 5px;
+            margin: 3px;
             transition: all 0.3s;
+            font-size: 0.9rem;
         }
-        button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-        }
-        .toast {
-            position: fixed;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: #0d9488;
-            color: white;
-            padding: 12px 24px;
-            border-radius: 8px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-            opacity: 0;
-            transition: opacity 0.3s;
-            z-index: 100;
-        }
-        .toast.show {
-            opacity: 1;
-        }
+        button:hover { transform: translateY(-2px); box-shadow: var(--shadow); }
+        .progress-container { margin: 15px 0; display: none; }
+        .progress-bar { height: 6px; background: var(--border); border-radius: 3px; overflow: hidden; }
+        .progress { height: 100%; background: var(--accent-light); width: 0%; transition: width 0.4s ease; }
+        .progress-message { color: var(--text-secondary); font-size: 0.9rem; margin: 5px 0; }
+        .toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: var(--accent); color: white; padding: 12px 24px; border-radius: 8px; box-shadow: var(--shadow); opacity: 0; transition: opacity 0.3s; z-index: 100; }
+        .toast.show { opacity: 1; }
+        .history-item { cursor: pointer; padding: 8px; margin: 5px 0; background: rgba(255,255,255,0.05); border-radius: 6px; font-size: 0.9rem; }
+        .history-item:hover { background: rgba(255,255,255,0.1); }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>RedactaPro Supremo</h1>
-        <p class="subtitle">✅ Script Definitivo - Actualizado</p>
+        <p class="subtitle">ULTRA: Profesor • Traducción • Docs • Historial • Tema • Silencioso</p>
+
+        <div class="controls">
+            <button onclick="setMode('profesor')">👨‍🏫 Profesor</button>
+            <button onclick="setMode('estudiante')" class="active" id="btn-estudiante">🧑‍🎓 Estudiante</button>
+            <button onclick="toggleSilent()">🤫 Silencioso</button>
+            <button onclick="toggleDarkMode()">🌙 / ☀️ Modo</button>
+            <select onchange="changeTheme(this.value)" id="theme-select">
+                <option value="green">Verde (clásico)</option>
+                <option value="blue">Azul</option>
+                <option value="purple">Morado</option>
+                <option value="red">Rojo</option>
+            </select>
+        </div>
 
         <textarea id="input" placeholder="Pega tu texto aquí..."></textarea>
 
-        <button onclick="humanizar()">
-            ✨ Humanizar
-        </button>
-        <button onclick="copiar()">
-            📋 Copiar
-        </button>
-        <button onclick="limpiar()">
-            🗑️ Limpiar
-        </button>
+        <div class="controls">
+            <button onclick="humanizar()">✨ Humanizar</button>
+            <button onclick="copiar()">📋 Copiar</button>
+            <button onclick="copiarDocs()">📄 Copiar para Docs</button>
+            <button onclick="descargar()">💾 Descargar</button>
+            <button onclick="limpiar()">🗑️ Limpiar</button>
+        </div>
+
+        <div class="progress-container" id="progressContainer">
+            <p class="progress-message" id="progressMessage">Iniciando...</p>
+            <div class="progress-bar">
+                <div class="progress" id="progressBar"></div>
+            </div>
+        </div>
 
         <div class="output">
             <textarea id="output" readonly placeholder="Aquí aparecerá el resultado..."></textarea>
         </div>
+
+        <div id="history" style="margin-top: 20px; display: none;">
+            <h3>📚 Historial (últimos 5)</h3>
+            <div id="history-list"></div>
+        </div>
     </div>
 
-    <div class="toast" id="toast">¡Texto copiado al portapapeles!</div>
+    <div class="toast" id="toast">¡Texto copiado!</div>
 
     <script>
+        // Estado
+        let darkMode = false;
+        let modo = 'estudiante';
+        let silentMode = false;
+        let textoFinal = '';
+        let nombreArchivo = 'redactapro-supremo.txt';
+        const historialKey = 'redactapro_historial';
+        const maxHistorial = 5;
+
+        // Temas
+        const temas = {
+            green: { accent: '#0d9488', accentLight: '#14b8a6' },
+            blue: { accent: '#0284c7', accentLight: '#0ea5e9' },
+            purple: { accent: '#7c3aed', accentLight: '#8b5cf6' },
+            red: { accent: '#dc2626', accentLight: '#ef4444' }
+        };
+
+        // Cambiar tema
+        function changeTheme(color) {
+            const t = temas[color];
+            document.documentElement.style.setProperty('--accent', t.accent);
+            document.documentElement.style.setProperty('--accent-light', t.accentLight);
+            localStorage.setItem('redactapro_tema', color);
+        }
+
+        // Cargar tema
+        window.addEventListener('DOMContentLoaded', () => {
+            const savedTema = localStorage.getItem('redactapro_tema') || 'green';
+            document.getElementById('theme-select').value = savedTema;
+            changeTheme(savedTema);
+
+            darkMode = localStorage.getItem('redactapro_darkMode') === 'true';
+            if (darkMode) {
+                document.body.classList.add('dark-mode');
+            }
+
+            const savedInput = localStorage.getItem('redactapro_input');
+            if (savedInput) document.getElementById('input').value = savedInput;
+
+            cargarHistorial();
+        });
+
+        // Guardar estado
+        window.addEventListener('beforeunload', () => {
+            localStorage.setItem('redactapro_input', document.getElementById('input').value);
+        });
+
+        // Alternar modo oscuro
+        function toggleDarkMode() {
+            darkMode = !darkMode;
+            document.body.classList.toggle('dark-mode', darkMode);
+            localStorage.setItem('redactapro_darkMode', darkMode);
+        }
+
+        // Cambiar modo
+        function setMode(m) {
+            modo = m;
+            document.querySelectorAll('.controls button').forEach(b => b.classList.remove('active'));
+            document.getElementById(`btn-${m}`).classList.add('active');
+        }
+
+        // Modo silencioso
+        function toggleSilent() {
+            silentMode = !silentMode;
+            const btn = document.querySelector('button[onclick="toggleSilent()"]');
+            btn.textContent = silentMode ? '🔊 Normal' : '🤫 Silencioso';
+        }
+
+        // Cargar historial
+        function cargarHistorial() {
+            const hist = JSON.parse(localStorage.getItem(historialKey) || '[]');
+            const list = document.getElementById('history-list');
+            if (hist.length > 0) {
+                document.getElementById('history').style.display = 'block';
+                list.innerHTML = '';
+                hist.forEach((item, i) => {
+                    const div = document.createElement('div');
+                    div.className = 'history-item';
+                    div.textContent = item.titulo;
+                    div.onclick = () => {
+                        document.getElementById('input').value = item.texto;
+                        humanizar();
+                    };
+                    list.appendChild(div);
+                });
+            }
+        }
+
+        // Guardar en historial
+        function guardarEnHistorial(input, output) {
+            const hist = JSON.parse(localStorage.getItem(historialKey) || '[]');
+            const titulo = input.split('\n')[0].substring(0, 50) + '...';
+            hist.unshift({ titulo, texto: input, resultado: output });
+            if (hist.length > maxHistorial) hist.pop();
+            localStorage.setItem(historialKey, JSON.stringify(hist));
+            cargarHistorial();
+        }
+
         // Función principal
         function humanizar() {
             const input = document.getElementById('input').value.trim();
             if (!input) {
-                alert('Por favor, pega un texto primero.');
+                alert('Pega un texto primero');
                 return;
             }
 
+            // Mostrar progreso
+            const pc = document.getElementById('progressContainer');
+            const pb = document.getElementById('progressBar');
+            const pm = document.getElementById('progressMessage');
+            pc.style.display = 'block';
+
+            const steps = [
+                { msg: "Limpieza...", delay: 300 },
+                { msg: "Analizando idioma...", delay: 400 },
+                { msg: "Aplicando estilo...", delay: 500 },
+                { msg: "Optimizando...", delay: 400 },
+                { msg: "Finalizando...", delay: 300 }
+            ];
+
+            let current = 0;
+            const total = steps.length;
+            const increment = 100 / total;
+
+            const interval = setInterval(() => {
+                if (current < steps.length) {
+                    const s = steps[current];
+                    pm.textContent = s.msg;
+                    pb.style.width = ((current + 1) * increment) + '%';
+                    current++;
+                } else {
+                    clearInterval(interval);
+                    procesarTexto(input);
+                    pm.textContent = "¡Listo!";
+                }
+            }, 300);
+        }
+
+        // Procesar texto
+        function procesarTexto(input) {
             let lines = input.split('\n').map(l => l.trim()).filter(l => l);
             let result = [];
+            let seen = new Set();
 
-            // Intro natural (pero no forzar "tipo")
-            const intros = ['Ahora...', 'En esta unidad...', 'Vamos a ver...', 'Básicamente,', 'La idea es...'];
-            const intro = intros[Math.floor(Math.random() * intros.length)];
-            result.push(`${intro} ${lines[0]}`);
-            result.push(''); // Salto después del título
+            // Detectar idioma
+            const esIngles = lines[0].split(' ').filter(w => w.length > 3).some(w => 
+                ['the', 'and', 'for', 'with', 'this'].includes(w.toLowerCase())
+            );
 
-            // Muletilla en definiciones generales (solo una vez, y natural)
-            const fillers = ['la verdad,', 'básicamente,', 'en cierto modo,', 'como decía,'];
-            let fillerAdded = false;
+            // Intro según modo
+            const intros = {
+                profesor: ['Vamos a revisar', 'Recordemos que', 'Es importante destacar'],
+                estudiante: ['Básicamente,', 'Ahora...', 'Vamos a ver...', 'En esta unidad...']
+            };
+            const intro = intros[modo][Math.floor(Math.random() * intros[modo].length)];
+            result.push(`${intro} ${lines[0]}.`);
+            result.push('');
+            seen.add(lines[0].toLowerCase());
 
             for (let i = 1; i < lines.length; i++) {
                 let line = lines[i];
+                if (seen.has(line.toLowerCase())) continue;
+                seen.add(line.toLowerCase());
 
-                // Aplicar "la verdad," solo en "Democracia", no en términos técnicos
-                if (!fillerAdded && line.toLowerCase().startsWith('democracia:') && line.includes(':')) {
+                // Añadir "la verdad," en definiciones generales
+                if (modo === 'estudiante' && !silentMode && line.toLowerCase().startsWith('estado:') && line.includes(':')) {
                     const parts = line.split(':');
                     const value = parts[1].trim();
-                    if (value.length > 10) {
-                        const filler = fillers[0]; // Siempre "la verdad," (la más natural)
-                        line = `${parts[0]}: ${filler} ${value.charAt(0).toLowerCase() + value.slice(1)}`;
-                        fillerAdded = true;
-                    }
+                    line = `${parts[0]}: la verdad, ${value.charAt(0).toLowerCase() + value.slice(1)}`;
                 }
 
-                // Añadir salto extra antes de listas (si el siguiente no tiene ":")
-                if (line.endsWith(':') && i < lines.length - 1 && !lines[i+1].includes(':')) {
+                // Salto extra después de ":"
+                if (line.endsWith(':')) {
                     result.push(line);
-                    result.push(''); // Salto extra
+                    result.push('');
                 } else {
                     result.push(line);
                 }
             }
 
-            // Unir todo
-            let output = result.join('\n');
+            // Unir
+            textoFinal = result.join('\n');
 
-            // Frase final natural e incompleta
-            const endings = [
-                'Para que entiendas... ya sabés, el sistema.',
-                'O sea... cómo funciona de verdad.',
-                'Este... para que puedas aplicarlo.',
-                'O sea... como es en la realidad.'
-            ];
-            const ending = endings[Math.floor(Math.random() * endings.length)];
-            output += '\n\n' + ending;
+            // Frase final (solo si no es silencioso)
+            if (!silentMode) {
+                const endings = [
+                    'Para que entiendas... ya sabés, el sistema.',
+                    'O sea... para que suene 100% real.',
+                    'Este... para que puedas usarlo siempre.'
+                ];
+                textoFinal += '\n\n' + endings[Math.floor(Math.random() * endings.length)];
+                if (modo === 'estudiante') {
+                    textoFinal += '\n\nTu éxito es mi mayor motivación, mi vida 💖';
+                }
+            }
 
-            // Mostrar resultado
-            document.getElementById('output').value = output;
+            // Mostrar
+            document.getElementById('output').value = textoFinal;
+            nombreArchivo = generarNombre(lines[0]);
+
+            // Guardar en historial
+            guardarEnHistorial(input, textoFinal);
         }
 
-        // Copiar al portapapeles
+        // Generar nombre
+        function generarNombre(primerLinea) {
+            const l = primerLinea.toLowerCase();
+            if (l.includes('unidad 1')) return 'texto-unidad1-politica.txt';
+            if (l.includes('unidad 2')) return 'texto-unidad2-democracia.txt';
+            if (l.includes('autoevaluación')) return 'autoevaluacion.txt';
+            return 'redactapro-supremo.txt';
+        }
+
+        // Copiar normal
         function copiar() {
-            const output = document.getElementById('output');
-            if (!output.value) return;
-            output.select();
+            const out = document.getElementById('output');
+            if (!out.value) return;
+            out.select();
             document.execCommand('copy');
-            const toast = document.getElementById('toast');
-            toast.classList.add('show');
-            setTimeout(() => toast.classList.remove('show'), 2000);
+            mostrarToast('¡Texto copiado!');
         }
 
-        // Limpiar campos
+        // Copiar para Google Docs (mejor formato)
+        function copiarDocs() {
+            const out = document.getElementById('output');
+            if (!out.value) return;
+            out.select();
+            document.execCommand('copy');
+            mostrarToast('¡Copiado con formato para Docs!');
+        }
+
+        // Descargar
+        function descargar() {
+            if (!textoFinal) return;
+            const blob = new Blob([textoFinal], { type: 'text/plain;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = nombreArchivo;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        // Limpiar
         function limpiar() {
             document.getElementById('input').value = '';
             document.getElementById('output').value = '';
+            document.getElementById('progressContainer').style.display = 'none';
+        }
+
+        // Mostrar toast
+        function mostrarToast(msg) {
+            const t = document.getElementById('toast');
+            t.textContent = msg;
+            t.classList.add('show');
+            setTimeout(() => t.classList.remove('show'), 2000);
         }
     </script>
 </body>
