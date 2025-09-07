@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -24,6 +25,13 @@
             --safe: #10b981;
             --caution: #f59e0b;
             --risk: #ef4444;
+            --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
         }
 
         body {
@@ -31,10 +39,9 @@
             background: var(--bg);
             color: var(--text);
             line-height: 1.6;
-            padding: 0;
-            margin: 0;
             min-height: 100vh;
             display: flex;
+            overflow: hidden;
         }
 
         /* Sidebar */
@@ -47,57 +54,73 @@
             overflow-y: auto;
             position: fixed;
             box-shadow: 2px 0 10px rgba(0, 0, 0, 0.05);
+            z-index: 100;
         }
 
         .logo {
             font-size: 1.5rem;
             font-weight: 700;
             color: var(--accent);
-            margin-bottom: 20px;
+            margin-bottom: 25px;
             text-align: center;
             display: flex;
             align-items: center;
+            justify-content: center;
             gap: 10px;
+            padding: 15px 0;
+            border-bottom: 1px solid var(--border);
         }
 
         .tool-section {
             margin-bottom: 25px;
+            padding: 0 5px;
         }
 
         .tool-title {
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             color: var(--text-secondary);
             font-weight: 600;
-            margin-bottom: 10px;
+            margin-bottom: 12px;
             text-transform: uppercase;
             letter-spacing: 0.5px;
             display: flex;
             align-items: center;
             gap: 6px;
+            padding-left: 3px;
         }
 
         .tool-btn {
             display: block;
             width: 100%;
-            padding: 8px 12px;
+            padding: 10px 12px;
             margin-bottom: 6px;
             background: white;
             border: 1px solid var(--border);
-            border-radius: 6px;
+            border-radius: 8px;
             color: var(--text);
-            font-size: 0.9rem;
+            font-size: 0.95rem;
             text-align: left;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: var(--transition);
             display: flex;
             align-items: center;
             gap: 10px;
+            font-weight: 500;
         }
 
         .tool-btn:hover {
             background: var(--accent);
             color: white;
             border-color: var(--accent);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
+        }
+
+        .tool-btn.active {
+            background: var(--accent);
+            color: white;
+            border-color: var(--accent);
+            font-weight: 600;
         }
 
         /* Main content */
@@ -105,6 +128,8 @@
             margin-left: 300px;
             padding: 30px;
             width: calc(100% - 300px);
+            height: calc(100vh - 60px);
+            overflow-y: auto;
         }
 
         h1 {
@@ -115,12 +140,14 @@
             display: flex;
             align-items: center;
             gap: 12px;
+            margin-bottom: 8px;
         }
 
         p.subtitle {
             color: var(--text-secondary);
             font-size: 1.1rem;
             margin-bottom: 25px;
+            font-weight: 500;
         }
 
         /* Form */
@@ -136,6 +163,7 @@
             display: flex;
             align-items: center;
             gap: 8px;
+            font-size: 0.95rem;
         }
 
         textarea {
@@ -149,6 +177,7 @@
             font-size: 1rem;
             resize: vertical;
             font-family: 'Inter', sans-serif;
+            transition: var(--transition);
         }
 
         textarea:focus {
@@ -157,13 +186,18 @@
             box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
         }
 
+        textarea:read-only {
+            background: #f9fafb;
+            cursor: default;
+        }
+
         /* Buttons */
         .btn {
             background: var(--accent);
             color: white;
             border: none;
             padding: 10px 16px;
-            border-radius: 6px;
+            border-radius: 8px;
             cursor: pointer;
             font-weight: 600;
             font-size: 0.95rem;
@@ -172,10 +206,18 @@
             display: inline-flex;
             align-items: center;
             gap: 8px;
+            transition: var(--transition);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
 
         .btn:hover {
             background: var(--accent-light);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(59, 130, 246, 0.2);
+        }
+
+        .btn:active {
+            transform: translateY(0);
         }
 
         .btn-secondary {
@@ -185,10 +227,18 @@
             display: inline-flex;
             align-items: center;
             gap: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
         }
 
         .btn-secondary:hover {
             background: #f1f5f9;
+            border-color: var(--border);
+        }
+
+        .btn-group {
+            display: flex;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
         }
 
         /* Evasion Panel */
@@ -200,6 +250,25 @@
             margin: 20px 0;
             font-size: 0.95rem;
             color: var(--text-secondary);
+            transition: var(--transition);
+            border-left: 4px solid var(--safe);
+        }
+
+        .evasion-panel.warning {
+            border-left-color: var(--caution);
+        }
+
+        .evasion-panel.danger {
+            border-left-color: var(--risk);
+        }
+
+        .evasion-title {
+            font-weight: 600;
+            color: var(--text);
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
         .evasion-item {
@@ -208,12 +277,20 @@
             margin: 8px 0;
             padding: 6px 0;
             border-bottom: 1px dashed #e2e8f0;
+            font-size: 0.95rem;
+        }
+
+        .evasion-item:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
         }
 
         .evasion-status {
             display: flex;
             align-items: center;
             gap: 6px;
+            font-weight: 500;
         }
 
         .status-dot {
@@ -221,10 +298,16 @@
             height: 10px;
             border-radius: 50%;
             background: var(--safe);
+            transition: var(--transition);
         }
 
-        .status-caution { background: var(--caution); }
-        .status-risk { background: var(--risk); }
+        .status-caution { 
+            background: var(--caution); 
+        }
+        
+        .status-risk { 
+            background: var(--risk); 
+        }
 
         /* Output */
         .output {
@@ -246,8 +329,17 @@
             justify-content: space-between;
             z-index: 100;
             align-items: center;
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
         }
 
+        .status-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* Toast */
         .toast {
             position: fixed;
             bottom: 80px;
@@ -260,15 +352,79 @@
             border-radius: 8px;
             box-shadow: var(--shadow);
             opacity: 0;
-            transition: opacity 0.3s;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             z-index: 1000;
             display: flex;
             align-items: center;
             gap: 10px;
+            border-radius: 12px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
         }
 
         .toast.show {
             opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        /* Animation */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .main-content > * {
+            animation: fadeIn 0.4s ease-out;
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .sidebar {
+                width: 260px;
+            }
+            .main-content {
+                margin-left: 260px;
+                width: calc(100% - 260px);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 240px;
+                padding: 15px;
+            }
+            .main-content {
+                margin-left: 240px;
+                width: calc(100% - 240px);
+                padding: 20px;
+            }
+            h1 {
+                font-size: 1.6rem;
+            }
+            .subtitle {
+                font-size: 1rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+                border-right: none;
+                border-bottom: 1px solid var(--border);
+            }
+            .main-content {
+                margin-left: 0;
+                width: 100%;
+                padding: 20px 15px;
+            }
+            .status-bar {
+                padding: 8px 15px;
+            }
+            .btn {
+                margin-right: 5px;
+                margin-bottom: 5px;
+            }
         }
     </style>
 </head>
@@ -286,15 +442,15 @@
                 <i data-lucide="settings"></i>
                 Estilo
             </div>
-            <button class="tool-btn" onclick="setEstilo('colloquial')">
+            <button class="tool-btn active" id="btn-colloquial" onclick="setEstilo('colloquial')">
                 <i data-lucide="message-circle"></i>
                 Coloquial
             </button>
-            <button class="tool-btn" onclick="setEstilo('formal')">
+            <button class="tool-btn" id="btn-formal" onclick="setEstilo('formal')">
                 <i data-lucide="book"></i>
                 Formal
             </button>
-            <button class="tool-btn" onclick="setEstilo('tecnico')">
+            <button class="tool-btn" id="btn-tecnico" onclick="setEstilo('tecnico')">
                 <i data-lucide="code"></i>
                 Técnico
             </button>
@@ -351,7 +507,7 @@
             <textarea id="input" placeholder="Pega tu texto aquí..."></textarea>
         </div>
 
-        <div>
+        <div class="btn-group">
             <button class="btn" onclick="humanizar()">
                 <i data-lucide="sparkles"></i>
                 Humanizar Texto
@@ -363,8 +519,11 @@
         </div>
 
         <!-- Evasion Panel -->
-        <div class="evasion-panel" id="evasionPanel">
-            <strong>🛡️ Análisis de Evasión:</strong>
+        <div class="evasion-panel" id="evasionPanel" style="display: none;">
+            <div class="evasion-title">
+                <i data-lucide="shield"></i>
+                <strong>🛡️ Análisis de Evasión</strong>
+            </div>
             <div class="evasion-item">
                 <span>Tono robótico</span>
                 <div class="evasion-status">
@@ -376,7 +535,7 @@
                 <span>Patrones de IA</span>
                 <div class="evasion-status">
                     <span class="status-dot" id="patternStatus"></span>
-                    <span id="patternText">Bajo</span>
+                    <span id="patternText">No detectado</span>
                 </div>
             </div>
             <div class="evasion-item">
@@ -423,49 +582,62 @@
         <span id="toast-message">¡Listo!</span>
     </div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://unpkg.com/docx@7.11.0/build/index.browser.js"></script>
     <script>
         // Inicializar Lucide
-        lucide.createIcons();
+        document.addEventListener('DOMContentLoaded', () => {
+            lucide.createIcons();
+        });
 
         // Estado
         let textoFinal = '';
         let estiloActual = 'colloquial';
-        const historialKey = 'rps_historial_v19';
 
         // Sinónimos contextuales
         const sinonimos = {
-            'importante': ['clave', 'fundamental', 'esencial'],
-            'destacar': ['resaltar', 'enfatizar', 'señalar'],
-            'contexto': ['marco', 'escenario', 'situación'],
-            'por lo tanto': ['entonces', 'así que', 'por eso'],
-            'como resultado': ['por ende', 'en consecuencia', 'de ahí que'],
-            'en conclusión': ['para cerrar', 'finalmente', 'en definitiva']
+            'importante': ['clave', 'fundamental', 'esencial', 'crucial', 'relevante'],
+            'destacar': ['resaltar', 'enfatizar', 'señalar', 'subrayar', 'poner énfasis'],
+            'contexto': ['marco', 'escenario', 'situación', 'entorno', 'ámbito'],
+            'por lo tanto': ['entonces', 'así que', 'por eso', 'consecuentemente', 'de ahí que'],
+            'como resultado': ['por ende', 'en consecuencia', 'de ahí que', 'lo que lleva a'],
+            'en conclusión': ['para cerrar', 'finalmente', 'en definitiva', 'en resumen', 'para terminar'],
+            'además': ['también', 'igualmente', 'asimismo', 'por otro lado'],
+            'sin embargo': ['pero', 'aunque', 'no obstante', 'a pesar de']
         };
 
         // Muletillas naturales
         const muletillas = [
             'la verdad,', 'ahora...', 'fijate que', 'para que entiendas...',
-            'básicamente,', 'vamos a ver...', 'en esta unidad...', 'ya sabés, el sistema'
+            'básicamente,', 'vamos a ver...', 'en esta unidad...', 'ya sabés, el sistema',
+            'si me permitís,', 'lo cierto es que', 'por así decirlo', 'en cierto modo',
+            'si pensamos bien,', 'desde mi perspectiva', 'te cuento que'
         ];
 
         // Configuración de estilo
         function setEstilo(estilo) {
+            // Reset buttons
+            document.querySelectorAll('.tool-btn').forEach(btn => {
+                if (btn.id && btn.id.startsWith('btn-')) {
+                    btn.classList.remove('active');
+                }
+            });
+            
+            // Set active button
+            document.getElementById(`btn-${estilo}`).classList.add('active');
+            
             estiloActual = estilo;
             document.getElementById('status-estilo').textContent = `Estilo: ${{
                 colloquial: 'Coloquial',
                 formal: 'Formal',
                 tecnico: 'Técnico'
             }[estilo]}`;
-            mostrarToast(`Estilo: ${estilo}`);
+            mostrarToast(`✅ Estilo: ${estilo}`);
         }
 
         // Humanizar texto
         function humanizar() {
             const input = document.getElementById('input').value.trim();
             if (!input) {
-                alert('Pega un texto primero');
+                mostrarToast('⚠️ Pega un texto primero');
                 return;
             }
 
@@ -478,21 +650,24 @@
                 formal: 'En esta unidad:',
                 tecnico: 'Análisis:'
             };
-            result.push(`${intros[estiloActual]} ${lines[0]}.`);
+            
+            if (lines[0]) {
+                result.push(`${intros[estiloActual]} ${lines[0]}.`);
+            }
             result.push('');
 
             let seen = new Set();
             let fillerAdded = false;
 
-            for (let i = 1; i < lines.length; i++) {
+            for (let i = 0; i < lines.length; i++) {
                 let line = lines[i];
                 if (seen.has(line.toLowerCase())) continue;
                 seen.add(line.toLowerCase());
 
                 // Añadir muletilla en democracia
-                if (!fillerAdded && line.toLowerCase().startsWith('democracia:') && line.includes(':')) {
+                if (!fillerAdded && line.toLowerCase().includes('democracia') && line.includes(':')) {
                     const parts = line.split(':');
-                    const value = parts[1].trim();
+                    const value = parts.slice(1).join(':').trim();
                     if (value.length > 10) {
                         line = `${parts[0]}: la verdad, ${value.charAt(0).toLowerCase() + value.slice(1)}`;
                         fillerAdded = true;
@@ -500,13 +675,11 @@
                 }
 
                 // Reemplazar con sinónimos
-                if (estiloActual !== 'formal') {
-                    for (const [palabra, lista] of Object.entries(sinonimos)) {
-                        const regex = new RegExp(palabra, 'gi');
-                        if (line.match(regex)) {
-                            const sinonimo = lista[Math.floor(Math.random() * lista.length)];
-                            line = line.replace(regex, sinonimo);
-                        }
+                for (const [palabra, lista] of Object.entries(sinonimos)) {
+                    const regex = new RegExp(`\\b${palabra}\\b`, 'gi');
+                    if (line.match(regex)) {
+                        const sinonimo = lista[Math.floor(Math.random() * lista.length)];
+                        line = line.replace(regex, sinonimo);
                     }
                 }
 
@@ -520,20 +693,34 @@
             }
 
             // Frase final
-            const endings = [
-                'Para que entiendas... ya sabés, el sistema.',
-                'O sea... para que suene 100% real.',
-                'Este... para que puedas usarlo siempre.'
-            ];
+            const endings = {
+                colloquial: [
+                    'Para que entiendas... ya sabés, el sistema.',
+                    'O sea... para que suene 100% real.',
+                    'Este... para que puedas usarlo siempre.',
+                    'La verdad, esto es oro puro.'
+                ],
+                formal: [
+                    'Este análisis concluye con éxito.',
+                    'La evaluación finaliza satisfactoriamente.',
+                    'Se completa el proceso de revisión.'
+                ],
+                tecnico: [
+                    'Proceso de humanización completado.',
+                    'Análisis terminado con resultados óptimos.',
+                    'Sistema validado correctamente.'
+                ]
+            };
+            
             result.push('');
-            result.push(endings[Math.floor(Math.random() * endings.length)]);
+            result.push(endings[estiloActual][Math.floor(Math.random() * endings[estiloActual].length)]);
             result.push('');
             result.push('Tu éxito es mi mayor motivación, mi vida 💖');
 
             textoFinal = result.join('\n');
             document.getElementById('output').value = textoFinal;
             analizarEvasion();
-            mostrarToast('✅ Texto humanizado');
+            mostrarToast('✨ Texto humanizado');
         }
 
         // Analizar evasión
@@ -541,54 +728,75 @@
             const input = document.getElementById('output').value.trim();
             if (!input) return;
 
-            const tieneIA = /es importante destacar|en este contexto|a continuación/i.test(input.toLowerCase());
-            const tieneMuletilla = muletillas.some(m => input.toLowerCase().includes(m));
-            const tieneSalto = (input.match(/:\s*\n/g) || []).length > 2;
+            const tieneIA = /es importante destacar|en este contexto|a continuación|es fundamental mencionar|vale la pena destacar|es relevante señalar/i.test(input.toLowerCase());
+            const tieneMuletilla = muletillas.some(m => input.toLowerCase().includes(m.toLowerCase()));
+            const tieneSalto = (input.match(/:\s*\n/g) || []).length > 1;
+            const longLineas = input.split('\n').filter(l => l.trim().length > 50).length;
+            const variacionLong = longLineas < 3; // Menos variación = más sospechoso
 
             // Tono robótico
-            setDot('roboticStatus', tieneIA ? 'risk' : 'safe');
-            document.getElementById('roboticText').textContent = tieneIA ? 'Alto' : 'Bajo';
+            const roboticLevel = tieneIA ? 'risk' : (variacionLong ? 'caution' : 'safe');
+            setDot('roboticStatus', roboticLevel);
+            document.getElementById('roboticText').textContent = tieneIA ? 'Alto' : (variacionLong ? 'Medio' : 'Bajo');
 
             // Patrones de IA
-            setDot('patternStatus', tieneIA ? 'risk' : 'safe');
+            const patternLevel = tieneIA ? 'risk' : 'safe';
+            setDot('patternStatus', patternLevel);
             document.getElementById('patternText').textContent = tieneIA ? 'Detectado' : 'No detectado';
 
             // Entropía
-            const entropia = tieneMuletilla && tieneSalto ? 'safe' : 'caution';
+            const entropia = (tieneMuletilla && tieneSalto) ? 'safe' : 'caution';
             setDot('entropyStatus', entropia);
             document.getElementById('entropyText').textContent = entropia === 'safe' ? 'Alta' : 'Media';
 
             // Veredicto
+            let veredicto, finalLevel;
             if (tieneIA) {
-                setDot('finalStatus', 'risk');
-                document.getElementById('finalText').textContent = '❌ No pasa detectores';
+                veredicto = '❌ No pasa detectores';
+                finalLevel = 'risk';
             } else if (tieneMuletilla && tieneSalto) {
-                setDot('finalStatus', 'safe');
-                document.getElementById('finalText').textContent = '✅ Pasa detectores';
+                veredicto = '✅ Pasa detectores';
+                finalLevel = 'safe';
             } else {
-                setDot('finalStatus', 'caution');
-                document.getElementById('finalText').textContent = '⚠️ Podría mejorar';
+                veredicto = '⚠️ Podría mejorar';
+                finalLevel = 'caution';
             }
 
-            document.getElementById('evasionPanel').style.display = 'block';
+            setDot('finalStatus', finalLevel);
+            document.getElementById('finalText').textContent = veredicto;
+
+            // Actualizar panel
+            const panel = document.getElementById('evasionPanel');
+            panel.style.display = 'block';
+            panel.className = 'evasion-panel';
+            if (finalLevel === 'caution') panel.classList.add('warning');
+            if (finalLevel === 'risk') panel.classList.add('danger');
         }
 
         // Detectar tono robótico
         function detectarTonoRobótico() {
             const input = document.getElementById('input').value.trim();
-            if (!input) return;
-            const detector = document.getElementById('detector-result');
-            const tieneIA = /es importante destacar|en este contexto|a continuación/i.test(input.toLowerCase());
-            detector.innerHTML = tieneIA 
-                ? '<p style="color:#EF4444;">⚠️ Frases robóticas detectadas. Usa "Humanizar".</p>' 
-                : '<p style="color:#10B981;">✅ No se detectaron frases robóticas.</p>';
-            detector.style.display = 'block';
+            if (!input) {
+                mostrarToast('⚠️ Ingresa texto primero');
+                return;
+            }
+            
+            const tieneIA = /es importante destacar|en este contexto|a continuación|es fundamental mencionar|vale la pena destacar|es relevante señalar/i.test(input.toLowerCase());
+            
+            if (tieneIA) {
+                mostrarToast('⚠️ Frases robóticas detectadas - Usa "Humanizar"');
+            } else {
+                mostrarToast('✅ No se detectaron frases robóticas');
+            }
         }
 
         // Copiar con formato para Google Docs
         function copiarConFormato() {
             const out = document.getElementById('output');
-            if (!out.value) return;
+            if (!out.value) {
+                mostrarToast('⚠️ No hay texto para copiar');
+                return;
+            }
             out.select();
             document.execCommand('copy');
             mostrarToast('📋 Copiado (listo para Docs)');
@@ -596,41 +804,58 @@
 
         // Exportar PDF
         function exportarPDF() {
-            if (!textoFinal) return;
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF();
-            doc.setFontSize(12);
-            const lines = doc.splitTextToSize(textoFinal, 180);
-            doc.text(lines, 15, 20);
-            doc.save('redactapro-supremo.pdf');
+            if (!textoFinal) {
+                mostrarToast('⚠️ No hay texto para exportar');
+                return;
+            }
+            try {
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF();
+                doc.setFontSize(12);
+                doc.setFont('Inter');
+                const lines = doc.splitTextToSize(textoFinal, 180);
+                doc.text(lines, 15, 20);
+                doc.save('redactapro-supremo.pdf');
+                mostrarToast('📄 PDF exportado');
+            } catch (error) {
+                mostrarToast('❌ Error al exportar PDF');
+            }
         }
 
         // Exportar DOCX
         function exportarDOCX() {
-            if (!textoFinal) return;
-            const { Document, Packer, Paragraph, TextRun } = window.docx;
-            const doc = new Document({
-                sections: [{
-                    properties: {},
-                    children: [
-                        new Paragraph({
-                            children: [
-                                new TextRun(textoFinal)
-                            ]
-                        })
-                    ]
-                }]
-            });
-            Packer.toBlob(doc).then(blob => {
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = 'redactapro-supremo.docx';
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-                URL.revokeObjectURL(url);
-            });
+            if (!textoFinal) {
+                mostrarToast('⚠️ No hay texto para exportar');
+                return;
+            }
+            try {
+                const { Document, Packer, Paragraph, TextRun } = window.docx;
+                const doc = new Document({
+                    sections: [{
+                        properties: {},
+                        children: [
+                            new Paragraph({
+                                children: [
+                                    new TextRun(textoFinal)
+                                ]
+                            })
+                        ]
+                    }]
+                });
+                Packer.toBlob(doc).then(blob => {
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = 'redactapro-supremo.docx';
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    URL.revokeObjectURL(url);
+                    mostrarToast('📄 Word exportado');
+                });
+            } catch (error) {
+                mostrarToast('❌ Error al exportar Word');
+            }
         }
 
         // Limpiar
@@ -638,6 +863,7 @@
             document.getElementById('input').value = '';
             document.getElementById('output').value = '';
             document.getElementById('evasionPanel').style.display = 'none';
+            mostrarToast('🧹 Limpiado');
         }
 
         // Mostrar toast
@@ -646,7 +872,7 @@
             const span = document.getElementById('toast-message');
             span.textContent = msg;
             t.classList.add('show');
-            setTimeout(() => t.classList.remove('show'), 2000);
+            setTimeout(() => t.classList.remove('show'), 2500);
         }
 
         // Helper para puntos de estado
@@ -659,3 +885,4 @@
     </script>
 </body>
 </html>
+```
