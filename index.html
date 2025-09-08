@@ -1,4 +1,3 @@
-```html
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -301,13 +300,8 @@
             transition: var(--transition);
         }
 
-        .status-caution { 
-            background: var(--caution); 
-        }
-        
-        .status-risk { 
-            background: var(--risk); 
-        }
+        .status-caution { background: var(--caution); }
+        .status-risk { background: var(--risk); }
 
         /* Output */
         .output {
@@ -378,53 +372,22 @@
 
         /* Responsive */
         @media (max-width: 1024px) {
-            .sidebar {
-                width: 260px;
-            }
-            .main-content {
-                margin-left: 260px;
-                width: calc(100% - 260px);
-            }
+            .sidebar { width: 260px; }
+            .main-content { margin-left: 260px; width: calc(100% - 260px); }
         }
 
         @media (max-width: 768px) {
-            .sidebar {
-                width: 240px;
-                padding: 15px;
-            }
-            .main-content {
-                margin-left: 240px;
-                width: calc(100% - 240px);
-                padding: 20px;
-            }
-            h1 {
-                font-size: 1.6rem;
-            }
-            .subtitle {
-                font-size: 1rem;
-            }
+            .sidebar { width: 240px; padding: 15px; }
+            .main-content { margin-left: 240px; width: calc(100% - 240px); padding: 20px; }
+            h1 { font-size: 1.6rem; }
+            .subtitle { font-size: 1rem; }
         }
 
         @media (max-width: 480px) {
-            .sidebar {
-                width: 100%;
-                height: auto;
-                position: relative;
-                border-right: none;
-                border-bottom: 1px solid var(--border);
-            }
-            .main-content {
-                margin-left: 0;
-                width: 100%;
-                padding: 20px 15px;
-            }
-            .status-bar {
-                padding: 8px 15px;
-            }
-            .btn {
-                margin-right: 5px;
-                margin-bottom: 5px;
-            }
+            .sidebar { width: 100%; height: auto; position: relative; border-right: none; border-bottom: 1px solid var(--border); }
+            .main-content { margin-left: 0; width: 100%; padding: 20px 15px; }
+            .status-bar { padding: 8px 15px; }
+            .btn { margin-right: 5px; margin-bottom: 5px; }
         }
     </style>
 </head>
@@ -508,6 +471,10 @@
         </div>
 
         <div class="btn-group">
+            <button class="btn" onclick="limpiarIconos()">
+                <i data-lucide="zap"></i>
+                Limpiar Iconos/Emojis
+            </button>
             <button class="btn" onclick="humanizar()">
                 <i data-lucide="sparkles"></i>
                 Humanizar Texto
@@ -583,16 +550,13 @@
     </div>
 
     <script>
-        // Inicializar Lucide
         document.addEventListener('DOMContentLoaded', () => {
             lucide.createIcons();
         });
 
-        // Estado
         let textoFinal = '';
         let estiloActual = 'colloquial';
 
-        // Sinónimos contextuales
         const sinonimos = {
             'importante': ['clave', 'fundamental', 'esencial', 'crucial', 'relevante'],
             'destacar': ['resaltar', 'enfatizar', 'señalar', 'subrayar', 'poner énfasis'],
@@ -604,7 +568,6 @@
             'sin embargo': ['pero', 'aunque', 'no obstante', 'a pesar de']
         };
 
-        // Muletillas naturales
         const muletillas = [
             'la verdad,', 'ahora...', 'fijate que', 'para que entiendas...',
             'básicamente,', 'vamos a ver...', 'en esta unidad...', 'ya sabés, el sistema',
@@ -612,18 +575,11 @@
             'si pensamos bien,', 'desde mi perspectiva', 'te cuento que'
         ];
 
-        // Configuración de estilo
         function setEstilo(estilo) {
-            // Reset buttons
             document.querySelectorAll('.tool-btn').forEach(btn => {
-                if (btn.id && btn.id.startsWith('btn-')) {
-                    btn.classList.remove('active');
-                }
+                if (btn.id && btn.id.startsWith('btn-')) btn.classList.remove('active');
             });
-            
-            // Set active button
             document.getElementById(`btn-${estilo}`).classList.add('active');
-            
             estiloActual = estilo;
             document.getElementById('status-estilo').textContent = `Estilo: ${{
                 colloquial: 'Coloquial',
@@ -633,7 +589,27 @@
             mostrarToast(`✅ Estilo: ${estilo}`);
         }
 
-        // Humanizar texto
+        // ✅ NUEVA FUNCIÓN: LIMPIAR ICONOS Y EMOJIS
+        function limpiarIconos() {
+            const input = document.getElementById('input');
+            if (!input.value.trim()) {
+                mostrarToast('⚠️ Pega un texto primero');
+                return;
+            }
+
+            // Elimina emojis, iconos y símbolos no alfabéticos (excepto puntuación básica y acentos)
+            let textoLimpio = input.value.replace(
+                /[^\w\sáéíóúüñÁÉÍÓÚÜÑ.,:;!?()"'@#%&\-+*/=<>[\]{}\\|`~^$_]/gu,
+                ''
+            );
+
+            // Opcional: también puedes normalizar espacios múltiples
+            textoLimpio = textoLimpio.replace(/\s+/g, ' ').trim();
+
+            input.value = textoLimpio;
+            mostrarToast('🧹 Iconos y emojis eliminados');
+        }
+
         function humanizar() {
             const input = document.getElementById('input').value.trim();
             if (!input) {
@@ -644,7 +620,6 @@
             let lines = input.split('\n').map(l => l.trim()).filter(l => l);
             let result = [];
 
-            // Intro natural
             const intros = {
                 colloquial: 'Ahora...',
                 formal: 'En esta unidad:',
@@ -664,7 +639,6 @@
                 if (seen.has(line.toLowerCase())) continue;
                 seen.add(line.toLowerCase());
 
-                // Añadir muletilla en democracia
                 if (!fillerAdded && line.toLowerCase().includes('democracia') && line.includes(':')) {
                     const parts = line.split(':');
                     const value = parts.slice(1).join(':').trim();
@@ -674,7 +648,6 @@
                     }
                 }
 
-                // Reemplazar con sinónimos
                 for (const [palabra, lista] of Object.entries(sinonimos)) {
                     const regex = new RegExp(`\\b${palabra}\\b`, 'gi');
                     if (line.match(regex)) {
@@ -683,7 +656,6 @@
                     }
                 }
 
-                // Saltos después de ":"
                 if (line.endsWith(':')) {
                     result.push(line);
                     result.push('');
@@ -692,7 +664,6 @@
                 }
             }
 
-            // Frase final
             const endings = {
                 colloquial: [
                     'Para que entiendas... ya sabés, el sistema.',
@@ -723,7 +694,6 @@
             mostrarToast('✨ Texto humanizado');
         }
 
-        // Analizar evasión
         function analizarEvasion() {
             const input = document.getElementById('output').value.trim();
             if (!input) return;
@@ -732,24 +702,20 @@
             const tieneMuletilla = muletillas.some(m => input.toLowerCase().includes(m.toLowerCase()));
             const tieneSalto = (input.match(/:\s*\n/g) || []).length > 1;
             const longLineas = input.split('\n').filter(l => l.trim().length > 50).length;
-            const variacionLong = longLineas < 3; // Menos variación = más sospechoso
+            const variacionLong = longLineas < 3;
 
-            // Tono robótico
             const roboticLevel = tieneIA ? 'risk' : (variacionLong ? 'caution' : 'safe');
             setDot('roboticStatus', roboticLevel);
             document.getElementById('roboticText').textContent = tieneIA ? 'Alto' : (variacionLong ? 'Medio' : 'Bajo');
 
-            // Patrones de IA
             const patternLevel = tieneIA ? 'risk' : 'safe';
             setDot('patternStatus', patternLevel);
             document.getElementById('patternText').textContent = tieneIA ? 'Detectado' : 'No detectado';
 
-            // Entropía
             const entropia = (tieneMuletilla && tieneSalto) ? 'safe' : 'caution';
             setDot('entropyStatus', entropia);
             document.getElementById('entropyText').textContent = entropia === 'safe' ? 'Alta' : 'Media';
 
-            // Veredicto
             let veredicto, finalLevel;
             if (tieneIA) {
                 veredicto = '❌ No pasa detectores';
@@ -765,7 +731,6 @@
             setDot('finalStatus', finalLevel);
             document.getElementById('finalText').textContent = veredicto;
 
-            // Actualizar panel
             const panel = document.getElementById('evasionPanel');
             panel.style.display = 'block';
             panel.className = 'evasion-panel';
@@ -773,16 +738,13 @@
             if (finalLevel === 'risk') panel.classList.add('danger');
         }
 
-        // Detectar tono robótico
         function detectarTonoRobótico() {
             const input = document.getElementById('input').value.trim();
             if (!input) {
                 mostrarToast('⚠️ Ingresa texto primero');
                 return;
             }
-            
             const tieneIA = /es importante destacar|en este contexto|a continuación|es fundamental mencionar|vale la pena destacar|es relevante señalar/i.test(input.toLowerCase());
-            
             if (tieneIA) {
                 mostrarToast('⚠️ Frases robóticas detectadas - Usa "Humanizar"');
             } else {
@@ -790,7 +752,6 @@
             }
         }
 
-        // Copiar con formato para Google Docs
         function copiarConFormato() {
             const out = document.getElementById('output');
             if (!out.value) {
@@ -802,7 +763,6 @@
             mostrarToast('📋 Copiado (listo para Docs)');
         }
 
-        // Exportar PDF
         function exportarPDF() {
             if (!textoFinal) {
                 mostrarToast('⚠️ No hay texto para exportar');
@@ -822,7 +782,6 @@
             }
         }
 
-        // Exportar DOCX
         function exportarDOCX() {
             if (!textoFinal) {
                 mostrarToast('⚠️ No hay texto para exportar');
@@ -858,7 +817,6 @@
             }
         }
 
-        // Limpiar
         function limpiar() {
             document.getElementById('input').value = '';
             document.getElementById('output').value = '';
@@ -866,7 +824,6 @@
             mostrarToast('🧹 Limpiado');
         }
 
-        // Mostrar toast
         function mostrarToast(msg) {
             const t = document.getElementById('toast');
             const span = document.getElementById('toast-message');
@@ -875,7 +832,6 @@
             setTimeout(() => t.classList.remove('show'), 2500);
         }
 
-        // Helper para puntos de estado
         function setDot(id, type) {
             const dot = document.getElementById(id);
             dot.className = 'status-dot';
@@ -885,4 +841,3 @@
     </script>
 </body>
 </html>
-```
